@@ -22,6 +22,15 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@biomejs/biome": "2.0.6"
+    "@biomejs/biome": "2.0.6",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.2"
+  },
+  "lint-staged": {
+    "*.{js,ts,jsx,tsx}": [
+      "pnpm run format",
+      "pnpm run check",
+      "pnpm run lint"
+    ]
   }
 }
