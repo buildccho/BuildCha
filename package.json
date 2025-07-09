@@ -16,7 +16,8 @@
     "dev": "pnpm dev:back & pnpm dev:front",
     "lint": "biome lint .",
     "format": "biome format --write .",
-    "check": "biome check ."
+    "check": "biome check .",
+    "postinstall": "husky install"
   },
   "keywords": [],
   "author": "",
