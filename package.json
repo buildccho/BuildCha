@@ -9,10 +9,19 @@
   "packageManager": "pnpm@10.11.0",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "back": "pnpm -F backend",
-    "front": "pnpm -F frontend"
+    "back": "pnpm -F apps/backend",
+    "front": "pnpm -F apps/frontend",
+    "dev:back": "pnpm -F apps/backend dev",
+    "dev:front": "pnpm -F apps/frontend dev",
+    "dev": "pnpm dev:back & pnpm dev:front",
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "check": "biome check ."
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@biomejs/biome": "2.0.6"
+  }
 }

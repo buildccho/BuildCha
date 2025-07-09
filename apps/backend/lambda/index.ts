@@ -1,5 +1,5 @@
-import { handle } from 'hono/aws-lambda'
-import app from '../index'
+import { handle } from "hono/aws-lambda";
+import app from "../index";
 
 // index.ts で定義された純粋なHTTPサーバをAWS Lambda用のアダプタでラップしてハンドラとしてエクスポート
-export const handler = handle(app)
+export const handler = handle(app);
