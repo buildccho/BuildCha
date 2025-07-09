@@ -1,0 +1,37 @@
+{
+  "name": "buildccho",
+  "version": "1.0.0",
+  "description": "",
+  "engines": {
+    "pnpm": "10.11.0",
+    "npm": "please_use_pnpm_instead"
+  },
+  "packageManager": "pnpm@10.11.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "back": "pnpm -F backend",
+    "front": "pnpm -F frontend",
+    "dev:back": "pnpm -F backend dev",
+    "dev:front": "pnpm -F frontend dev",
+    "dev": "pnpm dev:back & pnpm dev:front",
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "check": "biome check .",
+    "postinstall": "husky install"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@biomejs/biome": "2.0.6",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.2"
+  },
+  "lint-staged": {
+    "*.{js,ts,jsx,tsx}": [
+      "pnpm run format",
+      "pnpm run check",
+      "pnpm run lint"
+    ]
+  }
+}
