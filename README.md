@@ -81,5 +81,5 @@ docker-compose --profile full up --build
 停止は以下のコマンドです。
 
 ```bash
-docker compose down
+docker-compose down
 ```

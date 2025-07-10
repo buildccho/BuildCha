@@ -13,6 +13,4 @@ RUN pnpm install
 COPY apps/backend ./apps/backend
 COPY apps/frontend ./apps/frontend
 
-EXPOSE 3000
-
-CMD ["pnpm", "dev"]
+EXPOSE 8000

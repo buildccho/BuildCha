@@ -14,5 +14,3 @@ COPY apps/frontend ./apps/frontend
 COPY apps/backend ./apps/backend
 
 EXPOSE 3000
-
-CMD ["pnpm", "dev"]
