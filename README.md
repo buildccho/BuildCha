@@ -58,18 +58,21 @@ pnpm --filter frontend dev
 - **backendのみ起動**
 
 ```bash
+docker-compose --profile frontend build
 docker-compose --profile backend up --build
 ```
 
 - **frontendのみ起動**
 
 ```bash
+docker-compose --profile backend build
 docker-compose --profile frontend up --build
 ```
 
 - **両方同時に起動**
 
 ```bash
+docker-compose --profile full build
 docker-compose --profile full up --build
 ```
 
