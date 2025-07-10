@@ -1,0 +1,17 @@
+services:    
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    ports:
+      - "8000:8000"
+    command: pnpm dev:back
+    profiles: ["full", "backend"]
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+    ports:
+      - "3000:3000"
+    command: pnpm dev:front
+    profiles: ["full", "frontend"]

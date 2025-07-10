@@ -1,0 +1,18 @@
+FROM node:22-alpine
+
+RUN npm install -g pnpm
+
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/backend/package.json ./apps/backend/
+COPY apps/frontend/package.json ./apps/frontend/
+
+RUN pnpm install
+
+COPY apps/backend ./apps/backend
+COPY apps/frontend ./apps/frontend
+
+EXPOSE 3000
+
+CMD ["pnpm", "dev"]
