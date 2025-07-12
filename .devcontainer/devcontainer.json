@@ -11,8 +11,7 @@
       "settings": {
         "terminal.integrated.defaultProfile.linux": "zsh"
       },
-      "extensions": [
-      ]
+      "extensions": []
     }
   }
 }
