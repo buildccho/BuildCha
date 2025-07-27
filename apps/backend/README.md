@@ -1,19 +1,17 @@
-# Backend
+# Back-Azure
 
-BuildCha のバックエンド API サーバーです。Hono フレームワークを使用し、ローカル開発と AWS Lambda デプロイの両方をサポートしています。
+BuildCha のバックエンド API サーバーです。Hono フレームワークを使用し、ローカル開発と Azure Functions デプロイの両方をサポートしています。
 
 ## 🏗️ プロジェクト構造
 
 ```
-packages/backend/
-├── bin/                    # CDKアプリケーションのエントリーポイント
-│   └── backend.ts         # CDKスタックの定義
-├── lib/                    # CDKスタックの実装
-│   └── backend-stack.ts   # AWS Lambda関数の定義
-├── lambda/                 # AWS Lambda用のエントリーポイント
-│   └── index.ts           # Lambdaハンドラーの定義
-├── test/                   # テストファイル
-├── index.ts               # メインのAPIサーバー（Honoアプリ）
+apps/back-azure/
+├── src/                    # ソースコード
+│   ├── app.ts             # メインのAPIアプリケーション（Honoアプリ）
+│   └── functions/         # Azure Functions用のエントリーポイント
+│       └── httpTrigger.ts # HTTP トリガー関数の定義
+├── host.json              # Azure Functions の設定ファイル
+├── local.settings.json    # ローカル開発用の設定
 ├── package.json           # 依存関係とスクリプト
 └── tsconfig.json          # TypeScript設定
 ```
@@ -22,13 +20,20 @@ packages/backend/
 
 ### 前提条件
 
-- Node.js 22.x 以上
+- Node.js 18.x 以上
 - pnpm
+- Azure Functions Core Tools（ローカル開発用）
 
 ### インストール
 
 ```bash
 pnpm install
+```
+
+### Azure Functions Core Tools のインストール
+
+```bash
+npm install -g azure-functions-core-tools@4 --unsafe-perm true
 ```
 
 ## 🛠️ 開発
@@ -39,7 +44,7 @@ pnpm install
 pnpm dev
 ```
 
-サーバーは [http://localhost:8000](http://localhost:8000) で起動します。
+サーバーは [http://localhost:7071](http://localhost:7071) で起動します。
 
 ### ビルド
 
@@ -57,50 +62,54 @@ pnpm test
 
 ### ローカル開発
 
-- **Hono** + **@hono/node-server** を使用
-- ポート 8000 で HTTP サーバーを起動
-- ホットリロード対応（`tsx watch`）
+- **Hono** + **@marplex/hono-azurefunc-adapter** を使用
+- Azure Functions Core Tools でローカルサーバーを起動
+- ポート 7071 で HTTP サーバーを起動
+- ホットリロード対応（TypeScript watch モード）
 
-### 本番環境（AWS）
+### 本番環境（Azure）
 
-- **AWS Lambda** + **Hono** を使用
-- CDK でインフラをコード化
-- Lambda Function URL でアクセス可能
+- **Azure Functions** + **Hono** を使用
+- HTTP トリガーでリクエストを処理
+- すべてのHTTPメソッド（GET, POST, DELETE, PATCH）をサポート
 
 ### コード共有
 
-- `index.ts` で定義された Hono アプリケーション
-- ローカル開発と Lambda 環境で同じコードを再利用
-- `lambda/index.ts` で Lambda 用のアダプタを提供
+- `src/app.ts` で定義された Hono アプリケーション
+- ローカル開発と Azure Functions 環境で同じコードを再利用
+- `src/functions/httpTrigger.ts` で Azure Functions 用のアダプタを提供
 
 ## 📦 主要な依存関係
 
 ### フレームワーク
 
 - **Hono**: 軽量な Web フレームワーク
-- **@hono/node-server**: Node.js 用サーバーアダプタ
+- **@marplex/hono-azurefunc-adapter**: Azure Functions 用の Hono アダプタ
 
-### AWS
+### Azure
 
-- **aws-cdk-lib**: AWS CDK ライブラリ
-- **constructs**: CDK コンストラクト
+- **@azure/functions**: Azure Functions ランタイム
 
 ### 開発ツール
 
 - **TypeScript**: 型安全な開発
-- **Jest**: テストフレームワーク
-- **tsx**: TypeScript 実行環境
+- **concurrently**: 複数コマンドの並列実行
+- **rimraf**: ディレクトリクリーンアップ
 
 ## 🚀 デプロイ
 
-### CDK デプロイ
+### Azure Functions へのデプロイ
 
 ```bash
-pnpm cdk deploy
+# ビルド
+pnpm build
+
+# Azure にデプロイ（Azure CLI を使用）
+func azure functionapp publish <your-function-app-name>
 ```
 
-### CDK 合成
+### 設定
 
-```bash
-pnpm cdk synth
-```
+- `host.json`: Azure Functions の全体設定
+- `local.settings.json`: ローカル開発用の環境設定
+- CORS設定: すべてのオリジンを許可（開発用）
