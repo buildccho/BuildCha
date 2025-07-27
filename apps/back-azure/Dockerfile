@@ -8,3 +8,4 @@ RUN npm install -g pnpm
 WORKDIR /home/site/wwwroot
 COPY . .
 RUN pnpm install
+RUN pnpm build
