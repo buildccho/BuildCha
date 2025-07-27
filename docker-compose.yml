@@ -1,11 +1,10 @@
 services:    
   backend:
     build:
-      context: .
-      dockerfile: apps/backend/Dockerfile
+      context: ./apps/backend
+      dockerfile: Dockerfile
     ports:
-      - "8000:8000"
-    command: pnpm dev:back
+      - "8000:80"
     profiles: ["full", "backend"]
   frontend:
     build:

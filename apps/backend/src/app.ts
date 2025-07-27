@@ -3,7 +3,7 @@ import { Hono } from "hono";
 
 const app = new Hono();
 
-app.get("/", (c) => c.text("Hello Hono!"));
+app.get("/", (c) => c.text("Hello World!"));
 
 // ローカル開発用のnodeサーバーを起動
 const port = 8000;
