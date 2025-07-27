@@ -1,12 +1,19 @@
 services:    
-  backend:
+  back-azure:
     build:
-      context: .
-      dockerfile: apps/backend/Dockerfile
+      context: ./apps/back-azure
+      dockerfile: Dockerfile
     ports:
-      - "8000:8000"
-    command: pnpm dev:back
-    profiles: ["full", "backend"]
+      - "8000:80"
+    profiles: ["full", "back-azure"]
+  # backend:
+  #   build:
+  #     context: .
+  #     dockerfile: apps/backend/Dockerfile
+  #   ports:
+  #     - "8000:8000"
+  #   command: pnpm dev:back
+  #   profiles: ["full", "backend"]
   frontend:
     build:
       context: .

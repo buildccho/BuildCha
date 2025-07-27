@@ -1,0 +1,26 @@
+{
+  "name": "back-azure",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/src/functions/*.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rimraf dist",
+    "prestart": "pnpm run clean && pnpm run build",
+    "start": "func start",
+    "dev": "concurrently \"pnpm:watch\" \"pnpm:start\"",
+    "test": "echo \"No tests yet...\""
+  },
+  "dependencies": {
+    "@azure/functions": "^4.0.0",
+    "@marplex/hono-azurefunc-adapter": "^1.0.1",
+    "hono": "^4.8.4"
+  },
+  "devDependencies": {
+    "@types/node": "18.x",
+    "concurrently": "^9.2.0",
+    "rimraf": "^5.0.0",
+    "typescript": "^5.8.3"
+  }
+}
