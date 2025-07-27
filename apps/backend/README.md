@@ -1,11 +1,11 @@
-# Back-Azure
+# Backend
 
 BuildCha のバックエンド API サーバーです。Hono フレームワークを使用し、ローカル開発と Azure Functions デプロイの両方をサポートしています。
 
 ## 🏗️ プロジェクト構造
 
 ```
-apps/back-azure/
+apps/backend/
 ├── src/                    # ソースコード
 │   ├── app.ts             # メインのAPIアプリケーション（Honoアプリ）
 │   └── functions/         # Azure Functions用のエントリーポイント
@@ -30,12 +30,6 @@ apps/back-azure/
 pnpm install
 ```
 
-### Azure Functions Core Tools のインストール
-
-```bash
-npm install -g azure-functions-core-tools@4 --unsafe-perm true
-```
-
 ## 🛠️ 開発
 
 ### ローカル開発サーバーの起動
@@ -44,18 +38,12 @@ npm install -g azure-functions-core-tools@4 --unsafe-perm true
 pnpm dev
 ```
 
-サーバーは [http://localhost:7071](http://localhost:7071) で起動します。
+サーバーは [http://localhost:8000](http://localhost:8000) で起動します。
 
 ### ビルド
 
 ```bash
 pnpm build
-```
-
-### テスト
-
-```bash
-pnpm test
 ```
 
 ## 🏗️ アーキテクチャ
