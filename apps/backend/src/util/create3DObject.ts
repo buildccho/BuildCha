@@ -1,6 +1,7 @@
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { z } from "zod";
+import type { ConversationHistorySchema } from "../ai/createObject";
 import { getConfig } from "../config";
 
 const AiOutputSchema = z
@@ -195,7 +196,7 @@ const systemInstruction = `# 3D建物生成システムプロンプト
 
 export async function create3DObjectFromMessage(
   message: string,
-  history: string[],
+  history: ConversationHistorySchema,
 ) {
   try {
     //NOTE: withStructuredOutputを使用して出力形式を指定
