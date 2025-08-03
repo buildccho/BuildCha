@@ -1,7 +1,10 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
+import ai from "./ai/createObject";
 
 const app = new Hono();
+
+app.route("/ai", ai);
 
 app.get("/", (c) => c.text("Hello World!"));
 
