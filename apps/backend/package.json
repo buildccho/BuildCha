@@ -21,7 +21,6 @@
     "dotenv": "^17.2.1",
     "hono": "^4.8.4",
     "langchain": "^0.3.30",
-    "prompts": "link:@langchain/core/prompts",
     "tsx": "^4.20.3",
     "zod": "^4.0.14"
   },

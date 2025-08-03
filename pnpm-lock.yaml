@@ -44,9 +44,6 @@ importers:
       langchain:
         specifier: ^0.3.30
         version: 0.3.30(@langchain/core@0.3.66(openai@5.11.0(zod@4.0.14)))(@langchain/google-genai@0.2.16(@langchain/core@0.3.66(openai@5.11.0(zod@4.0.14))))(openai@5.11.0(zod@4.0.14))
-      prompts:
-        specifier: link:@langchain/core/prompts
-        version: link:@langchain/core/prompts
       tsx:
         specifier: ^4.20.3
         version: 4.20.3
