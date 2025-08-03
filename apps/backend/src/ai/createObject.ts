@@ -11,9 +11,13 @@ app.get("/", async (c) => {
     return c.json({ error: "Missing comment or history" }, 400);
   }
   // ここで3Dオブジェクトを生成するロジックを実装
-  return await create3DObjectFromMessage(comment, JSON.parse(history))
-    .then((data) => c.json(data))
-    .catch((error) => c.json({ error: error.message }, 500));
+  try {
+    const parsedHistory = JSON.parse(history);
+    const data = await create3DObjectFromMessage(comment, parsedHistory);
+    return c.json(data);
+  } catch (error) {
+    return c.json({ error: error.message }, 500);
+  }
 });
 
 export default app;
