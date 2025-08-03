@@ -1,4 +1,3 @@
-"use server";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { z } from "zod";
@@ -26,9 +25,6 @@ const AiOutputSchema = z
 
 // APIキーを環境変数から取得
 const GEMINI_API_KEY = getConfig().GEMINI_API_KEY;
-if (!GEMINI_API_KEY) {
-  throw new Error("GEMINI_API_KEY is not set in environment variables.");
-}
 
 const model = new ChatGoogleGenerativeAI({
   apiKey: GEMINI_API_KEY,
