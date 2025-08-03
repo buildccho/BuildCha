@@ -7,8 +7,8 @@ const app = new Hono();
 
 app.get("/", async (c) => {
   const { comment, history } = c.req.query();
-  if (!comment || !history) {
-    return c.json({ error: "Missing comment or history" }, 400);
+  if (!comment?.trim() || !history) {
+    return c.json({ error: "Comment and history are required" }, 400);
   }
   // ここで3Dオブジェクトを生成するロジックを実装
   try {
