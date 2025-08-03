@@ -22,7 +22,8 @@ app.get("/", async (c) => {
   }
   // ここで3Dオブジェクトを生成するロジックを実装
   try {
-    const parsedHistory = ConversationHistorySchema.parse(history);
+    const historyJson = JSON.parse(history);
+    const parsedHistory = ConversationHistorySchema.parse(historyJson);
     const data = await create3DObjectFromMessage(comment, parsedHistory);
     return c.json(data);
   } catch (error) {
