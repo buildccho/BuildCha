@@ -3,8 +3,6 @@
 import * as dotenv from "dotenv";
 import zod from "zod";
 
-dotenv.config();
-
 const ConfigSchema = zod.object({
   GEMINI_API_KEY: zod.string(),
 });
@@ -14,11 +12,11 @@ let config: Config;
 
 export const getConfig = () => {
   if (!config) {
-    const parsed = dotenv.config().parsed;
-    if (!parsed) {
+    const result = dotenv.config();
+    if (!result.parsed) {
       throw new Error("Failed to load environment variables");
     }
-    config = ConfigSchema.parse(parsed);
+    config = ConfigSchema.parse(result.parsed);
   }
 
   return config;
