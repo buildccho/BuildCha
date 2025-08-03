@@ -216,8 +216,6 @@ export async function create3DObjectFromMessage(
     return response;
   } catch (error) {
     console.error(error);
-    return {
-      error: "Failed to create 3D data",
-    };
+    throw new Error("Failed to create 3D data");
   }
 }
