@@ -1,0 +1,19 @@
+// commentとhistoryが引数で作成された3Dオブジェクトのjsonを返すAPI
+
+import { Hono } from "hono";
+import { create3DObjectFromMessage } from "../util/create3DObject";
+
+const app = new Hono();
+
+app.get("/", async (c) => {
+  const { comment, history } = c.req.query();
+  if (!comment || !history) {
+    return c.json({ error: "Missing comment or history" }, 400);
+  }
+  // ここで3Dオブジェクトを生成するロジックを実装
+  return await create3DObjectFromMessage(comment, JSON.parse(history))
+    .then((data) => c.json(data))
+    .catch((error) => c.json({ error: error.message }, 500));
+});
+
+export default app;
