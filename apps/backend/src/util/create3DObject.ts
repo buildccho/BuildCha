@@ -1,7 +1,6 @@
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
-import type { ConversationHistorySchema } from "../ai/createObject";
-import { AiOutputSchema } from "../ai/createObject";
+import { AiOutputSchema } from "../ai/schemas";
 import { getConfig } from "../config";
 
 // APIキーを環境変数から取得
@@ -176,7 +175,7 @@ const systemInstruction = `# 3D建物生成システムプロンプト
 
 export async function create3DObjectFromMessage(
   userInput: string,
-  history: ConversationHistorySchema,
+  history: string,
 ) {
   try {
     //NOTE: withStructuredOutputを使用して出力形式を指定

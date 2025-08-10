@@ -1,37 +1,6 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { create3DObjectFromMessage } from "../util/create3DObject";
-
-export const AiOutputSchema = z
-  .object({
-    chat: z.string().describe("チャットの返信"),
-    name: z.string().describe("オブジェクトの名前"),
-    parts: z
-      .array(
-        z
-          .object({
-            type: z.string().describe("パーツタイプ"),
-            position: z.array(z.number()).describe("位置[x, y, z]"),
-            rotation: z.array(z.number()).describe("回転[x, y, z]"),
-            size: z.array(z.number()).describe("サイズ[x, y, z]"),
-            color: z.string().describe("色コード"),
-          })
-          .strict(),
-      )
-      .nonempty(),
-  })
-  .strict();
-export type AiOutputSchema = z.infer<typeof AiOutputSchema>;
-
-const ConversationHistorySchema = z
-  .object({
-    role: z.enum(["user", "assistant"]).openapi({ example: "user" }),
-    content: z.string().openapi({ example: "かわいい家つくって！" }),
-  })
-  .array()
-  .openapi("会話履歴");
-export type ConversationHistorySchema = z.infer<
-  typeof ConversationHistorySchema
->;
+import { AiOutputSchema, ConversationHistorySchema } from "./schemas";
 
 const ErrorSchema = z.object({
   message: z.string().openapi({ example: "エラーメッセージ" }),
@@ -84,11 +53,18 @@ app.openapi(createObjectRoute, async (c) => {
   let parsedHistory: ConversationHistorySchema = [];
   if (history) {
     const raw = JSON.parse(history);
-    parsedHistory = ConversationHistorySchema.parse(raw);
+    const result = ConversationHistorySchema.safeParse(raw);
+    if (!result.success) {
+      return c.json({ message: "会話履歴の解析に失敗しました" }, 400);
+    }
+    parsedHistory = result.data;
   }
 
   try {
-    const data = await create3DObjectFromMessage(userInput, parsedHistory);
+    const data = await create3DObjectFromMessage(
+      userInput,
+      JSON.stringify(parsedHistory),
+    );
     return c.json(data, 200);
   } catch (e) {
     const message = e instanceof Error ? e.message : "3Dオブジェクト生成失敗";
