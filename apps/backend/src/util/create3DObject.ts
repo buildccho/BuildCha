@@ -1,28 +1,8 @@
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
-import { z } from "zod";
 import type { ConversationHistorySchema } from "../ai/createObject";
+import { AiOutputSchema } from "../ai/createObject";
 import { getConfig } from "../config";
-
-const AiOutputSchema = z
-  .object({
-    chat: z.string().describe("チャットの返信"),
-    name: z.string().describe("オブジェクトの名前"),
-    parts: z
-      .array(
-        z
-          .object({
-            type: z.string().describe("パーツタイプ"),
-            position: z.array(z.number()).describe("位置[x, y, z]"),
-            rotation: z.array(z.number()).describe("回転[x, y, z]"),
-            size: z.array(z.number()).describe("サイズ[x, y, z]"),
-            color: z.string().describe("色コード"),
-          })
-          .strict(),
-      )
-      .nonempty(),
-  })
-  .strict();
 
 // APIキーを環境変数から取得
 const GEMINI_API_KEY = getConfig().GEMINI_API_KEY;
@@ -195,7 +175,7 @@ const systemInstruction = `# 3D建物生成システムプロンプト
 必ずJSONフォーマットでのみ回答してください。`;
 
 export async function create3DObjectFromMessage(
-  message: string,
+  userInput: string,
   history: ConversationHistorySchema,
 ) {
   try {
@@ -209,7 +189,7 @@ export async function create3DObjectFromMessage(
 
     // SystemMessageは除外し、HumanMessageとAIMessageのみ履歴として渡す
     const prompt = await promptTemplate.formatPromptValue({
-      input: message,
+      input: userInput,
       history: history,
     });
     const response = await ai.invoke(prompt);
