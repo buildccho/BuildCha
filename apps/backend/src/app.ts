@@ -17,7 +17,7 @@ app
     openAPIRouteHandler(app, {
       documentation: {
         info: {
-          title: "Hono",
+          title: "BuildCha API",
           version: "1.0.0",
           description: "API for greeting users",
         },
