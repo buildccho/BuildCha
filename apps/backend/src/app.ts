@@ -1,5 +1,5 @@
 import { serve } from "@hono/node-server";
-import { Scalar } from "@scalar/hono-api-reference";
+import { swaggerUI } from "@hono/swagger-ui";
 import { Hono } from "hono";
 import { openAPIRouteHandler } from "hono-openapi";
 import ai from "./ai/createObject";
@@ -38,10 +38,8 @@ app
   )
   .get(
     "/api/docs",
-    Scalar({
+    swaggerUI({
       url: "/openapi.json",
-      theme: "alternate",
-      pageTitle: "BuildCha API Docs",
     }),
   );
 

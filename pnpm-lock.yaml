@@ -26,6 +26,9 @@ importers:
       '@hono/node-server':
         specifier: ^1.17.1
         version: 1.18.1(hono@4.9.0)
+      '@hono/swagger-ui':
+        specifier: ^0.5.2
+        version: 0.5.2(hono@4.9.0)
       '@hono/zod-validator':
         specifier: ^0.7.2
         version: 0.7.2(hono@4.9.0)(zod@4.0.17)
@@ -38,9 +41,6 @@ importers:
       '@marplex/hono-azurefunc-adapter':
         specifier: ^1.0.1
         version: 1.0.1
-      '@scalar/hono-api-reference':
-        specifier: ^0.9.13
-        version: 0.9.13(hono@4.9.0)
       dotenv:
         specifier: ^17.2.1
         version: 17.2.1
@@ -66,6 +66,9 @@ importers:
       '@types/node':
         specifier: 18.x
         version: 18.19.122
+      '@types/swagger-ui-dist':
+        specifier: ^3.30.6
+        version: 3.30.6
       concurrently:
         specifier: ^9.2.0
         version: 9.2.0
@@ -393,6 +396,11 @@ packages:
       '@standard-schema/spec': 1.0.0
       hono: '>=3.9.0'
 
+  '@hono/swagger-ui@0.5.2':
+    resolution: {integrity: sha512-7wxLKdb8h7JTdZ+K8DJNE3KXQMIpJejkBTQjrYlUWF28Z1PGOKw6kUykARe5NTfueIN37jbyG/sBYsbzXzG53A==}
+    peerDependencies:
+      hono: '*'
+
   '@hono/zod-validator@0.7.2':
     resolution: {integrity: sha512-ub5eL/NeZ4eLZawu78JpW/J+dugDAYhwqUIdp9KYScI6PZECij4Hx4UsrthlEUutqDDhPwRI0MscUfNkvn/mqQ==}
     peerDependencies:
@@ -684,24 +692,6 @@ packages:
       react-native:
         optional: true
 
-  '@scalar/core@0.3.11':
-    resolution: {integrity: sha512-4O3mC29k2STz4quBHrpsl6czxi94F3dy8Ej/OPbELS2myKO4GoxromT0BiKSLPAThCnmJ0rqMZ7k9NsgzVjEgA==}
-    engines: {node: '>=20'}
-
-  '@scalar/hono-api-reference@0.9.13':
-    resolution: {integrity: sha512-79Gs+/2/FcqwZ3Lp0lsv3pFKHY1qBF2ONkfgh/gxRsd8Z+RZRTDBZafe7OConj+c4tHm0Zz3bKTKEV0OMQi/aA==}
-    engines: {node: '>=20'}
-    peerDependencies:
-      hono: ^4.0.0
-
-  '@scalar/openapi-types@0.3.7':
-    resolution: {integrity: sha512-QHSvHBVDze3+dUwAhIGq6l1iOev4jdoqdBK7QpfeN1Q4h+6qpVEw3EEqBiH0AXUSh/iWwObBv4uMgfIx0aNZ5g==}
-    engines: {node: '>=20'}
-
-  '@scalar/types@0.2.11':
-    resolution: {integrity: sha512-SUZzGmoisWsYv33LmmT/ajvSlcl9ZDj9d5RncJ+wB9ZQ2l018xlfpDIH9Kdfo+6KCKQOe3LYLXfH4Lzm891Mag==}
-    engines: {node: '>=20'}
-
   '@standard-community/standard-json@0.3.0-rc.4':
     resolution: {integrity: sha512-AcFJqiYt0nj17VoReUkEhTq1JzM2oEytCyBoR0j09yHqrrHp1g6kvXoh+IyMWIeqWYVUml9wzr5VJrfxh69/8g==}
     peerDependencies:
@@ -885,6 +875,9 @@ packages:
 
   '@types/stats.js@0.17.4':
     resolution: {integrity: sha512-jIBvWWShCvlBqBNIZt0KAshWpvSjhkwkEu4ZUcASoAvhmrgAUI2t1dXrjSL4xXVLB4FznPrIsX3nKXFl/Dt4vA==}
+
+  '@types/swagger-ui-dist@3.30.6':
+    resolution: {integrity: sha512-FVxN7wjLYRtJsZBscOcOcf8oR++m38vbUFjT33Mr9HBuasX9bRDrJsp7iwixcOtKSHEEa2B7o2+4wEiXqC+Ebw==}
 
   '@types/three@0.178.1':
     resolution: {integrity: sha512-WSabew1mgWgRx2RfLfKY+9h4wyg6U94JfLbZEGU245j/WY2kXqU0MUfghS+3AYMV5ET1VlILAgpy77cB6a3Itw==}
@@ -1480,11 +1473,6 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
-  nanoid@5.1.5:
-    resolution: {integrity: sha512-Ir/+ZpE9fDsNH0hQ3C68uyThDXzYcim2EqcZ8zn8Chtt1iylPT9xXJB0kPCnqzgcEGikO9RxSrh63MsmVCU7Fw==}
-    engines: {node: ^18 || >=20}
-    hasBin: true
-
   next@15.3.5:
     resolution: {integrity: sha512-RkazLBMMDJSJ4XZQ81kolSpwiCt907l0xcgcpF4xC2Vml6QVcPNXW0NQRwQ80FFtSn7UM52XN0anaw8TEJXaiw==}
     engines: {node: ^18.18.0 || ^19.8.0 || >= 20.0.0}
@@ -1892,9 +1880,6 @@ packages:
     peerDependencies:
       zod: ^3.24.1
 
-  zod@3.24.1:
-    resolution: {integrity: sha512-muH7gBL9sI1nciMZV67X5fTKKBLtwpZ5VBp1vsOQzj1MhrBZ4wlVCm3gedKZWLp0Oyel8sIGfeiz54Su+OVT+A==}
-
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
@@ -2086,6 +2071,10 @@ snapshots:
       '@standard-schema/spec': 1.0.0
       hono: 4.9.0
     optional: true
+
+  '@hono/swagger-ui@0.5.2(hono@4.9.0)':
+    dependencies:
+      hono: 4.9.0
 
   '@hono/zod-validator@0.7.2(hono@4.9.0)(zod@4.0.17)':
     dependencies:
@@ -2351,25 +2340,6 @@ snapshots:
       - '@types/react'
       - immer
 
-  '@scalar/core@0.3.11':
-    dependencies:
-      '@scalar/types': 0.2.11
-
-  '@scalar/hono-api-reference@0.9.13(hono@4.9.0)':
-    dependencies:
-      '@scalar/core': 0.3.11
-      hono: 4.9.0
-
-  '@scalar/openapi-types@0.3.7':
-    dependencies:
-      zod: 3.24.1
-
-  '@scalar/types@0.2.11':
-    dependencies:
-      '@scalar/openapi-types': 0.3.7
-      nanoid: 5.1.5
-      zod: 3.24.1
-
   '@standard-community/standard-json@0.3.0-rc.4(@standard-schema/spec@1.0.0)(@types/json-schema@7.0.15)(zod-to-json-schema@3.24.6(zod@4.0.17))(zod@4.0.17)':
     dependencies:
       '@standard-schema/spec': 1.0.0
@@ -2502,6 +2472,8 @@ snapshots:
   '@types/retry@0.12.0': {}
 
   '@types/stats.js@0.17.4': {}
+
+  '@types/swagger-ui-dist@3.30.6': {}
 
   '@types/three@0.178.1':
     dependencies:
@@ -2996,8 +2968,6 @@ snapshots:
 
   nanoid@3.3.11: {}
 
-  nanoid@5.1.5: {}
-
   next@15.3.5(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
     dependencies:
       '@next/env': 15.3.5
@@ -3394,8 +3364,6 @@ snapshots:
     dependencies:
       zod: 4.0.17
     optional: true
-
-  zod@3.24.1: {}
 
   zod@3.25.76: {}
 
