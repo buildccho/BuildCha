@@ -1,34 +1,63 @@
-// commentとhistoryが引数で作成された3Dオブジェクトのjsonを返すAPI
-
 import { Hono } from "hono";
+import { describeRoute, resolver, validator } from "hono-openapi";
 import { z } from "zod";
 import { create3DObjectFromMessage } from "../util/create3DObject";
+import {
+  AiInputSchema,
+  AiOutputSchema,
+  ConversationHistorySchema,
+} from "./schemas";
 
-const ConversationHistorySchema = z.array(
-  z.object({
-    role: z.enum(["user", "assistant"]),
-    content: z.string(),
-  }),
-);
-export type ConversationHistorySchema = z.infer<
-  typeof ConversationHistorySchema
->;
+const ErrorSchema = z.object({
+  message: z.string().meta({ example: "エラーメッセージ" }),
+});
+
 const app = new Hono();
 
-app.get("/", async (c) => {
-  const { comment, history } = c.req.query();
-  if (!comment?.trim() || !history) {
-    return c.json({ error: "Comment and history are required" }, 400);
-  }
-  // ここで3Dオブジェクトを生成するロジックを実装
-  try {
-    const historyJson = JSON.parse(history);
-    const parsedHistory = ConversationHistorySchema.parse(historyJson);
-    const data = await create3DObjectFromMessage(comment, parsedHistory);
-    return c.json(data);
-  } catch (error) {
-    return c.json({ error: error.message }, 500);
-  }
-});
+app.get(
+  "/createObject",
+  describeRoute({
+    description: "AIオブジェクト生成エンドポイント",
+    tags: ["AI"],
+    responses: {
+      200: {
+        description: "3Dオブジェクト生成結果",
+        content: { "application/json": { schema: resolver(AiOutputSchema) } },
+      },
+      400: {
+        description: "バリデーションエラー",
+        content: { "application/json": { schema: resolver(ErrorSchema) } },
+      },
+      500: {
+        description: "サーバーエラー",
+        content: { "application/json": { schema: resolver(ErrorSchema) } },
+      },
+    },
+  }),
+  validator("query", AiInputSchema),
+  async (c) => {
+    const { userInput, history } = c.req.valid("query");
+    let parsedHistory: ConversationHistorySchema = [];
+    if (history) {
+      const raw = JSON.parse(history);
+      const result = ConversationHistorySchema.safeParse(raw);
+      if (!result.success) {
+        return c.json({ message: "会話履歴の解析に失敗しました" }, 400);
+      }
+      parsedHistory = result.data;
+    }
+
+    try {
+      const data = await create3DObjectFromMessage(
+        userInput,
+        JSON.stringify(parsedHistory),
+      );
+      return c.json(data, 200);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "3Dオブジェクト生成失敗";
+      return c.json({ message }, 500);
+    }
+  },
+);
 
 export default app;
