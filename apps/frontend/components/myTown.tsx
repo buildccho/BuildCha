@@ -6,7 +6,7 @@ import Ground from "./ground";
 
 export default function MyTown() {
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full grow">
       <Canvas shadows camera={{ fov: 45, position: [5, 15, -40] }}>
         <ambientLight intensity={Math.PI / 1.5} />
         <pointLight castShadow intensity={0.8} position={[100, 100, 100]} />
