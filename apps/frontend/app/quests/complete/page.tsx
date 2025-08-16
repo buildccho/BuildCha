@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 export default function CompletePage() {
   return (
-    <div className="w-full min-h-screen grid place-items-center bg-neutral-100 py-6">
+    <main className="w-full min-h-screen grid place-items-center bg-neutral-100 py-6">
       <div className="max-w-6xl grid w-full px-18 py-16 rounded-3xl gap-16 bg-white shadow-lg shadow-black/5">
         <div className="flex flex-row gap-2 items-center justify-between">
           <h1 className="text-3xl font-bold">クエスト完了！</h1>
@@ -50,10 +50,10 @@ export default function CompletePage() {
         <div className="grid gap-4">
           <h3 className="font-bold text-2xl">次はどれをつくる？</h3>
           <div className="grid grid-cols-3 gap-4">
-            <QuestCard dificulty="easy" />
+            <QuestCard difficulty="easy" />
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

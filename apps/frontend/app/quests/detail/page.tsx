@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 
 export default function QuestDetailPage() {
   return (
-    <div className="min-h-screen bg-neutral-200 flex flex-col">
+    <main className="min-h-screen bg-neutral-200 flex flex-col">
       <div className="mx-auto xl:container max-w-7xl px-4 py-6 flex flex-col grow">
         <Button variant={"ghost"} asChild size={"icon"}>
           <Link href={"/quests"}>
@@ -24,6 +24,6 @@ export default function QuestDetailPage() {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

@@ -3,16 +3,16 @@ import Link from "next/link";
 import { Badge } from "./ui/badge";
 
 export default function QuestCard({
-  dificulty = "normal",
+  difficulty = "normal",
 }: {
-  dificulty?: "easy" | "normal" | "hard";
+  difficulty?: "easy" | "normal" | "hard";
 }) {
   return (
     <Link
       href={"/quests/detail"}
       className="bg-background shadow rounded-2xl p-3 block w-full max-w-60 space-y-2"
     >
-      <DificultyBadge dificulty={dificulty} />
+      <DifficultyBadge difficulty={difficulty} />
       <Image
         src={"/house.png"}
         alt="画像"
@@ -25,29 +25,24 @@ export default function QuestCard({
   );
 }
 
-const DificultyBadge = ({
-  dificulty,
-}: {
-  dificulty: "easy" | "normal" | "hard";
-}) => {
-  if (dificulty === "easy") {
-    return (
-      <Badge className="bg-green-100 text-green-800 font-semibold">
-        かんたん
-      </Badge>
-    );
-  } else if (dificulty === "normal") {
-    return (
-      <Badge className="bg-yellow-100 text-yellow-800 font-semibold">
-        ふつう
-      </Badge>
-    );
-  } else if (dificulty === "hard") {
-    return (
-      <Badge className="bg-purple-100 text-purple-800 font-semibold">
-        むずかしい
-      </Badge>
-    );
-  }
-  return <Badge>かんたん</Badge>;
+type Difficulty = "easy" | "normal" | "hard";
+
+const DIFFICULTY: Record<Difficulty, { text: string; className: string }> = {
+  easy: {
+    text: "かんたん",
+    className: "bg-green-100 text-green-800 font-semibold",
+  },
+  normal: {
+    text: "ふつう",
+    className: "bg-yellow-100 text-yellow-800 font-semibold",
+  },
+  hard: {
+    text: "むずかしい",
+    className: "bg-purple-100 text-purple-800 font-semibold",
+  },
+};
+
+const DifficultyBadge = ({ difficulty }: { difficulty: Difficulty }) => {
+  const d = DIFFICULTY[difficulty] ?? DIFFICULTY.easy;
+  return <Badge className={d.className}>{d.text}</Badge>;
 };
