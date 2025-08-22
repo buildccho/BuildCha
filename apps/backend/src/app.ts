@@ -1,7 +1,7 @@
 import { serve } from "@hono/node-server";
 import { swaggerUI } from "@hono/swagger-ui";
 import { Hono } from "hono";
-import { openAPIRouteHandler } from "hono-openapi";
+import { openAPISpecs } from "hono-openapi";
 import ai from "./ai/createObject";
 
 const app = new Hono();
@@ -14,7 +14,7 @@ app.get("/", (c) => c.text("Hello World!"));
 app
   .get(
     "/openapi.json",
-    openAPIRouteHandler(app, {
+    openAPISpecs(app, {
       documentation: {
         info: {
           title: "BuildCha API",
