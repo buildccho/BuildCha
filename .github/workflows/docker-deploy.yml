@@ -1,0 +1,34 @@
+name: CI to Azure Container Registry
+
+# ワークフローが実行されるトリガー条件。
+# mainブランチへのpushしたときに発動させてる
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    # 実行環境はUbuntuを指定
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        name: Checkout source code
+
+      # Dockerにログインする。ビルドとプッシュ作業の前に必要
+      - name: Log in to Azure Container Registry
+        uses: docker/login-action@v2
+        with:
+          # ACRのドメインを指定。
+          registry: buildchatest.azurecr.io
+          # GitHub Secretsからユーザー名とパスワードを取得。
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+      
+      - name: Set IMAGE_TAG
+        run: echo "IMAGE_TAG=${GITHUB_SHA}" >> $GITHUB_ENV
+
+      # ここでDockerイメージのビルドとACRへのプッシュする。
+      - name: Build and push Docker image
+        run: |
+          docker-compose --profile frontend build
+          docker push buildchatest.azurecr.io/buildcha:${{ github.sha }}

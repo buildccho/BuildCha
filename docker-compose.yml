@@ -10,6 +10,7 @@ services:
     build:
       context: .
       dockerfile: apps/frontend/Dockerfile
+    image: buildchatest.azurecr.io/buildcha:${IMAGE_TAG}
     ports:
       - "3000:3000"
     command: pnpm dev:front
