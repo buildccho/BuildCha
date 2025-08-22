@@ -58,22 +58,22 @@ pnpm --filter frontend dev
 - **backendのみ起動**
 
 ```bash
-docker-compose --profile frontend build
-docker-compose --profile backend up --build
+docker compose --profile frontend build
+docker compose --profile backend up --build
 ```
 
 - **frontendのみ起動**
 
 ```bash
-docker-compose --profile backend build
-docker-compose --profile frontend up --build
+docker compose --profile backend build
+docker compose --profile frontend up --build
 ```
 
 - **両方同時に起動**
 
 ```bash
-docker-compose --profile full build
-docker-compose --profile full up --build
+docker compose --profile full build
+docker compose --profile full up --build
 ```
 
 各サービスのアクセス先は次のとおりです。
@@ -84,5 +84,5 @@ docker-compose --profile full up --build
 停止は以下のコマンドです。
 
 ```bash
-docker-compose down
+docker compose down
 ```
