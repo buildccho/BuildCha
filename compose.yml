@@ -3,6 +3,7 @@ services:
     build:
       context: ./apps/backend
       dockerfile: Dockerfile
+    platform: linux/amd64
     ports:
       - "8000:80"
     profiles: ["full", "backend"]
@@ -10,6 +11,7 @@ services:
     build:
       context: .
       dockerfile: apps/frontend/Dockerfile
+    image: buildchatest.azurecr.io/buildcha:${IMAGE_TAG:-dev}
     ports:
       - "3000:3000"
     command: pnpm dev:front

@@ -1,5 +1,6 @@
 import { Hono } from "hono";
-import { describeRoute, resolver, validator } from "hono-openapi";
+import { describeRoute } from "hono-openapi";
+import { resolver, validator } from "hono-openapi/zod";
 import { z } from "zod";
 import { create3DObjectFromMessage } from "../util/create3DObject";
 import {
