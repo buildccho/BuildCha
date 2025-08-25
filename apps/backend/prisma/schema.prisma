@@ -56,11 +56,9 @@ model Quest {
   score            Int
   difficulty       String // easy | normal | hard
 
-  answer_object_id String    @unique
-  answerObject     Parts     @relation(fields: [answer_object_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  answerObject     Parts[]
   @@map("quests")
 
-  @@index([answer_object_id])
   UserObject UserObject[]
 }
 
@@ -133,6 +131,8 @@ model Parts {
   userObject      UserObject? @relation(fields: [user_object_id], references: [id], onDelete: Cascade)
 
   Quest Quest[]
+
+  role            String // User | Answer
 
   @@index([user_object_id])
 }
