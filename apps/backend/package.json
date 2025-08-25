@@ -10,6 +10,7 @@
     "prestart": "pnpm run clean && pnpm run build",
     "start": "func start",
     "dev": "tsx watch src/app.ts",
+    "migrate": "prisma migrate dev --schema prisma/schema.prisma",
     "test": "echo \"No tests yet...\""
   },
   "dependencies": {
@@ -24,11 +25,13 @@
     "hono": "^4.8.4",
     "hono-openapi": "0.4.8",
     "langchain": "^0.3.30",
+    "prisma": "^6.14.0",
     "tsx": "^4.20.3",
     "zod": "^4.0.17",
     "zod-openapi": "^5.3.1"
   },
   "devDependencies": {
+    "@prisma/client": "^6.14.0",
     "@types/node": "18.x",
     "@types/swagger-ui-dist": "^3.30.6",
     "concurrently": "^9.2.0",
