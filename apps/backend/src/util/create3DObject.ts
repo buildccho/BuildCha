@@ -1,14 +1,14 @@
 import { ChatPromptTemplate } from "@langchain/core/prompts";
-import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import { ChatOpenAI } from "@langchain/openai";
 import { AiOutputSchema } from "../ai/schemas";
 import { getConfig } from "../config";
 
 // APIキーを環境変数から取得
-const GEMINI_API_KEY = getConfig().GEMINI_API_KEY;
+const OPENAI_API_KEY = getConfig().OPENAI_API_KEY;
 
-const model = new ChatGoogleGenerativeAI({
-  apiKey: GEMINI_API_KEY,
-  model: "gemini-2.5-flash",
+const model = new ChatOpenAI({
+  apiKey: OPENAI_API_KEY,
+  model: "gpt-4o-mini", //TODO: 本番環境では"gpt-4o"に変更
 });
 
 const systemInstruction = `# 3D建物生成システムプロンプト
