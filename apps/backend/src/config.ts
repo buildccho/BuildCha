@@ -4,7 +4,7 @@ import * as dotenv from "dotenv";
 import zod from "zod";
 
 const ConfigSchema = zod.object({
-  GEMINI_API_KEY: zod.string(),
+  OPENAI_API_KEY: zod.string(),
 });
 type Config = zod.infer<typeof ConfigSchema>;
 
