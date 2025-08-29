@@ -3,13 +3,8 @@ import { ChatOpenAI } from "@langchain/openai";
 import { AiOutputSchema } from "../ai/schemas";
 import { getConfig } from "../config";
 
-// APIキーを環境変数から取得
-const OPENAI_API_KEY = getConfig().OPENAI_API_KEY;
-
-const model = new ChatOpenAI({
-  apiKey: OPENAI_API_KEY,
-  model: "gpt-4o-mini", //TODO: 本番環境では"gpt-4o"に変更
-});
+// NOTE: Avoid initializing API client at module load.
+// Resolve configuration and create the model lazily per request.
 
 const systemInstruction = `# 3D建物生成システムプロンプト
 
@@ -178,6 +173,13 @@ export async function create3DObjectFromMessage(
   history: string,
 ) {
   try {
+    // Initialize model with config on demand
+    const { OPENAI_API_KEY } = getConfig();
+    const model = new ChatOpenAI({
+      apiKey: OPENAI_API_KEY,
+      model: "gpt-4o-mini", //TODO: 本番環境では"gpt-4o"に変更
+    });
+
     //NOTE: withStructuredOutputを使用して出力形式を指定
     const ai = model.withStructuredOutput(AiOutputSchema);
 

@@ -12,12 +12,11 @@ let config: Config;
 
 export const getConfig = () => {
   if (!config) {
-    const result = dotenv.config();
-    if (!result.parsed) {
-      throw new Error("Failed to load environment variables");
-    }
-    config = ConfigSchema.parse(result.parsed);
+    // Load .env if present (no-op in Azure). Always read from process.env.
+    dotenv.config();
+    config = ConfigSchema.parse({
+      OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    });
   }
-
   return config;
 };

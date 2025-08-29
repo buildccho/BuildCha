@@ -1,4 +1,3 @@
-import { serve } from "@hono/node-server";
 import { swaggerUI } from "@hono/swagger-ui";
 import { Hono } from "hono";
 import { openAPISpecs } from "hono-openapi";
@@ -42,14 +41,5 @@ app
       url: "/openapi.json",
     }),
   );
-
-// ローカル開発用のnodeサーバーを起動
-const port = 8000;
-console.log(`Server is running on port ${port}`);
-
-serve({
-  fetch: app.fetch,
-  port,
-});
 
 export default app;
