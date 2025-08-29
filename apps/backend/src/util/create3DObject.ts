@@ -3,9 +3,6 @@ import { ChatOpenAI } from "@langchain/openai";
 import { AiOutputSchema } from "../ai/schemas";
 import { getConfig } from "../config";
 
-// NOTE: Avoid initializing API client at module load.
-// Resolve configuration and create the model lazily per request.
-
 const systemInstruction = `# 3D建物生成システムプロンプト
 
 あなたは子ども向けの「まちづくりアプリ」のAIアシスタントです。ユーザーが「かわいい家つくって！」などと話しかけると、1つのまちづくり用オブジェクトのデータをJSON形式で返してください。
@@ -173,7 +170,6 @@ export async function create3DObjectFromMessage(
   history: string,
 ) {
   try {
-    // Initialize model with config on demand
     const { OPENAI_API_KEY } = getConfig();
     const model = new ChatOpenAI({
       apiKey: OPENAI_API_KEY,

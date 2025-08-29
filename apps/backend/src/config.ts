@@ -12,7 +12,6 @@ let config: Config;
 
 export const getConfig = () => {
   if (!config) {
-    // Load .env if present (no-op in Azure). Always read from process.env.
     dotenv.config();
     config = ConfigSchema.parse({
       OPENAI_API_KEY: process.env.OPENAI_API_KEY,
