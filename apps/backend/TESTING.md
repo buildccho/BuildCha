@@ -1,0 +1,4 @@
+- Testing framework: Jest
+- Run tests: npm test or pnpm test (depending on workspace setup)
+- The config module is tested in apps/backend/src/__tests__/config.test.ts
+- If using Vitest in this repo, these tests are compatible; replace `jest.*` with `vi.*` where necessary.

@@ -11,7 +11,8 @@
     "start": "func start",
     "dev": "tsx watch src/local.ts",
     "migrate": "prisma migrate dev --schema prisma/schema.prisma",
-    "test": "echo \"No tests yet...\""
+    "test": "echo \"No tests yet...\"",
+    "test:config": "node --test tests/package.config.test.js"
   },
   "dependencies": {
     "@azure/functions": "^4.0.0",
