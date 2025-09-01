@@ -3,14 +3,6 @@ import { ChatOpenAI } from "@langchain/openai";
 import { AiOutputSchema } from "../ai/schemas";
 import { getConfig } from "../config";
 
-// APIキーを環境変数から取得
-const OPENAI_API_KEY = getConfig().OPENAI_API_KEY;
-
-const model = new ChatOpenAI({
-  apiKey: OPENAI_API_KEY,
-  model: "gpt-4o-mini", //TODO: 本番環境では"gpt-4o"に変更
-});
-
 const systemInstruction = `# 3D建物生成システムプロンプト
 
 あなたは子ども向けの「まちづくりアプリ」のAIアシスタントです。ユーザーが「かわいい家つくって！」などと話しかけると、1つのまちづくり用オブジェクトのデータをJSON形式で返してください。
@@ -178,6 +170,12 @@ export async function create3DObjectFromMessage(
   history: string,
 ) {
   try {
+    const { OPENAI_API_KEY } = getConfig();
+    const model = new ChatOpenAI({
+      apiKey: OPENAI_API_KEY,
+      model: "gpt-4o-mini", //TODO: 本番環境では"gpt-4o"に変更
+    });
+
     //NOTE: withStructuredOutputを使用して出力形式を指定
     const ai = model.withStructuredOutput(AiOutputSchema);
 

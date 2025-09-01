@@ -9,7 +9,7 @@
     "clean": "rimraf dist",
     "prestart": "pnpm run clean && pnpm run build",
     "start": "func start",
-    "dev": "tsx watch src/app.ts",
+    "dev": "tsx watch src/local.ts",
     "migrate": "prisma migrate dev --schema prisma/schema.prisma",
     "test": "echo \"No tests yet...\""
   },
