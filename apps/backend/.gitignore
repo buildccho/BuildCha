@@ -52,3 +52,6 @@ __azurite_db*__.json
 *.db
 migrations/
 generated/
+
+# testに関する設定
+/testImage

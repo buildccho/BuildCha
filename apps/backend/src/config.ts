@@ -5,6 +5,7 @@ import zod from "zod";
 
 const ConfigSchema = zod.object({
   OPENAI_API_KEY: zod.string(),
+  USE_OPENAI_MODEL: zod.string().default("gpt-4o-mini"),
 });
 type Config = zod.infer<typeof ConfigSchema>;
 
@@ -15,6 +16,7 @@ export const getConfig = () => {
     dotenv.config();
     config = ConfigSchema.parse({
       OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+      USE_OPENAI_MODEL: process.env.USE_OPENAI_MODEL,
     });
   }
   return config;

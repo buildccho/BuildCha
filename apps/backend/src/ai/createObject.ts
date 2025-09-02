@@ -4,9 +4,9 @@ import { resolver, validator } from "hono-openapi/zod";
 import { z } from "zod";
 import { create3DObjectFromMessage } from "../util/create3DObject";
 import {
-  AiInputSchema,
-  AiOutputSchema,
   ConversationHistorySchema,
+  CreateObjectInputSchema,
+  CreateObjectOutputSchema,
 } from "./schemas";
 
 const ErrorSchema = z.object({
@@ -23,7 +23,9 @@ app.get(
     responses: {
       200: {
         description: "3Dオブジェクト生成結果",
-        content: { "application/json": { schema: resolver(AiOutputSchema) } },
+        content: {
+          "application/json": { schema: resolver(CreateObjectOutputSchema) },
+        },
       },
       400: {
         description: "バリデーションエラー",
@@ -35,7 +37,7 @@ app.get(
       },
     },
   }),
-  validator("query", AiInputSchema),
+  validator("query", CreateObjectInputSchema),
   async (c) => {
     const { userInput, history } = c.req.valid("query");
     let parsedHistory: ConversationHistorySchema = [];
