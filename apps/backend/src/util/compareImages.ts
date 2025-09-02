@@ -23,7 +23,7 @@ const systemInstruction = `
 - 色や質感が近いか
 - 相違点があれば短く明示する
 `;
-
+//NOTE: userObjectImagesはFileオブジェクトの連想配列、correctObjectUrlsはWebURLの連想配列
 export const compareImages = async (
   userObjectImages: { [key: string]: File },
   correctObjectUrls: { [key: string]: string },
@@ -52,15 +52,11 @@ export const compareImages = async (
     }
   }
 
-  // スコア配列から平均値（整数）を算出する関数
-  const calcAverageScore = (scores: number[]): number => {
-    if (scores.length === 0) return 0;
-    const sum = scores.reduce((acc, cur) => acc + cur, 0);
-    return Math.round(sum / scores.length);
-  };
-
   const scores = Object.values(results).map((r) => r.score);
-  const overallScore = calcAverageScore(scores);
+  const overallScore =
+    scores.length === 0
+      ? 0
+      : Math.round(scores.reduce((acc, cur) => acc + cur, 0) / scores.length);
 
   return { overallScore, results };
 };
