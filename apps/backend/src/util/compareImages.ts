@@ -1,6 +1,6 @@
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { ChatOpenAI } from "@langchain/openai";
-import { comparObjectOutputSchema } from "../ai/schemas";
+import { compareObjectOutputSchema } from "../ai/schemas";
 import { getConfig } from "../config";
 
 const systemInstruction = `
@@ -72,7 +72,7 @@ const compareTwoImages = async (
       apiKey: OPENAI_API_KEY,
       model: USE_OPENAI_MODEL,
     });
-    const ai = model.withStructuredOutput(comparObjectOutputSchema);
+    const ai = model.withStructuredOutput(compareObjectOutputSchema);
 
     const res = await ai.invoke([
       new SystemMessage(systemInstruction),

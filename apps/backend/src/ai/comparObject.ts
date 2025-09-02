@@ -4,7 +4,7 @@ import { resolver, validator } from "hono-openapi/zod";
 import { z } from "zod";
 import { getAnswerObjectImageUrls } from "../moc/getAnswerObject";
 import { compareImages } from "../util/compareImages";
-import { comparObjectInputSchema, comparObjectOutputSchema } from "./schemas";
+import { compareObjectInputSchema, compareObjectOutputSchema } from "./schemas";
 
 const ErrorSchema = z.object({
   message: z.string().meta({ example: "エラーメッセージ" }),
@@ -12,7 +12,7 @@ const ErrorSchema = z.object({
 
 const app = new Hono();
 
-app.get(
+app.post(
   "/compareObject",
   describeRoute({
     description: "AIオブジェクト比較エンドポイント",
@@ -21,7 +21,7 @@ app.get(
       200: {
         description: "3Dオブジェクト比較結果",
         content: {
-          "application/json": { schema: resolver(comparObjectOutputSchema) },
+          "application/json": { schema: resolver(compareObjectOutputSchema) },
         },
       },
       400: {
@@ -34,9 +34,9 @@ app.get(
       },
     },
   }),
-  validator("query", comparObjectInputSchema),
+  validator("form", compareObjectInputSchema),
   async (c) => {
-    const { questId, userCreatedObjectImages } = c.req.valid("query");
+    const { questId, userCreatedObjectImages } = c.req.valid("form");
     const correctObjectUrls = getAnswerObjectImageUrls(questId); //TODO: ここはDBから取得するようにする
     if (!correctObjectUrls) {
       return c.json(

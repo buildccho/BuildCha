@@ -53,7 +53,7 @@ export const CreateObjectInputSchema = z.object({
     }),
 });
 
-export const comparObjectInputSchema = z.object({
+export const compareObjectInputSchema = z.object({
   questId: z.string().meta({ example: "クエストID" }),
   userCreatedObjectImages: z
     .object({
@@ -67,7 +67,7 @@ export const comparObjectInputSchema = z.object({
     .meta({ description: "ユーザーが作成したオブジェクトの画像" }),
 });
 
-export const comparObjectOutputSchema = z.object({
+export const compareObjectOutputSchema = z.object({
   score: z
     .number()
     .min(0)
