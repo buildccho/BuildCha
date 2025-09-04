@@ -51,3 +51,5 @@ app.post(
     return c.json({ overallScore, results });
   },
 );
+
+export default app;

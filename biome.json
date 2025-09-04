@@ -14,7 +14,8 @@
       "**/*.json",
       "**/*.md",
       "!node_modules",
-      "!**/.next"
+      "!**/.next",
+      "!.pnpm-store/**"
     ]
   },
   "formatter": {
