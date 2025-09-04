@@ -1,7 +1,7 @@
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { ChatOpenAI } from "@langchain/openai";
-import { compareObjectOutputSchema } from "../ai/schemas";
 import { getConfig } from "../config";
+import { compareObjectOutputSchema } from "./schemas";
 
 const systemInstruction = `
 あなたは優秀な3Dオブジェクト比較AIです。  

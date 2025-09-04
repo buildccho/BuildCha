@@ -15,7 +15,8 @@
       "**/*.md",
       "!node_modules",
       "!**/.next",
-      "!.pnpm-store/**"
+      "!.pnpm-store/**",
+      "!**/generated/**"
     ]
   },
   "formatter": {

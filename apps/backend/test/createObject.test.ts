@@ -1,7 +1,7 @@
 import fs from "node:fs";
+import { compareImages } from "../src/ai/compareImages";
 import { getConfig } from "../src/config";
 import { getAnswerObjectImageUrls } from "../src/moc/getAnswerObject";
-import { compareImages } from "../src/util/compareImages";
 
 let FileCtor: typeof File;
 try {

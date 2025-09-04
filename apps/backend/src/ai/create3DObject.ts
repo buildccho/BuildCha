@@ -1,7 +1,7 @@
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { ChatOpenAI } from "@langchain/openai";
-import { CreateObjectOutputSchema } from "../ai/schemas";
 import { getConfig } from "../config";
+import { CreateObjectOutputSchema } from "./schemas";
 
 const systemInstruction = `# 3D建物生成システムプロンプト
 

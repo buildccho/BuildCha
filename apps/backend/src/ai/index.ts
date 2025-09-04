@@ -3,8 +3,8 @@ import { describeRoute } from "hono-openapi";
 import { resolver, validator } from "hono-openapi/zod";
 import { z } from "zod";
 import { getAnswerObjectImageUrls } from "../moc/getAnswerObject";
-import { compareImages } from "../util/compareImages";
-import { create3DObjectFromMessage } from "../util/create3DObject";
+import { compareImages } from "./compareImages";
+import { create3DObjectFromMessage } from "./create3DObject";
 import {
   ConversationHistorySchema,
   CreateObjectInputSchema,
