@@ -19,7 +19,7 @@ const ErrorSchema = z.object({
 
 const app = new Hono();
 
-app.get(
+app.post(
   "/createObject",
   describeRoute({
     description: "AIオブジェクト生成エンドポイント",
@@ -41,9 +41,9 @@ app.get(
       },
     },
   }),
-  validator("query", CreateObjectInputSchema),
+  validator("json", CreateObjectInputSchema),
   async (c) => {
-    const { userInput, history } = c.req.valid("query");
+    const { userInput, history } = c.req.valid("json");
     let parsedHistory: ConversationHistorySchema = [];
     if (history) {
       const raw = JSON.parse(history);
