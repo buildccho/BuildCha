@@ -170,10 +170,10 @@ export async function create3DObjectFromMessage(
   history: string,
 ) {
   try {
-    const { OPENAI_API_KEY, USE_OPENAI_MODEL } = getConfig();
+    const { OPENAI_API_KEY, USE_OPENAI_MODEL_NAME } = getConfig();
     const model = new ChatOpenAI({
       apiKey: OPENAI_API_KEY,
-      model: USE_OPENAI_MODEL,
+      model: USE_OPENAI_MODEL_NAME,
     });
 
     //NOTE: withStructuredOutputを使用して出力形式を指定

@@ -66,11 +66,11 @@ const compareTwoImages = async (
   correctDataUrl: string,
 ): Promise<{ score: number; comment: string }> => {
   try {
-    const { OPENAI_API_KEY, USE_OPENAI_MODEL } = getConfig();
+    const { OPENAI_API_KEY, USE_OPENAI_MODEL_NAME } = getConfig();
 
     const model = new ChatOpenAI({
       apiKey: OPENAI_API_KEY,
-      model: USE_OPENAI_MODEL,
+      model: USE_OPENAI_MODEL_NAME,
     });
     const ai = model.withStructuredOutput(compareObjectOutputSchema);
 
