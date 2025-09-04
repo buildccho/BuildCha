@@ -1,13 +1,11 @@
 import { swaggerUI } from "@hono/swagger-ui";
 import { Hono } from "hono";
 import { openAPISpecs } from "hono-openapi";
-import compareObject from "./ai/comparObject";
-import createObject from "./ai/createObject";
+import endpoint from "./ai/endpoint";
 
 const app = new Hono();
 
-app.route("/ai", createObject);
-app.route("/ai", compareObject);
+app.route("/ai", endpoint);
 
 app.get("/", (c) => c.text("Hello World!"));
 

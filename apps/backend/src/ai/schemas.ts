@@ -45,8 +45,7 @@ export const CreateObjectInputSchema = z.object({
         { role: "user", content: "かわいい家つくって" },
         {
           role: "assistant",
-          content:
-            '{"chat": "かわいい家ができました！","name": "かわいい家","parts":[{~}]}',
+          content: '{"role":"user","content":"かわいい家つくって！"}',
         },
       ]),
       description: "会話履歴(JSON文字列)",
@@ -55,16 +54,12 @@ export const CreateObjectInputSchema = z.object({
 
 export const compareObjectInputSchema = z.object({
   questId: z.string().meta({ example: "クエストID" }),
-  userCreatedObjectImages: z
-    .object({
-      topView: z.file().mime("image/png"),
-      bottomView: z.file().mime("image/png"),
-      leftView: z.file().mime("image/png"),
-      rightView: z.file().mime("image/png"),
-      frontView: z.file().mime("image/png"),
-      backView: z.file().mime("image/png"),
-    })
-    .meta({ description: "ユーザーが作成したオブジェクトの画像" }),
+  topView: z.file().mime("image/png").meta({ example: "上面画像" }),
+  bottomView: z.file().mime("image/png").meta({ example: "下面画像" }),
+  leftView: z.file().mime("image/png").meta({ example: "左側面画像" }),
+  rightView: z.file().mime("image/png").meta({ example: "右側面画像" }),
+  frontView: z.file().mime("image/png").meta({ example: "前面画像" }),
+  backView: z.file().mime("image/png").meta({ example: "背面画像" }),
 });
 
 export const compareObjectOutputSchema = z.object({
