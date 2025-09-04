@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const AiOutputSchema = z
+export const CreateObjectOutputSchema = z
   .object({
     chat: z.string().describe("チャットの返信"),
     name: z.string().describe("オブジェクトの名前"),
@@ -19,7 +19,7 @@ export const AiOutputSchema = z
       .nonempty(),
   })
   .strict();
-export type AiOutputSchema = z.infer<typeof AiOutputSchema>;
+export type CreateObjectOutputSchema = z.infer<typeof CreateObjectOutputSchema>;
 
 export const ConversationHistorySchema = z
   .object({
@@ -32,7 +32,7 @@ export type ConversationHistorySchema = z.infer<
   typeof ConversationHistorySchema
 >;
 
-export const AiInputSchema = z.object({
+export const CreateObjectInputSchema = z.object({
   userInput: z.string().min(1).meta({
     example: "かわいい家つくって",
     description: "ユーザー入力コメント",
@@ -45,10 +45,32 @@ export const AiInputSchema = z.object({
         { role: "user", content: "かわいい家つくって" },
         {
           role: "assistant",
-          content:
-            '{"chat": "かわいい家ができました！","name": "かわいい家","parts":[{~}]}',
+          content: '{"role":"user","content":"かわいい家つくって！"}',
         },
       ]),
       description: "会話履歴(JSON文字列)",
     }),
+});
+
+export const compareObjectInputSchema = z.object({
+  questId: z.string().meta({ example: "クエストID" }),
+  topView: z.file().mime("image/png").meta({ example: "上面画像" }),
+  bottomView: z.file().mime("image/png").meta({ example: "下面画像" }),
+  leftView: z.file().mime("image/png").meta({ example: "左側面画像" }),
+  rightView: z.file().mime("image/png").meta({ example: "右側面画像" }),
+  frontView: z.file().mime("image/png").meta({ example: "前面画像" }),
+  backView: z.file().mime("image/png").meta({ example: "背面画像" }),
+});
+
+export const compareObjectOutputSchema = z.object({
+  score: z
+    .number()
+    .min(0)
+    .max(100)
+    .meta({ example: 85, description: "類似度スコア（0-100）" }),
+  comment: z.string().meta({
+    example:
+      "ユーザーのオブジェクトは非常に良くできています。いくつかの細部を改善することで、さらにリアルになります。",
+    description: "AIからのフィードバックコメント",
+  }),
 });

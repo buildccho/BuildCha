@@ -1,7 +1,7 @@
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { ChatOpenAI } from "@langchain/openai";
-import { AiOutputSchema } from "../ai/schemas";
 import { getConfig } from "../config";
+import { CreateObjectOutputSchema } from "./schemas";
 
 const systemInstruction = `# 3D建物生成システムプロンプト
 
@@ -170,14 +170,14 @@ export async function create3DObjectFromMessage(
   history: string,
 ) {
   try {
-    const { OPENAI_API_KEY } = getConfig();
+    const { OPENAI_API_KEY, USE_OPENAI_MODEL_NAME } = getConfig();
     const model = new ChatOpenAI({
       apiKey: OPENAI_API_KEY,
-      model: "gpt-4o-mini", //TODO: 本番環境では"gpt-4o"に変更
+      model: USE_OPENAI_MODEL_NAME,
     });
 
     //NOTE: withStructuredOutputを使用して出力形式を指定
-    const ai = model.withStructuredOutput(AiOutputSchema);
+    const ai = model.withStructuredOutput(CreateObjectOutputSchema);
 
     const promptTemplate = ChatPromptTemplate.fromMessages([
       ["system", systemInstruction],

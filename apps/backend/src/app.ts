@@ -1,7 +1,7 @@
 import { swaggerUI } from "@hono/swagger-ui";
 import { Hono } from "hono";
 import { openAPISpecs } from "hono-openapi";
-import ai from "./ai/createObject";
+import ai from "./ai";
 
 const app = new Hono();
 
