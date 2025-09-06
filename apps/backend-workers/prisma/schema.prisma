@@ -1,0 +1,171 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
+  level        Int        @default(0)
+  score        Int        @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  isAnonymous Boolean?
+
+  userObjects  UserObject[]
+  maps         Map[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  @@map("verification")
+}
+
+model Quest {
+  id               String    @id @default(uuid())
+  created_at       DateTime  @default(now())
+  name             String
+  image_url        String
+  level            Int
+  challenge        String?
+  score            Int
+  difficulty       String // easy | normal | hard
+
+  answerObject     Parts[]
+  @@map("quests")
+
+  UserObject UserObject[]
+}
+
+model UserObject {
+  id               String      @id @default(uuid())
+  created_at       DateTime    @default(now())
+
+  user_id          String
+  user             User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  name             String
+
+  map_id           String
+  map              Map         @relation(fields: [map_id], references: [id], onDelete: Cascade)
+
+  quest_id         String
+  quest            Quest       @relation(fields: [quest_id], references: [id])
+
+  position         String // Store as JSON string, e.g. "[1.0,2.0,3.0]"
+  rotation         String // Store as JSON string, e.g. "[0.0,0.0,0.0]"
+  bounding_box     String // Store as JSON string, e.g. "[1.0,1.0,1.0]"
+  object_precision Float
+
+  chatHistory      ChatHistory[]
+  parts            Parts[]
+  @@map("user_objects")
+
+  @@index([user_id])
+  @@index([map_id])
+  @@index([quest_id])
+}
+
+model Map {
+  id          String        @id @default(uuid())
+  user_id     String
+  user        User          @relation(fields: [user_id], references: [id],onDelete: Cascade)
+  created_at  DateTime      @default(now())
+  name        String
+  update_at  DateTime      @updatedAt
+
+  userObjects UserObject[]
+  @@map("maps")
+
+  @@index([user_id])
+}
+
+model ChatHistory {
+  id              String      @id @default(uuid())
+  created_at      DateTime    @default(now())
+
+  user_object_id  String
+  userObject      UserObject  @relation(fields: [user_object_id], references: [id], onDelete: Cascade)
+
+  role            String // User | System
+  message         String
+
+  @@index([user_object_id])
+}
+
+model Parts {
+  id              String      @id @default(uuid())
+  created_at      DateTime    @default(now())
+
+  size            String
+  type            String
+  color           String
+  position        String // Store as JSON string, e.g. "[1.0,2.0,3.0]"
+  rotation        String // Store as JSON string, e.g. "[0.0,0.0,0.0]"
+
+  user_object_id  String? // Answer Objectの場合はnull許容
+  userObject      UserObject? @relation(fields: [user_object_id], references: [id], onDelete: Cascade)
+
+  Quest Quest[]
+
+  role            String // User | Answer
+
+  @@index([user_object_id])
+}
