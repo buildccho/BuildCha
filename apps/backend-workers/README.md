@@ -41,6 +41,19 @@ backend-workers ディレクトリ内で利用できる主要なコマンドは�
 | `pnpm dev` | 開発サーバーの起動 |
 | `pnpm local:migration` | 開発環境のD1マイグレーション |
 | `pnpm remote:migration` | 本番環境のD1マイグレーション |
+| `pnpm test` | テストの実行 |
+
+## テスト
+
+テスト用の環境変数は、test/__mocks__/cloudflareWorkersMock.ts に設定してください。
+
+```ts
+// Cloudflare Workers 用モジュールのモック
+export const env = {
+  OPENAI_API_KEY: "dummy-key", // 自分のkeyに変更してください
+  USE_OPENAI_MODEL_NAME: "gpt-4o-mini",
+}
+```
 
 
 ## ディレクトリ構成
