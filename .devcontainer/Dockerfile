@@ -1,7 +1,7 @@
-FROM node:22-alpine
+FROM node:22
 
 # 必要なツールをapkでインストール
-RUN apk update && apk add --no-cache zsh git
+RUN apt-get update && apt-get install -y zsh git
 
 # pnpmインストール
 RUN corepack enable && corepack prepare pnpm@latest --activate

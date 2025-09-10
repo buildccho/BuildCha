@@ -2,12 +2,20 @@ import { swaggerUI } from "@hono/swagger-ui";
 import { Hono } from "hono";
 import { openAPISpecs } from "hono-openapi";
 import ai from "./ai";
+import prismaClients from "./lib/prisma";
 
-const app = new Hono();
+const app = new Hono<{
+  Bindings: CloudflareBindings;
+}>();
 
 app.route("/ai", ai);
 
-app.get("/", (c) => c.text("Hello World!"));
+app.get("/", async (c) => {
+  const prisma = await prismaClients.fetch(c.env.DB);
+  const users = await prisma.user.findMany();
+  console.log("users", users);
+  return c.json({ message: "Hello, BuildCha!" });
+});
 
 // OpenAPIドキュメントの設定
 app
@@ -42,4 +50,5 @@ app
     }),
   );
 
+export type AppType = typeof app;
 export default app;

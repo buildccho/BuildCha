@@ -3,7 +3,7 @@
   "build": {
     "dockerfile": "Dockerfile"
   },
-  "forwardPorts": [8000, 3000],
+  "forwardPorts": [8787, 3000],
   "postCreateCommand": "pnpm install",
   "workspaceFolder": "/workspaces/BuildCha",
   "customizations": {
