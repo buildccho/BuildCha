@@ -102,8 +102,11 @@ importers:
       '@hono/zod-validator':
         specifier: ^0.7.2
         version: 0.7.2(hono@4.9.6)(zod@4.1.5)
+      '@langchain/cloudflare':
+        specifier: ^0.1.1
+        version: 0.1.1(@langchain/core@0.3.75(openai@5.12.2(ws@8.18.0)(zod@4.1.5)))
       '@langchain/core':
-        specifier: ^0.3.66
+        specifier: ^0.3.75
         version: 0.3.75(openai@5.12.2(ws@8.18.0)(zod@4.1.5))
       '@langchain/openai':
         specifier: ^0.6.9
@@ -1187,6 +1190,12 @@ packages:
 
   '@jsdevtools/ono@7.1.3':
     resolution: {integrity: sha512-4JQNk+3mVzK3xh2rqd6RB4J46qUR19azEHBneZyTZM+c456qOrbbM/5xcR8huNCCcbVt7+UmizG6GuUvPvKUYg==}
+
+  '@langchain/cloudflare@0.1.1':
+    resolution: {integrity: sha512-M3az7HAoSYoWpLBrziRcJywUpJOAdDJejl4EucW0ZX/mCR6HaO1c2nYhICEcvkNsd//fhRpAkI5uLF+oW6ptGw==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@langchain/core': '>=0.2.21 <0.4.0'
 
   '@langchain/core@0.3.75':
     resolution: {integrity: sha512-kTyBS0DTeD0JYa9YH5lg6UdDbHmvplk3t9PCjP5jDQZCK5kPe2aDFToqdiCaLzZg8RzzM+clXLVyJtPTE8bZ2Q==}
@@ -4597,6 +4606,11 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.5.5
 
   '@jsdevtools/ono@7.1.3': {}
+
+  '@langchain/cloudflare@0.1.1(@langchain/core@0.3.75(openai@5.12.2(ws@8.18.0)(zod@4.1.5)))':
+    dependencies:
+      '@langchain/core': 0.3.75(openai@5.12.2(ws@8.18.0)(zod@4.1.5))
+      uuid: 10.0.0
 
   '@langchain/core@0.3.75(openai@5.12.2(ws@8.18.0)(zod@4.1.5))':
     dependencies:

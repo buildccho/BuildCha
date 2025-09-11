@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+// 3Dオブジェクト生成の出力スキーマ
 export const CreateObjectOutputSchema = z
   .object({
     chat: z.string().describe("チャットの返信"),
@@ -21,17 +22,18 @@ export const CreateObjectOutputSchema = z
   .strict();
 export type CreateObjectOutputSchema = z.infer<typeof CreateObjectOutputSchema>;
 
-export const ConversationHistorySchema = z
+export const CreateObjectConversationHistorySchema = z
   .object({
     role: z.enum(["user", "assistant"]).meta({ example: "user" }),
     content: z.string().meta({ example: "かわいい家つくって！" }),
   })
   .array()
   .meta({ description: "会話履歴" });
-export type ConversationHistorySchema = z.infer<
-  typeof ConversationHistorySchema
+export type CreateObjectConversationHistorySchema = z.infer<
+  typeof CreateObjectConversationHistorySchema
 >;
 
+// オブジェクト比較の入出力スキーマ
 export const CreateObjectInputSchema = z.object({
   userInput: z.string().min(1).meta({
     example: "かわいい家つくって",
@@ -52,7 +54,7 @@ export const CreateObjectInputSchema = z.object({
     }),
 });
 
-export const compareObjectInputSchema = z.object({
+export const CompareObjectInputSchema = z.object({
   questId: z.string().meta({ example: "クエストID" }),
   topView: z.file().mime("image/png").meta({ example: "上面画像" }),
   bottomView: z.file().mime("image/png").meta({ example: "下面画像" }),
@@ -62,7 +64,7 @@ export const compareObjectInputSchema = z.object({
   backView: z.file().mime("image/png").meta({ example: "背面画像" }),
 });
 
-export const compareObjectOutputSchema = z.object({
+export const CompareObjectOutputSchema = z.object({
   score: z
     .number()
     .min(0)
@@ -74,3 +76,26 @@ export const compareObjectOutputSchema = z.object({
     description: "AIからのフィードバックコメント",
   }),
 });
+
+// ChatBotの入出力スキーマ
+export const ChatBotConversationHistorySchema = z
+  .array(
+    z.object({
+      role: z.enum(["user", "assistant"]).meta({ description: "発言者の役割" }),
+      content: z.string().meta({ description: "内容" }),
+    }),
+  )
+  .meta({
+    example: [
+      { role: "user", content: "このBuildchaの使い方を教えてください。" },
+      {
+        role: "assistant",
+        content:
+          "こんにちは！Buildchaへようこそ！Buildchaは、3Dオブジェクトを作成することができるアプリケーションです。",
+      },
+    ],
+    description: "チャットの履歴",
+  });
+export type ChatBotConversationHistorySchema = z.infer<
+  typeof ChatBotConversationHistorySchema
+>;

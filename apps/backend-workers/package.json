@@ -11,7 +11,8 @@
   "dependencies": {
     "@hono/swagger-ui": "^0.5.2",
     "@hono/zod-validator": "^0.7.2",
-    "@langchain/core": "^0.3.66",
+    "@langchain/cloudflare": "^0.1.1",
+    "@langchain/core": "^0.3.75",
     "@langchain/openai": "^0.6.9",
     "@prisma/adapter-d1": "^6.15.0",
     "@prisma/client": "^6.15.0",
