@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 
 export default function CompletePage() {
   return (
-    <main className="w-full min-h-screen grid place-items-center bg-neutral-100 py-6">
-      <div className="max-w-6xl grid w-full px-18 py-16 rounded-3xl gap-16 bg-white shadow-lg shadow-black/5">
+    <main className="w-full min-h-screen grid place-items-center py-6">
+      <div className="max-w-6xl grid w-full px-18 py-16 rounded-3xl gap-16 bg-white/40 border border-white backdrop-blur-sm shadow-lg shadow-black/5">
         <div className="flex flex-row gap-2 items-center justify-between">
           <h1 className="text-3xl font-bold">クエスト完了！</h1>
           <Button asChild size={"lg"}>
