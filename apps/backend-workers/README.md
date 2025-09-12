@@ -48,7 +48,7 @@ backend-workers ディレクトリ内で利用できる主要なコマンドは�
 テスト用の環境変数は、test/__mocks__/cloudflareWorkersMock.ts に設定してください。
 
 ```ts
-// Cloudflare Workers 用モジュールのモック
+// cloudflare:workersのモック
 export const env = {
   OPENAI_API_KEY: "dummy-key", // 自分のkeyに変更してください
   USE_OPENAI_MODEL_NAME: "gpt-4o-mini",
