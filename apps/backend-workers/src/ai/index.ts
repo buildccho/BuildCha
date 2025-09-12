@@ -170,6 +170,7 @@ app.post(
   async (c) => {
     const { userMessage, chatHistory } = c.req.valid("json");
     try {
+      // await addDemoDataToVectorStore(c.env); //NOTE: デモデータ追加（初回のみ実行）
       const response = await createChatBotResponse(
         userMessage,
         chatHistory,
