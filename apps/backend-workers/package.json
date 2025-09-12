@@ -23,6 +23,7 @@
     "zod-openapi": "^5.3.1"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250912.0",
     "prisma": "^6.15.0",
     "wrangler": "^4.4.0"
   }
