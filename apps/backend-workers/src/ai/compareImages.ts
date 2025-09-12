@@ -58,7 +58,7 @@ export const compareImages = async (
       ? 0
       : Math.round(scores.reduce((acc, cur) => acc + cur, 0) / scores.length);
 
-  return { overallScore, results };
+  return { score: overallScore, results };
 };
 
 const compareTwoImages = async (

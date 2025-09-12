@@ -109,7 +109,7 @@ app.post(
         404,
       );
     }
-    const { overallScore, results } = await compareImages(
+    const { score, results } = await compareImages(
       {
         topView: topView as File,
         bottomView: bottomView as File,
@@ -120,7 +120,7 @@ app.post(
       },
       correctObjectUrls,
     );
-    return c.json({ overallScore, results });
+    return c.json({ score, results });
   },
 );
 
