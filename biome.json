@@ -16,7 +16,8 @@
       "!node_modules",
       "!**/.next",
       "!.pnpm-store/**",
-      "!**/generated/**"
+      "!**/generated/**",
+      "!apps/backend-workers/worker-configuration.d.ts"
     ]
   },
   "formatter": {
