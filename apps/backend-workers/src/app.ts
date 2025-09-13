@@ -61,6 +61,14 @@ app.get(
   describeRoute({
     tags: ["User"],
     description: "ユーザー情報の取得",
+    responses: {
+      200: {
+        description: "ユーザー情報の取得",
+        content: {
+          "application/json": {},
+        },
+      },
+    },
   }),
   async (c) => {
     const user = c.get("user");
