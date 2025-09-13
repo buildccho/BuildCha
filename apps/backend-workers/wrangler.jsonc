@@ -1,39 +1,45 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "backend",
-  "main": "src/app.ts",
-  "account_id": "4beba607eac3ca6a8e906c6a34cb6f18",
-  "compatibility_date": "2025-09-05",
-  "compatibility_flags": [
-    "nodejs_compat"
-  ],
-  // "vars": {
-  //   "MY_VAR": "my-variable"
-  // },
-  // "kv_namespaces": [
-  //   {
-  //     "binding": "MY_KV_NAMESPACE",
-  //     "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  //   }
-  // ],
-  // "r2_buckets": [
-  //   {
-  //     "binding": "MY_BUCKET",
-  //     "bucket_name": "my-bucket"
-  //   }
-  // ],
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "buildcha",
-      "database_id": "a381e3c3-128b-4056-bd78-b9d859007a34"
-    }
-  ],
-  // "ai": {
-  //   "binding": "AI"
-  // },
-  // "observability": {
-  //   "enabled": true,
-  //   "head_sampling_rate": 1
-  // }
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "backend",
+	"main": "src/app.ts",
+	"account_id": "4beba607eac3ca6a8e906c6a34cb6f18",
+	"compatibility_date": "2025-09-05",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	// "vars": {
+	//   "MY_VAR": "my-variable"
+	// },
+	// "kv_namespaces": [
+	//   {
+	//     "binding": "MY_KV_NAMESPACE",
+	//     "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+	//   }
+	// ],
+	// "r2_buckets": [
+	//   {
+	//     "binding": "MY_BUCKET",
+	//     "bucket_name": "my-bucket"
+	//   }
+	// ],
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "buildcha",
+			"database_id": "a381e3c3-128b-4056-bd78-b9d859007a34"
+		}
+	],
+	"vectorize": [
+		{
+			"binding": "VECTORIZE_INDEX",
+			"index_name": "buildcha-vector"
+		}
+	],
+	"ai": {
+	  "binding": "AI"
+	},
+	// "observability": {
+	//   "enabled": true,
+	//   "head_sampling_rate": 1
+	// }
 }
