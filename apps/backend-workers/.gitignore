@@ -37,3 +37,6 @@ lerna-debug.log*
 
 # testに関する設定
 /testImage
+
+# test/__mocks__/cloudflareWorkersMock.ts
+**/test/__mocks__/cloudflareWorkersMock.ts
