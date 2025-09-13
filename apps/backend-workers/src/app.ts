@@ -57,14 +57,12 @@ app.on(["POST", "GET"], "/api/auth/*", async (c) => {
 
 app.route("/ai", ai);
 
-app.get("/session", (c) => {
-  const session = c.get("session");
+app.get("/user", (c) => {
   const user = c.get("user");
 
   if (!user) return c.body(null, 401);
 
   return c.json({
-    session,
     user,
   });
 });
