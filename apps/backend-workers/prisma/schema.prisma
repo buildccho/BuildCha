@@ -17,7 +17,7 @@ model User {
   name          String
   email         String
   emailVerified Boolean   @default(false)
-  image         String?
+  imageUrl         String
   level        Int        @default(0)
   score        Int        @default(0)
   createdAt     DateTime  @default(now())
@@ -79,11 +79,12 @@ model Verification {
   @@map("verification")
 }
 
+
 model Quest {
   id               String    @id @default(uuid())
-  created_at       DateTime  @default(now())
+  createdAt       DateTime  @default(now())
   name             String
-  image_url        String
+  imageUrl        String
   level            Int
   challenge        String?
   score            Int
@@ -92,68 +93,68 @@ model Quest {
   answerObject     Parts[]
   @@map("quests")
 
-  UserObject UserObject[]
+  userObject UserObject[]
 }
 
 model UserObject {
   id               String      @id @default(uuid())
-  created_at       DateTime    @default(now())
+  createdAt       DateTime    @default(now())
 
-  user_id          String
-  user             User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  userId          String
+  user             User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   name             String
 
-  map_id           String
-  map              Map         @relation(fields: [map_id], references: [id], onDelete: Cascade)
+  mapId           String
+  map              Map         @relation(fields: [mapId], references: [id], onDelete: Cascade)
 
-  quest_id         String
-  quest            Quest       @relation(fields: [quest_id], references: [id])
+  questId         String
+  quest            Quest       @relation(fields: [questId], references: [id])
 
   position         String // Store as JSON string, e.g. "[1.0,2.0,3.0]"
   rotation         String // Store as JSON string, e.g. "[0.0,0.0,0.0]"
-  bounding_box     String // Store as JSON string, e.g. "[1.0,1.0,1.0]"
-  object_precision Float
+  boundingBox     String // Store as JSON string, e.g. "[1.0,1.0,1.0]"
+  objectPrecision Float
 
   chatHistory      ChatHistory[]
   parts            Parts[]
   @@map("user_objects")
 
-  @@index([user_id])
-  @@index([map_id])
-  @@index([quest_id])
+  @@index([userId])
+  @@index([mapId])
+  @@index([questId])
 }
 
 model Map {
   id          String        @id @default(uuid())
-  user_id     String
-  user        User          @relation(fields: [user_id], references: [id],onDelete: Cascade)
-  created_at  DateTime      @default(now())
+  userId     String
+  user        User          @relation(fields: [userId], references: [id],onDelete: Cascade)
+  createdAt  DateTime      @default(now())
   name        String
-  update_at  DateTime      @updatedAt
+  updateAt  DateTime      @updatedAt
 
   userObjects UserObject[]
   @@map("maps")
 
-  @@index([user_id])
+  @@index([userId])
 }
-
+//DONE↓
 model ChatHistory {
   id              String      @id @default(uuid())
-  created_at      DateTime    @default(now())
+  createdAt      DateTime    @default(now())
 
-  user_object_id  String
-  userObject      UserObject  @relation(fields: [user_object_id], references: [id], onDelete: Cascade)
+  userObjectId  String
+  userObject      UserObject  @relation(fields: [userObjectId], references: [id], onDelete: Cascade)
 
   role            String // User | System
   message         String
 
-  @@index([user_object_id])
+  @@index([userObjectId])
 }
 
 model Parts {
   id              String      @id @default(uuid())
-  created_at      DateTime    @default(now())
+  createdAt      DateTime    @default(now())
 
   size            String
   type            String
@@ -161,12 +162,12 @@ model Parts {
   position        String // Store as JSON string, e.g. "[1.0,2.0,3.0]"
   rotation        String // Store as JSON string, e.g. "[0.0,0.0,0.0]"
 
-  user_object_id  String? // Answer Objectの場合はnull許容
-  userObject      UserObject? @relation(fields: [user_object_id], references: [id], onDelete: Cascade)
+  userObjectId  String? // Answer Objectの場合はnull許容
+  userObject      UserObject? @relation(fields: [userObjectId], references: [id], onDelete: Cascade)
 
-  Quest Quest[]
+  quest         Quest[]
 
   role            String // User | Answer
 
-  @@index([user_object_id])
+  @@index([userObjectId])
 }
