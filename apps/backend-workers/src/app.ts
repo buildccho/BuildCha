@@ -1,8 +1,8 @@
-import { swaggerUI } from "@hono/swagger-ui";
+import { Scalar } from "@scalar/hono-api-reference";
 import type { Session, User } from "better-auth";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { openAPISpecs } from "hono-openapi";
+import { describeRoute, openAPISpecs } from "hono-openapi";
 import ai from "./ai";
 import { createAuth } from "./lib/auth";
 import prismaClients from "./lib/prisma";
@@ -15,30 +15,22 @@ const app = new Hono<{
   };
 }>();
 
-app.get("/", async (c) => {
-  const prisma = await prismaClients.fetch(c.env.DB);
-  const users = await prisma.user.findMany();
-  const auth = await createAuth(c.env.DB);
-  const user = await auth.api.signInAnonymous();
-  console.log("users", users);
-  console.log("user", user);
-  return c.json({ message: "Hello, BuildCha!" });
-});
-
+/* CORS Middleware */
 app.use(
-  "/api/auth/*", // or replace with "*" to enable cors for all routes
+  "*",
   cors({
-    origin: "http://localhost:3001", // replace with your origin
+    origin: "http://localhost:3000", // TODO: フロントエンドの本番環境のURLを追加する
     allowHeaders: ["Content-Type", "Authorization"],
-    allowMethods: ["POST", "GET", "OPTIONS"],
+    allowMethods: ["POST", "GET", "PATCH", "DELETE", "OPTIONS"],
     exposeHeaders: ["Content-Length"],
     maxAge: 600,
     credentials: true,
   }),
 );
 
+/* セッションチェック Middleware */
 app.use("*", async (c, next) => {
-  const auth = await createAuth(c.env.DB);
+  const auth = createAuth(c.env.DB);
   const session = await auth.api.getSession({ headers: c.req.raw.headers });
   if (!session) {
     c.set("user", null);
@@ -50,24 +42,43 @@ app.use("*", async (c, next) => {
   return next();
 });
 
-app.on(["POST", "GET"], "/api/auth/*", async (c) => {
-  const auth = await createAuth(c.env.DB);
+/* Better Authルート設定 */
+app.on(["POST", "GET"], "/api/auth/*", (c) => {
+  const auth = createAuth(c.env.DB);
   return auth.handler(c.req.raw);
 });
 
-app.route("/ai", ai);
-
-app.get("/user", (c) => {
-  const user = c.get("user");
-
-  if (!user) return c.body(null, 401);
-
-  return c.json({
-    user,
-  });
+app.get("/", async (c) => {
+  const prisma = await prismaClients.fetch(c.env.DB);
+  const users = await prisma.user.findMany();
+  console.log("users", users);
+  return c.json({ message: "Hello, BuildCha!" });
 });
 
-// OpenAPIドキュメントの設定
+/* ユーザー情報取得 */
+app.get(
+  "/user",
+  describeRoute({
+    tags: ["User"],
+    description: "ユーザー情報の取得",
+  }),
+  async (c) => {
+    const user = c.get("user");
+    if (!user) return c.json({ message: "ユーザーが見つかりません" }, 401);
+
+    return c.json(
+      {
+        user,
+      },
+      200,
+    );
+  },
+);
+
+/* ルート設定 */
+app.route("/ai", ai);
+
+/* OpenAPIドキュメントの設定 */
 app
   .get(
     "/openapi.json",
@@ -95,8 +106,13 @@ app
   )
   .get(
     "/api/docs",
-    swaggerUI({
-      url: "/openapi.json",
+    Scalar({
+      pageTitle: "API Documentation",
+      sources: [
+        { url: "/openapi.json", title: "API" },
+        // Better Auth schema generation endpoint
+        { url: "/api/auth/open-api/generate-schema", title: "Auth" },
+      ],
     }),
   );
 
