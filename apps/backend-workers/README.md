@@ -31,6 +31,11 @@ Hono + Cloudflare Workers で構築された BuildCha のバックエンドサ�
 	pnpm dev
 	```
 
+## 環境変数
+`.env.sample` をコピーして `.env` を作成してください。
+OPENAI_API_KEY は自分のOpenAIのAPIキーに変更してください。
+BETTER_AUTH_SECRET は[ここ](https://www.better-auth.com/docs/installation#set-environment-variables)で生成したシークレットキーに変更してください。
+
 ## 主要コマンド
 
 backend-workers ディレクトリ内で利用できる主要なコマンドは以下の通りです
