@@ -13,78 +13,78 @@ const app = new Hono<{
     user: User | null;
     session: Session | null;
   };
-}>();
+}>()
 
-/* CORS Middleware */
-app.use(
-  "*",
-  cors({
-    origin: "http://localhost:3000", // TODO: フロントエンドの本番環境のURLを追加する
-    allowHeaders: ["Content-Type", "Authorization"],
-    allowMethods: ["POST", "GET", "PATCH", "DELETE", "OPTIONS"],
-    exposeHeaders: ["Content-Length"],
-    maxAge: 600,
-    credentials: true,
-  }),
-);
+  /* CORS Middleware */
+  .use(
+    "*",
+    cors({
+      origin: "http://localhost:3000", // TODO: フロントエンドの本番環境のURLを追加する
+      allowHeaders: ["Content-Type", "Authorization"],
+      allowMethods: ["POST", "GET", "PATCH", "DELETE", "OPTIONS"],
+      exposeHeaders: ["Content-Length"],
+      maxAge: 600,
+      credentials: true,
+    }),
+  )
 
-/* セッションチェック Middleware */
-app.use("*", async (c, next) => {
-  const auth = createAuth(c.env.DB);
-  const session = await auth.api.getSession({ headers: c.req.raw.headers });
-  if (!session) {
-    c.set("user", null);
-    c.set("session", null);
+  /* セッションチェック Middleware */
+  .use("*", async (c, next) => {
+    const auth = createAuth(c.env.DB);
+    const session = await auth.api.getSession({ headers: c.req.raw.headers });
+    if (!session) {
+      c.set("user", null);
+      c.set("session", null);
+      return next();
+    }
+    c.set("user", session.user);
+    c.set("session", session.session);
     return next();
-  }
-  c.set("user", session.user);
-  c.set("session", session.session);
-  return next();
-});
+  })
 
-/* Better Authルート設定 */
-app.on(["POST", "GET"], "/api/auth/*", (c) => {
-  const auth = createAuth(c.env.DB);
-  return auth.handler(c.req.raw);
-});
+  /* Better Authルート設定 */
+  .on(["POST", "GET"], "/api/auth/*", (c) => {
+    const auth = createAuth(c.env.DB);
+    return auth.handler(c.req.raw);
+  })
 
-app.get("/", async (c) => {
-  const prisma = await prismaClients.fetch(c.env.DB);
-  const users = await prisma.user.findMany();
-  console.log("users", users);
-  return c.json({ message: "Hello, BuildCha!" });
-});
+  .get("/", async (c) => {
+    const prisma = await prismaClients.fetch(c.env.DB);
+    const users = await prisma.user.findMany();
+    console.log("users", users);
+    return c.json({ message: "Hello, BuildCha!" });
+  })
 
-/* ユーザー情報取得 */
-app.get(
-  "/user",
-  describeRoute({
-    tags: ["User"],
-    description: "ユーザー情報の取得",
-    responses: {
-      200: {
-        description: "ユーザー情報の取得",
-        content: {
-          "application/json": {},
+  /* ユーザー情報取得 */
+  .get(
+    "/user",
+    describeRoute({
+      tags: ["User"],
+      description: "ユーザー情報の取得",
+      responses: {
+        200: {
+          description: "ユーザー情報の取得",
+          content: {
+            "application/json": {},
+          },
         },
       },
+    }),
+    async (c) => {
+      const user = c.get("user");
+      if (!user) return c.json({ message: "ユーザーが見つかりません" }, 401);
+
+      return c.json(
+        {
+          user,
+        },
+        200,
+      );
     },
-  }),
-  async (c) => {
-    const user = c.get("user");
-    if (!user) return c.json({ message: "ユーザーが見つかりません" }, 401);
+  )
 
-    return c.json(
-      {
-        user,
-      },
-      200,
-    );
-  },
-);
-
-/* ルート設定 */
-app.route("/ai", ai);
+  /* ルート設定 */
+  .route("/ai", ai);
 
 /* OpenAPIドキュメントの設定 */
 app
@@ -124,5 +124,4 @@ app
     }),
   );
 
-export type AppType = typeof app;
 export default app;

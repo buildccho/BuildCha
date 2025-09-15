@@ -60,14 +60,14 @@ describe("画像比較", () => {
       rightView: file,
     };
 
-    const { overallScore, results } = await compareImages(
+    const { score, results } = await compareImages(
       testImageUrlObj,
       answerObjectUrls,
     );
-    console.log("平均値:", overallScore);
+    console.log("平均値:", score);
     console.log("詳細結果:", JSON.stringify(results, null, 2));
 
     expect(results).toBeDefined();
-    expect(overallScore).toBeGreaterThan(0);
+    expect(score).toBeGreaterThan(0);
   }, 240000);
 });
