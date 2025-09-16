@@ -17,7 +17,7 @@ model User {
   name          String
   email         String
   emailVerified Boolean   @default(false)
-  imageUrl         String
+  image         String?
   level        Int        @default(0)
   score        Int        @default(0)
   createdAt     DateTime  @default(now())
