@@ -17,7 +17,8 @@
       "!**/.next",
       "!.pnpm-store/**",
       "!**/generated/**",
-      "!apps/backend-workers/worker-configuration.d.ts",
+      "!apps/**/worker-configuration.d.ts",
+      "!apps/**/cloudflare-env.d.ts",
       "!**/.wrangler"
     ]
   },

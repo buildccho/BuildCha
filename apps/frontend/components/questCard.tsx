@@ -42,7 +42,7 @@ const DIFFICULTY: Record<Difficulty, { text: string; className: string }> = {
   },
 };
 
-const DifficultyBadge = ({ difficulty }: { difficulty: Difficulty }) => {
+export const DifficultyBadge = ({ difficulty }: { difficulty: Difficulty }) => {
   const d = DIFFICULTY[difficulty] ?? DIFFICULTY.easy;
   return <Badge className={d.className}>{d.text}</Badge>;
 };
