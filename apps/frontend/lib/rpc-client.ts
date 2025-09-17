@@ -1,10 +1,12 @@
-import { createClient } from "@apps/backend/client";
+import { createClient } from "backend-workers";
 
-export const client = createClient(
-  process.env.NEXT_PUBLIC_RPC_URL || "http://localhost:8787/",
+const client = createClient(
+  process.env.NEXT_PUBLIC_RPC_URL || "http://localhost:8787",
   {
     init: {
       credentials: "include",
     },
   },
 );
+
+export { client };

@@ -1,5 +1,4 @@
 "use client";
-
 import { ArrowUp } from "lucide-react";
 import { useState } from "react";
 import { client } from "@/lib/rpc-client";
