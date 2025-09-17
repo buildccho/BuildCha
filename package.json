@@ -9,9 +9,9 @@
   "packageManager": "pnpm@10.11.0",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "back": "pnpm -F backend-workers",
+    "back": "pnpm -F backend",
     "front": "pnpm -F frontend",
-    "dev:back": "pnpm -F backend-workers dev",
+    "dev:back": "pnpm -F backend dev",
     "dev:front": "pnpm -F frontend dev",
     "dev": "pnpm dev:back & pnpm dev:front",
     "lint": "biome lint .",

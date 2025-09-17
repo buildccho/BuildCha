@@ -1,56 +1,89 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  provider        = "prisma-client-js"
+  output          = "../generated/prisma"
 }
 
 datasource db {
-  provider = "sqlite"//TODO: Azureに移行したら `sqlserver` に変更
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id           String     @id
-  created_at   DateTime   @default(now())
-  name         String
-  image_url    String?
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
   level        Int        @default(0)
   score        Int        @default(0)
-  is_anonymous Boolean    @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
+  sessions      Session[]
+  accounts      Account[]
 
-  account      Account?
+  isAnonymous Boolean?
 
   userObjects  UserObject[]
   maps         Map[]
-  @@map("users")
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
 }
 
 model Account {
-  user_id    String   @id
-  created_at DateTime @default(now())
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
-  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  provider   String //匿名認証 or OAuth
-  email      String?  @unique
-  password   String?
-  @@map("accounts")
-
-  @@index([user_id])
+  @@map("account")
 }
 
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  @@map("verification")
+}
 
 
 model Quest {
   id               String    @id @default(uuid())
-  created_at       DateTime  @default(now())
+  createdAt       DateTime  @default(now())
   name             String
-  image_url        String
+  imageUrl        String
   level            Int
   challenge        String?
   score            Int
@@ -59,68 +92,68 @@ model Quest {
   answerObject     Parts[]
   @@map("quests")
 
-  UserObject UserObject[]
+  userObject UserObject[]
 }
 
 model UserObject {
   id               String      @id @default(uuid())
-  created_at       DateTime    @default(now())
+  createdAt       DateTime    @default(now())
 
-  user_id          String
-  user             User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  userId          String
+  user             User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   name             String
 
-  map_id           String
-  map              Map         @relation(fields: [map_id], references: [id], onDelete: Cascade)
+  mapId           String
+  map              Map         @relation(fields: [mapId], references: [id], onDelete: Cascade)
 
-  quest_id         String
-  quest            Quest       @relation(fields: [quest_id], references: [id])
+  questId         String
+  quest            Quest       @relation(fields: [questId], references: [id])
 
   position         String // Store as JSON string, e.g. "[1.0,2.0,3.0]"
   rotation         String // Store as JSON string, e.g. "[0.0,0.0,0.0]"
-  bounding_box     String // Store as JSON string, e.g. "[1.0,1.0,1.0]"
-  object_precision Float
+  boundingBox     String // Store as JSON string, e.g. "[1.0,1.0,1.0]"
+  objectPrecision Float
 
   chatHistory      ChatHistory[]
   parts            Parts[]
   @@map("user_objects")
 
-  @@index([user_id])
-  @@index([map_id])
-  @@index([quest_id])
+  @@index([userId])
+  @@index([mapId])
+  @@index([questId])
 }
 
 model Map {
   id          String        @id @default(uuid())
-  user_id     String
-  user        User          @relation(fields: [user_id], references: [id],onDelete: Cascade)
-  created_at  DateTime      @default(now())
+  userId     String
+  user        User          @relation(fields: [userId], references: [id],onDelete: Cascade)
+  createdAt  DateTime      @default(now())
   name        String
-  update_at  DateTime      @updatedAt
+  updateAt  DateTime      @updatedAt
 
   userObjects UserObject[]
   @@map("maps")
 
-  @@index([user_id])
+  @@index([userId])
 }
-
+//DONE↓
 model ChatHistory {
   id              String      @id @default(uuid())
-  created_at      DateTime    @default(now())
+  createdAt      DateTime    @default(now())
 
-  user_object_id  String
-  userObject      UserObject  @relation(fields: [user_object_id], references: [id], onDelete: Cascade)
+  userObjectId  String
+  userObject      UserObject  @relation(fields: [userObjectId], references: [id], onDelete: Cascade)
 
   role            String // User | System
   message         String
 
-  @@index([user_object_id])
+  @@index([userObjectId])
 }
 
 model Parts {
   id              String      @id @default(uuid())
-  created_at      DateTime    @default(now())
+  createdAt      DateTime    @default(now())
 
   size            String
   type            String
@@ -128,12 +161,12 @@ model Parts {
   position        String // Store as JSON string, e.g. "[1.0,2.0,3.0]"
   rotation        String // Store as JSON string, e.g. "[0.0,0.0,0.0]"
 
-  user_object_id  String? // Answer Objectの場合はnull許容
-  userObject      UserObject? @relation(fields: [user_object_id], references: [id], onDelete: Cascade)
+  userObjectId  String? // Answer Objectの場合はnull許容
+  userObject      UserObject? @relation(fields: [userObjectId], references: [id], onDelete: Cascade)
 
-  Quest Quest[]
+  quest         Quest[]
 
   role            String // User | Answer
 
-  @@index([user_object_id])
+  @@index([userObjectId])
 }

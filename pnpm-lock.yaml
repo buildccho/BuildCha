@@ -94,7 +94,7 @@ importers:
         specifier: ^5.8.3
         version: 5.9.2
 
-  apps/backend-workers:
+  apps/backend:
     dependencies:
       '@hono/zod-validator':
         specifier: ^0.7.2

@@ -1,4 +1,4 @@
-import fs from "node:fs";
+import * as fs from "node:fs";
 import { compareImages } from "../src/ai/compareImages";
 import { getConfig } from "../src/config";
 import { getAnswerObjectImageUrls } from "../src/moc/getAnswerObject";
@@ -15,13 +15,8 @@ jest.setTimeout(240000);
 // 環境変数が正しく設定されているかを確認するテスト
 describe("環境変数の設定", () => {
   test("OPENAI_API_KEYが定義されていること", () => {
-    try {
-      const config = getConfig();
-      expect(config.OPENAI_API_KEY).toBeDefined();
-    } catch (e) {
-      console.error(e);
-      expect(e).toBeInstanceOf(Error);
-    }
+    const config = getConfig();
+    expect(config.OPENAI_API_KEY).toBeDefined();
   });
 });
 

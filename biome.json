@@ -17,7 +17,7 @@
       "!**/.next",
       "!.pnpm-store/**",
       "!**/generated/**",
-      "!apps/backend-workers/worker-configuration.d.ts",
+      "!apps/backend/worker-configuration.d.ts",
       "!**/.wrangler"
     ]
   },

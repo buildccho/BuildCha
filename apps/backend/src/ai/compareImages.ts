@@ -1,7 +1,7 @@
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { ChatOpenAI } from "@langchain/openai";
 import { getConfig } from "../config";
-import { compareObjectOutputSchema } from "./schemas";
+import { CompareObjectOutputSchema } from "./schemas";
 
 const systemInstruction = `
 あなたは優秀な3Dオブジェクト比較AIです。  
@@ -58,7 +58,7 @@ export const compareImages = async (
       ? 0
       : Math.round(scores.reduce((acc, cur) => acc + cur, 0) / scores.length);
 
-  return { overallScore, results };
+  return { score: overallScore, results };
 };
 
 const compareTwoImages = async (
@@ -72,7 +72,7 @@ const compareTwoImages = async (
       apiKey: OPENAI_API_KEY,
       model: USE_OPENAI_MODEL_NAME,
     });
-    const ai = model.withStructuredOutput(compareObjectOutputSchema);
+    const ai = model.withStructuredOutput(CompareObjectOutputSchema);
 
     const res = await ai.invoke([
       new SystemMessage(systemInstruction),
@@ -95,17 +95,6 @@ const compareTwoImages = async (
 
 // Blob/File を Base64 data URL に変換
 const blobLikeToDataUrl = async (blobLike: Blob | File): Promise<string> => {
-  const hasFileReader =
-    typeof (globalThis as { FileReader?: unknown }).FileReader !== "undefined";
-  if (hasFileReader) {
-    const base64 = await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(blobLike);
-    });
-    return base64;
-  }
   const ab = await (blobLike as Blob).arrayBuffer();
   const buf = Buffer.from(ab);
   const mime = (blobLike as Blob).type || "application/octet-stream";
