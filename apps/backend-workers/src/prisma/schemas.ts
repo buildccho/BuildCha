@@ -1,20 +1,31 @@
 import { z } from "zod";
 
+// Stringの場合はtransformでJSON.parseしてから配列に変換する
+const JsonNumberArray = z.union([
+  z
+    .string()
+    .transform((s) => JSON.parse(s))
+    .pipe(z.array(z.number())),
+  z.array(z.number()),
+]);
+
 const ChatHistorySchema = z.object({
   id: z.string(),
-  createAt: z.date(),
+  createdAt: z.date(),
   userObjectId: z.string(),
   role: z.enum(["user", "system"]),
   message: z.string(),
 });
 const PartsSchema = z.object({
   id: z.string(),
-  createAt: z.date(),
-  size: z.array(z.number()),
-  position: z.array(z.number()),
-  rotation: z.array(z.number()),
+  createdAt: z.date(),
+  size: JsonNumberArray,
+  type: z.string(),
+  color: z.string(),
+  position: JsonNumberArray,
+  rotation: JsonNumberArray,
   userObjectId: z.string().optional(), //Answer Objectのときはnull
-  role: z.enum(["answer", "user"]),
+  role: z.enum(["Answer", "User"]),
 });
 
 //　以下がメインのスキーマ
@@ -36,10 +47,10 @@ export const UserObjectSchema = z.object({
   name: z.string(),
   mapId: z.string(),
   questId: z.string(),
-  position: z.array(z.number()),
-  rotation: z.array(z.number()),
-  boundingBox: z.array(z.number()),
-  objectPrecision: z.float64(),
+  position: JsonNumberArray,
+  rotation: JsonNumberArray,
+  boundingBox: JsonNumberArray,
+  objectPrecision: z.number(),
   chatHistory: z.array(ChatHistorySchema),
   parts: z.array(PartsSchema),
 });
@@ -90,8 +101,8 @@ export const UserSchema = z.object({
   imageUrl: z.url(),
   level: z.number(),
   score: z.number(),
-  createdAt: z.string(),
-  updatedAt: z.string(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
   sessions: z.array(SessionSchema),
   accounts: z.array(AccountSchema),
   isAnonymous: z.boolean().optional(),
