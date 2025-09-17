@@ -19,7 +19,10 @@ const app = new Hono<{
   .use(
     "*",
     cors({
-      origin: "http://localhost:3000", // TODO: フロントエンドの本番環境のURLを追加する
+      origin: [
+        "http://localhost:3000",
+        "https://frontend.buildcha.workers.dev",
+      ],
       allowHeaders: ["Content-Type", "Authorization"],
       allowMethods: ["POST", "GET", "PATCH", "DELETE", "OPTIONS"],
       exposeHeaders: ["Content-Length"],
