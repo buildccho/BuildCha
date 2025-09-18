@@ -47,7 +47,8 @@ describe("画像比較", () => {
   test("オブジェクト比較ができること", async () => {
     const answerObjectUrls = await getAnswerObjectImageUrls("ABC");
     const testImagePath = "./testImage/test_a.png";
-    const file = new FileCtor([fs.readFileSync(testImagePath)], "test_a.png", {
+    const buffer = fs.readFileSync(testImagePath);
+    const file = new FileCtor([new Uint8Array(buffer)], "test_a.png", {
       type: "image/png",
     });
 
