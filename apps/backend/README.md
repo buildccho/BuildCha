@@ -1,103 +1,85 @@
-# Backend
 
-BuildCha のバックエンド API サーバーです。Hono フレームワークを使用し、ローカル開発と Azure Functions デプロイの両方をサポートしています。
+# BuildCha Backend
 
-## 🏗️ プロジェクト構造
+Hono + Cloudflare Workers で構築された BuildCha のバックエンドサービスです。
+
+## 概要
+
+このディレクトリは、BuildCha プロジェクトのバックエンド（APIサーバー）を管理します。
+主に Hono フレームワークと Cloudflare Workers を利用し、Prisma によるDBアクセスや認証機能などを提供します。
+
+## 開発環境セットアップ
+
+1. 依存パッケージをインストール
+	```bash
+	pnpm install
+	```
+2. wrangler ログイン
+	```bash
+	npx wrangler login
+	```
+3. マイグレーションを適用
+	```bash
+	pnpm local:migration
+	```
+4. prisma client を生成
+	```bash
+	pnpm prisma generate
+	```
+5. 開発サーバーの起動
+	```bash
+	pnpm dev
+	```
+
+## 環境変数
+`.env.sample` をコピーして `.env` を作成してください。
+OPENAI_API_KEY は自分のOpenAIのAPIキーに変更してください。
+BETTER_AUTH_SECRET は[ここ](https://www.better-auth.com/docs/installation#set-environment-variables)で生成したシークレットキーに変更してください。
+
+## 主要コマンド
+
+backend-workers ディレクトリ内で利用できる主要なコマンドは以下の通りです
+
+| コマンド | 説明 |
+|----------|------|
+| `pnpm install` | 依存パッケージのインストール |
+| `pnpm dev` | 開発サーバーの起動 |
+| `pnpm local:migration` | 開発環境のD1マイグレーション |
+| `pnpm remote:migration` | 本番環境のD1マイグレーション |
+| `pnpm test` | テストの実行 |
+
+## テスト
+
+テスト用の環境変数は、test/__mocks__/cloudflareWorkersMock.ts に設定してください。
+
+```ts
+// cloudflare:workersのモック
+export const env = {
+  OPENAI_API_KEY: "dummy-key", // 自分のkeyに変更してください
+  USE_OPENAI_MODEL_NAME: "gpt-4o-mini",
+}
+```
+
+
+## ディレクトリ構成
 
 ```
-apps/backend/
-├── src/                    # ソースコード
-│   ├── app.ts             # メインのAPIアプリケーション（Honoアプリ）
-│   └── functions/         # Azure Functions用のエントリーポイント
-│       └── httpTrigger.ts # HTTP トリガー関数の定義
-├── host.json              # Azure Functions の設定ファイル
-├── local.settings.json    # ローカル開発用の設定
-├── package.json           # 依存関係とスクリプト
-└── tsconfig.json          # TypeScript設定
+apps/backend-workers/
+├── migrations/         # DBマイグレーションSQL
+├── prisma/             # Prismaスキーマ
+├── src/                # ソースコード
+│   ├── app.ts          # エントリーポイント
+│   ├── config.ts       # 設定
+│   ├── lib/            # ライブラリ群
+│   ├── routes/         # APIルート
+│   └── moc/            # モックデータ
+└── worker-configuration.d.ts  # Worker設定型定義
 ```
 
-## 🚀 セットアップ
+## 使用技術
 
-### 前提条件
-
-- Node.js 18.x 以上
+- [Hono](https://hono.dev/) - 軽量Webフレームワーク
+- [Cloudflare Workers](https://workers.cloudflare.com/)
+- [Prisma](https://www.prisma.io/) - ORM
+- TypeScript
 - pnpm
-- Azure Functions Core Tools（ローカル開発用）
-
-### インストール
-
-```bash
-pnpm install
-```
-
-## 🛠️ 開発
-
-### ローカル開発サーバーの起動
-
-```bash
-pnpm dev
-```
-
-サーバーは [http://localhost:8000](http://localhost:8000) で起動します。
-
-### ビルド
-
-```bash
-pnpm build
-```
-
-## 🏗️ アーキテクチャ
-
-### ローカル開発
-
-- **Hono** + **@marplex/hono-azurefunc-adapter** を使用
-- Azure Functions Core Tools でローカルサーバーを起動
-- ポート 7071 で HTTP サーバーを起動
-- ホットリロード対応（TypeScript watch モード）
-
-### 本番環境（Azure）
-
-- **Azure Functions** + **Hono** を使用
-- HTTP トリガーでリクエストを処理
-- すべてのHTTPメソッド（GET, POST, DELETE, PATCH）をサポート
-
-### コード共有
-
-- `src/app.ts` で定義された Hono アプリケーション
-- ローカル開発と Azure Functions 環境で同じコードを再利用
-- `src/functions/httpTrigger.ts` で Azure Functions 用のアダプタを提供
-
-## 📦 主要な依存関係
-
-### フレームワーク
-
-- **Hono**: 軽量な Web フレームワーク
-- **@marplex/hono-azurefunc-adapter**: Azure Functions 用の Hono アダプタ
-
-### Azure
-
-- **@azure/functions**: Azure Functions ランタイム
-
-### 開発ツール
-
-- **TypeScript**: 型安全な開発
-- **concurrently**: 複数コマンドの並列実行
-- **rimraf**: ディレクトリクリーンアップ
-
-## 🚀 デプロイ
-
-### Azure Functions へのデプロイ
-
-```bash
-# ビルド
-pnpm build
-
-# Azure にデプロイ（Azure CLI を使用）
-func azure functionapp publish <your-function-app-name>
-```
-
-### 設定
-
-- `host.json`: Azure Functions の全体設定
-- `local.settings.json`: ローカル開発用の環境設定
-- CORS設定: すべてのオリジンを許可（開発用）

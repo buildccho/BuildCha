@@ -1,23 +1,23 @@
-//envファイルから設定を読み込む
+import { env } from "cloudflare:workers";
+import { z } from "zod";
 
-import * as dotenv from "dotenv";
-import zod from "zod";
+// 環境変数の型定義
+export type Variables = {
+  OPENAI_API_KEY: string;
+  USE_OPENAI_MODEL_NAME?: string;
+};
 
-const ConfigSchema = zod.object({
-  OPENAI_API_KEY: zod.string(),
-  USE_OPENAI_MODEL_NAME: zod.string().default("gpt-4o-mini"),
+const ConfigSchema = z.object({
+  OPENAI_API_KEY: z.string().min(1, "OPENAI_API_KEY is required"),
+  USE_OPENAI_MODEL_NAME: z.string().default("gpt-4o-mini"),
 });
-type Config = zod.infer<typeof ConfigSchema>;
 
-let config: Config;
+export type Config = z.infer<typeof ConfigSchema>;
 
-export const getConfig = () => {
-  if (!config) {
-    dotenv.config();
-    config = ConfigSchema.parse({
-      OPENAI_API_KEY: process.env.OPENAI_API_KEY,
-      USE_OPENAI_MODEL_NAME: process.env.USE_OPENAI_MODEL_NAME,
-    });
-  }
-  return config;
+// Cloudflare Workers用の設定取得関数
+export const getConfig = (): Config => {
+  return ConfigSchema.parse({
+    OPENAI_API_KEY: env.OPENAI_API_KEY,
+    USE_OPENAI_MODEL_NAME: env.USE_OPENAI_MODEL_NAME,
+  });
 };
