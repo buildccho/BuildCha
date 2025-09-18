@@ -38,7 +38,7 @@ BETTER_AUTH_SECRET は[ここ](https://www.better-auth.com/docs/installation#set
 
 ## 主要コマンド
 
-backend-workers ディレクトリ内で利用できる主要なコマンドは以下の通りです
+backend ディレクトリ内で利用できる主要なコマンドは以下の通りです
 
 | コマンド | 説明 |
 |----------|------|
@@ -64,7 +64,7 @@ export const env = {
 ## ディレクトリ構成
 
 ```
-apps/backend-workers/
+apps/backend/
 ├── migrations/         # DBマイグレーションSQL
 ├── prisma/             # Prismaスキーマ
 ├── src/                # ソースコード

@@ -1,4 +1,4 @@
-import { createClient } from "backend-workers";
+import { createClient } from "backend";
 
 const client = createClient(
   process.env.NEXT_PUBLIC_RPC_URL || "http://localhost:8787",

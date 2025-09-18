@@ -19,7 +19,9 @@
       "!**/generated/**",
       "!apps/**/worker-configuration.d.ts",
       "!apps/**/cloudflare-env.d.ts",
-      "!**/.wrangler"
+      "!**/.wrangler",
+      "!**/.open-next",
+      "!**/dist"
     ]
   },
   "formatter": {
