@@ -1,57 +1,42 @@
-bin
-obj
-csx
-.vs
-edge
-Publish
+# prod
+dist/
 
-*.user
-*.suo
-*.cscfg
-*.Cache
-project.lock.json
+# dev
+.yarn/
+!.yarn/releases
+.vscode/*
+!.vscode/launch.json
+!.vscode/*.code-snippets
+.idea/workspace.xml
+.idea/usage.statistics.xml
+.idea/shelf
 
-/packages
-/TestResults
+# deps
+node_modules/
+.wrangler
 
-/tools/NuGet.exe
-/App_Data
-/secrets
-/data
-.secrets
-appsettings.json
-local.settings.json
-
-node_modules
-dist
-
-# Local python packages
-.python_packages/
-
-# Python Environments
+# env
 .env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
+.env.production
+.dev.vars
 
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
+# logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# Azurite artifacts
-__blobstorage__
-__queuestorage__
-__azurite_db*__.json
+# misc
+.DS_Store
 
+/generated/prisma
 
-# sqllight
-*.db
-migrations/
-generated/
 
 # testに関する設定
 /testImage
+
+# test/__mocks__/cloudflareWorkersMock.ts
+**/test/__mocks__/cloudflareWorkersMock.ts
