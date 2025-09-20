@@ -3,6 +3,7 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Bundler",
+    "esModuleInterop": true,
     "strict": true,
     "skipLibCheck": true,
     "lib": ["ESNext"],
@@ -10,7 +11,7 @@
     "jsxImportSource": "hono/jsx",
     "outDir": "./dist",
     "declaration": true,
-    "types": ["@cloudflare/workers-types", "jest", "@types/jest"]
+    "types": ["@cloudflare/workers-types"]
   },
   "include": ["src", "worker-configuration.d.ts"],
   "exclude": ["node_modules", "dist"]

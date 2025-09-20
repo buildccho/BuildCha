@@ -5,7 +5,7 @@ import { anonymous, openAPI } from "better-auth/plugins";
 import { PrismaClient } from "../../generated/prisma/client";
 
 // Cloudflare D1を受け取り、都度Authインスタンスを作るファクトリ
-export const createAuth = (db: D1Database) => {
+export const createAuth = (db: D1Database): ReturnType<typeof betterAuth> => {
   const prisma = new PrismaClient({
     adapter: new PrismaD1(db),
   });

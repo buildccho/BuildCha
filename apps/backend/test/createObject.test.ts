@@ -1,4 +1,12 @@
 import * as fs from "node:fs";
+import {
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  jest,
+  test,
+} from "@jest/globals";
 import { compareImages } from "../src/ai/compareImages";
 import { getConfig } from "../src/config";
 import { getAnswerObjectImageUrls } from "../src/moc/getAnswerObject";
