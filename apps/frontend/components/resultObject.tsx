@@ -1,0 +1,115 @@
+"use client";
+import { OrbitControls } from "@react-three/drei";
+import { Canvas } from "@react-three/fiber";
+import { useMemo } from "react";
+import * as THREE from "three";
+import { useObjectStore } from "@/lib/store";
+import type { BuildingPartData } from "@/types";
+
+const TriangleWall = ({ size }: { size: [number, number, number] }) => {
+  const [width, height, depth = 0.1] = size;
+  const triangleShape = new THREE.Shape();
+  triangleShape.moveTo(-width / 2, 0);
+  triangleShape.lineTo(width / 2, 0);
+  triangleShape.lineTo(0, height);
+  triangleShape.lineTo(-width / 2, 0);
+
+  const extrudeSettings = {
+    depth: depth,
+    bevelEnabled: false,
+  };
+  return <extrudeGeometry args={[triangleShape, extrudeSettings]} />;
+};
+
+// 建物パーツのレンダリング
+function BuildingPart({
+  size,
+  position,
+  rotation,
+  color,
+  type,
+}: BuildingPartData["parts"][number]) {
+  let geometry: THREE.BufferGeometry | null = null;
+
+  if (type === "triangleWall") {
+    const [width, height] = size;
+    // 三角形の形状を作成
+    const triangleShape = new THREE.Shape();
+    triangleShape.moveTo(-width / 2, 0); // 左下
+    triangleShape.lineTo(width / 2, 0); // 右下
+    triangleShape.lineTo(0, height); // 上の頂点
+    triangleShape.lineTo(-width / 2, 0); // 左下に戻る
+
+    geometry = new THREE.ShapeGeometry(triangleShape);
+  }
+  return (
+    <mesh
+      position={position as [number, number, number]}
+      rotation={rotation as [number, number, number]}
+    >
+      {geometry ? (
+        <TriangleWall size={size as [number, number, number]} />
+      ) : (
+        <boxGeometry args={size as [number, number, number]} />
+      )}
+
+      <meshLambertMaterial color={color || "#8B4513"} />
+    </mesh>
+  );
+}
+
+// 建物コンポーネント
+export function Buildings({
+  buildingData,
+}: {
+  buildingData: BuildingPartData;
+}) {
+  return (
+    <group>
+      {buildingData.parts?.map((part, i) => (
+        <BuildingPart
+          // biome-ignore lint/suspicious/noArrayIndexKey: key
+          key={i}
+          type={part.type}
+          position={part.position}
+          rotation={part.rotation}
+          color={part.color}
+          size={part.size}
+        />
+      ))}
+    </group>
+  );
+}
+
+export default function ResultObject() {
+  const data = useObjectStore((state) => state.objectData);
+  const setObjectData = useObjectStore((state) => state.setObjectData);
+
+  const Object3D = useMemo(() => {
+    if (!data || !data.BuildingPartData) {
+      setObjectData(null);
+      return null;
+    }
+
+    // 例: JSON内のオブジェクト定義を基に描画
+    return <Buildings buildingData={data.BuildingPartData} />;
+  }, [data, setObjectData]);
+
+  return (
+    <>
+      {data ? (
+        <Canvas shadows camera={{ position: [10, 6, 10], fov: 50 }}>
+          <ambientLight intensity={1.6} />
+          <directionalLight position={[5, 10, 5]} intensity={2} castShadow />
+
+          <group position={[0, -1, 0]}>{Object3D}</group>
+          <OrbitControls />
+        </Canvas>
+      ) : (
+        <p className="text-muted-foreground text-center grow grid items-center">
+          プロンプトを入力すると表示されます
+        </p>
+      )}
+    </>
+  );
+}

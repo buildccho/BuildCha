@@ -1,4 +1,12 @@
 import * as fs from "node:fs";
+import {
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  jest,
+  test,
+} from "@jest/globals";
 import { compareImages } from "../src/ai/compareImages";
 import { getConfig } from "../src/config";
 import { getAnswerObjectImageUrls } from "../src/moc/getAnswerObject";
@@ -47,7 +55,8 @@ describe("画像比較", () => {
   test("オブジェクト比較ができること", async () => {
     const answerObjectUrls = await getAnswerObjectImageUrls("ABC");
     const testImagePath = "./testImage/test_a.png";
-    const file = new FileCtor([fs.readFileSync(testImagePath)], "test_a.png", {
+    const buffer = fs.readFileSync(testImagePath);
+    const file = new FileCtor([new Uint8Array(buffer)], "test_a.png", {
       type: "image/png",
     });
 
@@ -60,14 +69,14 @@ describe("画像比較", () => {
       rightView: file,
     };
 
-    const { overallScore, results } = await compareImages(
+    const { score, results } = await compareImages(
       testImageUrlObj,
       answerObjectUrls,
     );
-    console.log("平均値:", overallScore);
+    console.log("平均値:", score);
     console.log("詳細結果:", JSON.stringify(results, null, 2));
 
     expect(results).toBeDefined();
-    expect(overallScore).toBeGreaterThan(0);
+    expect(score).toBeGreaterThan(0);
   }, 240000);
 });

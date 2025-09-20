@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "main": ".open-next/worker.js",
+  "name": "frontend",
+  "account_id": "4beba607eac3ca6a8e906c6a34cb6f18",
+  "workers_dev": true,
+  "compatibility_date": "2025-09-05",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  }
+}

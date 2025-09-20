@@ -17,8 +17,11 @@
       "!**/.next",
       "!.pnpm-store/**",
       "!**/generated/**",
-      "!apps/backend/worker-configuration.d.ts",
-      "!**/.wrangler"
+      "!apps/**/worker-configuration.d.ts",
+      "!apps/**/cloudflare-env.d.ts",
+      "!**/.wrangler",
+      "!**/.open-next",
+      "!**/dist"
     ]
   },
   "formatter": {
