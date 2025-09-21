@@ -60,6 +60,14 @@ export default function Chat() {
       setIsPending(false);
     }
   };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  };
+
   return (
     <>
       <ScrollArea
@@ -128,7 +136,11 @@ export default function Chat() {
       </ScrollArea>
 
       <div className="relative">
-        <form className="flex gap-2" onSubmit={handleSubmit}>
+        <form
+          className="flex gap-2"
+          onSubmit={handleSubmit}
+          onKeyDown={handleKeyDown}
+        >
           <Textarea
             className="bg-neutral-100 border-none p-4 xl:p-5 resize-none rounded-xl pr-16"
             value={message}
