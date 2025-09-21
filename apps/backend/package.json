@@ -16,7 +16,7 @@
     "local:migration": "wrangler d1 migrations apply buildcha --local",
     "remote:migration": "wrangler d1 migrations apply buildcha --remote",
     "test": "jest",
-    "build": "pnpm build:tsc && pnpm build:prisma",
+    "build": "pnpm build:prisma && pnpm build:tsc",
     "build:tsc": "tsc",
     "build:prisma": "npx prisma generate"
   },
