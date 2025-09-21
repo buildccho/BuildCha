@@ -194,7 +194,6 @@ export async function create3DObjectFromMessage(
       history: history,
     });
     const response = await ai.invoke(prompt);
-    console.log("3D Object Response:", response);
     return response;
   } catch (error) {
     console.error(error);
