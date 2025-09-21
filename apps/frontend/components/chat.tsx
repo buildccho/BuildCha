@@ -25,10 +25,16 @@ export default function Chat() {
     setHistory((prev) => [...prev, { role: "user", content: message }]);
     setIsPending(true);
     try {
+      const filteredHistory = history.filter((item, index) => {
+        if (item.role === "user") return true;
+        if (item.role === "assistant" && index === history.length - 1)
+          return true;
+        return false;
+      });
       const res = await client.ai.createObject.$post({
         json: {
           userInput: message,
-          history: JSON.stringify(history),
+          history: JSON.stringify(filteredHistory),
         },
       });
       if (res.status !== 200) {
