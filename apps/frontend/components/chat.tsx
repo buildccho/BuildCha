@@ -104,7 +104,7 @@ export default function Chat() {
                   <AvatarImage src="/AICharacter.png" />
                 </Avatar>
 
-                <div>
+                <div className="whitespace-pre-wrap">
                   {error ? (
                     <span className="text-red-500">{error}</span>
                   ) : (
