@@ -25,10 +25,16 @@ export default function Chat() {
     setHistory((prev) => [...prev, { role: "user", content: message }]);
     setIsPending(true);
     try {
+      const filteredHistory = history.filter((item, index) => {
+        if (item.role === "user") return true;
+        if (item.role === "assistant" && index === history.length - 1)
+          return true;
+        return false;
+      });
       const res = await client.ai.createObject.$post({
         json: {
           userInput: message,
-          history: JSON.stringify(history),
+          history: JSON.stringify(filteredHistory),
         },
       });
       if (res.status !== 200) {
@@ -54,6 +60,14 @@ export default function Chat() {
       setIsPending(false);
     }
   };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  };
+
   return (
     <>
       <ScrollArea
@@ -90,7 +104,7 @@ export default function Chat() {
                   <AvatarImage src="/AICharacter.png" />
                 </Avatar>
 
-                <div>
+                <div className="whitespace-pre-wrap">
                   {error ? (
                     <span className="text-red-500">{error}</span>
                   ) : (
@@ -122,7 +136,11 @@ export default function Chat() {
       </ScrollArea>
 
       <div className="relative">
-        <form className="flex gap-2" onSubmit={handleSubmit}>
+        <form
+          className="flex gap-2"
+          onSubmit={handleSubmit}
+          onKeyDown={handleKeyDown}
+        >
           <Textarea
             className="bg-neutral-100 border-none p-4 xl:p-5 resize-none rounded-xl pr-16"
             value={message}
