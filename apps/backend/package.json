@@ -16,7 +16,9 @@
     "local:migration": "wrangler d1 migrations apply buildcha --local",
     "remote:migration": "wrangler d1 migrations apply buildcha --remote",
     "test": "jest",
-    "build": "tsc"
+    "build": "pnpm build:prisma && pnpm build:tsc",
+    "build:tsc": "tsc",
+    "build:prisma": "npx prisma generate"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.7.2",
