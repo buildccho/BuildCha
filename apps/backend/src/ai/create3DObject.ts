@@ -30,7 +30,7 @@ You are the AI assistant of a city-building app for kids. When a user says thing
 - **Language rule**: *"chat"* **must be in Japanese**; *"name"* **must be in Japanese**.
 
 {{
-  "chat": "短くやさしい日本語で、次に選ぶ2〜3個の選択肢（例: 屋根の形・色・窓の数）を含めること。",
+  "chat": "Short kid-friendly response in Japanese, must include *\n* before 'Recommend:' section with 2–3 options.",
   "name": "日本語の楽しい名前",
   "parts": [
     {{
@@ -109,12 +109,12 @@ You are the AI assistant of a city-building app for kids. When a user says thing
 - ***"chat"* and *"name"* must be Japanese**.
 
 ## Response style
-- *"chat"* : short, kind **Japanese** for kids; always include **2–3 choices** (e.g., 「屋根は しかく or とんがり？」「色は あか or みずいろ？」).
+- *"chat"* : short, kind **Japanese** for kids; always include **2–3 choices** (e.g., 「屋根は しかく or とんがり？」「色は あか or みずいろ？」)  .
 - *"name"* : fun, **Japanese** name.
 
 ## Sample 1 (vague → Tofu House)
 {{
-  "chat": "まほうの箱みたいなおうちをつくったよ！つぎは『屋根のかたち（しかく/とんがり）』『いろ（しろ/あか/みずいろ）』『まどのかず（0/1/2）』からえらんでね！",
+  "chat": "まほうの箱みたいなおうちをつくったよ！ \n つぎは『屋根のかたち（しかく/とんがり）』『いろ（しろ/あか/みずいろ）』『まどのかず（0/1/2）』から選んでみてね！",
   "name": "とうふハウス",
   "parts": [
     {{ "type": "floor", "position": [0,0,0], "rotation": [0,0,0], "size": [4,0.2,4], "color": "#EDEDED" }},
@@ -128,7 +128,7 @@ You are the AI assistant of a city-building app for kids. When a user says thing
 
 ## Sample 2 (specific → Detailed gable roof)
 {{
-  "chat": "あかい屋根のおうちができたよ！つぎはドアのいろを『くろ/あお/みどり』からえらぶ？",
+  "chat": "あかい屋根のおうちができたよ！ \n つぎはドアのいろを『くろ/あお/みどり』からえらぶ？",
   "name": "あかい屋根の家",
   "parts": [
     {{ "type": "floor", "position": [0,0,0], "rotation": [0,0,0], "size": [4,0.2,4], "color": "#FFFFE0" }},
@@ -150,7 +150,7 @@ You are the AI assistant of a city-building app for kids. When a user says thing
 - New instruction: “Make the roof pointy and red; add 2 windows!”
 
 {{
-  "chat": "とんがりのあかい屋根にへんしん！まどは2つにしたよ。つぎは『ドアのいろ（くろ/あお/みどり）』からえらぶ？",
+  "chat": "とんがりのあかい屋根にへんしん！ \n まどは2つにしたよ。つぎは『ドアのいろ（くろ/あお/みどり）』からえらぶ？",
   "name": "とんがりあか屋根の家",
   "parts": [
     {{ "type": "floor", "position": [0,0,0], "rotation": [0,0,0], "size": [4,0.2,4], "color": "#EDEDED" }},
@@ -194,6 +194,7 @@ export async function create3DObjectFromMessage(
       history: history,
     });
     const response = await ai.invoke(prompt);
+    console.log("3D Object Response:", response);
     return response;
   } catch (error) {
     console.error(error);
