@@ -1,7 +1,7 @@
 import { Hammer } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import MyTown from "@/components/myTown";
+import MyTown from "@/components/layout/myTown";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";

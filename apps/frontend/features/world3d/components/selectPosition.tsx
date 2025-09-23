@@ -2,7 +2,7 @@
 import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useMemo, useState } from "react";
-import { useObjectStore } from "@/lib/store";
+import { useObjectStore } from "@/stores/store";
 import type { BuildingPartData } from "@/types";
 import Ground from "./ground";
 import { Buildings } from "./resultObject";

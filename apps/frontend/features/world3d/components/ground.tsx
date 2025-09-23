@@ -1,3 +1,4 @@
+"use client";
 import { Grid } from "@react-three/drei";
 import type { ThreeEvent } from "@react-three/fiber";
 import { useRef } from "react";

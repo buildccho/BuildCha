@@ -2,7 +2,7 @@
 import { Cloud, Clouds, OrbitControls, Sky } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import * as THREE from "three";
-import Ground from "./ground";
+import Ground from "@/features/world3d/components/ground";
 
 export default function MyTown() {
   return (

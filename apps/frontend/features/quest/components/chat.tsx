@@ -1,12 +1,12 @@
 "use client";
 import { ArrowUp } from "lucide-react";
 import { useState } from "react";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Textarea } from "@/components/ui/textarea";
 import { client } from "@/lib/rpc-client";
-import { useObjectStore } from "@/lib/store";
-import { Avatar, AvatarImage } from "./ui/avatar";
-import { Button } from "./ui/button";
-import { ScrollArea } from "./ui/scroll-area";
-import { Textarea } from "./ui/textarea";
+import { useObjectStore } from "@/stores/store";
 
 type History = {
   role: "user" | "assistant";

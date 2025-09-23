@@ -1,4 +1,4 @@
-import QuestCard from "@/components/questCard";
+import QuestCard from "@/features/quest/components/questCard";
 
 export default function QuestList() {
   return (

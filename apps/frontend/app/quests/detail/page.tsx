@@ -1,9 +1,9 @@
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
-import Chat from "@/components/chat";
-import { DifficultyBadge } from "@/components/questCard";
-import ResultObject from "@/components/resultObject";
 import { Button } from "@/components/ui/button";
+import Chat from "@/features/quest/components/chat";
+import { DifficultyBadge } from "@/features/quest/components/questCard";
+import ResultObject from "@/features/world3d/components/resultObject";
 
 export default function QuestDetailPage() {
   return (

@@ -1,8 +1,8 @@
 import { ChevronLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import SelectPosition from "@/components/selectPosition";
 import { Button } from "@/components/ui/button";
+import SelectPosition from "@/features/world3d/components/selectPosition";
 
 export default function PositionPage() {
   return (
