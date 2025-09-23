@@ -61,11 +61,13 @@ function BuildingPart({
 // 建物コンポーネント
 export function Buildings({
   buildingData,
+  position,
 }: {
   buildingData: BuildingPartData;
+  position?: [number, number, number];
 }) {
   return (
-    <group>
+    <group position={position}>
       {buildingData.parts?.map((part, i) => (
         <BuildingPart
           // biome-ignore lint/suspicious/noArrayIndexKey: key
@@ -83,17 +85,15 @@ export function Buildings({
 
 export default function ResultObject() {
   const data = useObjectStore((state) => state.objectData);
-  const setObjectData = useObjectStore((state) => state.setObjectData);
 
   const Object3D = useMemo(() => {
     if (!data || !data.BuildingPartData) {
-      setObjectData(null);
       return null;
     }
 
     // 例: JSON内のオブジェクト定義を基に描画
     return <Buildings buildingData={data.BuildingPartData} />;
-  }, [data, setObjectData]);
+  }, [data]);
 
   return (
     <>

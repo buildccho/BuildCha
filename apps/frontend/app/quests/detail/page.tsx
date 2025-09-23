@@ -13,15 +13,17 @@ export default function QuestDetailPage() {
           <Button variant={"link"} size={"sm"} asChild className="text-xs">
             <Link href="/quests">
               <ChevronLeft className="size-3.5" />
-              クエスト一覧に戻る
+              クエスト一覧にもどる
             </Link>
           </Button>
-          <div className="flex items-center gap-1 xl:gap-2 pl-3">
+          <div className="flex items-center gap-1 xl:gap-2 pl-2">
             <h2 className="text-xl xl:text-2xl font-bold">家</h2>
             <DifficultyBadge difficulty="normal" />
           </div>
         </div>
-        <Button size={"lg"}>おく場所を選ぶ</Button>
+        <Button size={"lg"} asChild>
+          <Link href="/quests/position">おく場所を選ぶ</Link>
+        </Button>
       </div>
 
       <div className="grid gap-x-4 gap-y-5 xl:gap-x-8 lg:gap-y-5 py-3 lg:py-4 xl:py-5 grid-cols-7 grid-rows-7 grow h-[calc(100%-100px)]">
