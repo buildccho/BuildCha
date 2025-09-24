@@ -2,10 +2,11 @@ import { Scalar } from "@scalar/hono-api-reference";
 import type { Session, User } from "better-auth";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { describeRoute, openAPISpecs } from "hono-openapi";
+import { openAPISpecs } from "hono-openapi";
 import ai from "./ai";
 import { createAuth } from "./lib/auth";
 import prismaClients from "./lib/prisma";
+import user from "./user";
 
 const app = new Hono<{
   Bindings: CloudflareBindings;
@@ -58,35 +59,8 @@ const app = new Hono<{
     return c.json({ message: "Hello, BuildCha!" });
   })
 
-  /* ユーザー情報取得 */
-  .get(
-    "/user",
-    describeRoute({
-      tags: ["User"],
-      description: "ユーザー情報の取得",
-      responses: {
-        200: {
-          description: "ユーザー情報の取得",
-          content: {
-            "application/json": {},
-          },
-        },
-      },
-    }),
-    async (c) => {
-      const user = c.get("user");
-      if (!user) return c.json({ message: "ユーザーが見つかりません" }, 401);
-
-      return c.json(
-        {
-          user,
-        },
-        200,
-      );
-    },
-  )
-
   /* ルート設定 */
+  .route("/user", user)
   .route("/ai", ai);
 
 /* OpenAPIドキュメントの設定 */
