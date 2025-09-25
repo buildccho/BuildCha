@@ -61,13 +61,11 @@ function BuildingPart({
 // 建物コンポーネント
 export function Buildings({
   buildingData,
-  position,
 }: {
   buildingData: BuildingPartData;
-  position?: [number, number, number];
 }) {
   return (
-    <group position={position}>
+    <group position={buildingData.position} rotation={buildingData.rotation}>
       {buildingData.parts?.map((part, i) => (
         <BuildingPart
           // biome-ignore lint/suspicious/noArrayIndexKey: key
