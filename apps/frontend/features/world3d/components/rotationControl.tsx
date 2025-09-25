@@ -22,7 +22,7 @@ export default function RotationControl({
   return (
     <Html position={position} center>
       <div
-        className="rotation-controls"
+        className="rotation-controls relative"
         style={{ pointerEvents: "auto" }}
         onPointerDown={(e) => e.stopPropagation()}
         onPointerUp={(e) => e.stopPropagation()}

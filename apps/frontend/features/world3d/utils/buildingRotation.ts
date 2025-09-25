@@ -60,7 +60,10 @@ export function normalizeRotation(degrees: number): number {
   const normalized = ((degrees % 360) + 360) % 360;
 
   // 90度刻みに丸める
-  return Math.round(normalized / 90) * 90;
+  const result = Math.round(normalized / 90) * 90;
+
+  // 360度を0度にマップ（360は無効な値のため）
+  return result % 360;
 }
 
 /**

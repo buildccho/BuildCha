@@ -50,7 +50,8 @@ export function useObjectPlacement() {
     if (!placedObject) return;
 
     const currentRotation = placedObject.rotation || [0, 0, 0];
-    const normalizedAngle = angleRadians % (Math.PI * 2);
+    const normalizedAngle =
+      ((angleRadians % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
     const newRotation: [number, number, number] = [
       currentRotation[0],
       normalizedAngle,
@@ -69,7 +70,8 @@ export function useObjectPlacement() {
 
   const getCurrentRotationDegrees = () => {
     const radians = getCurrentRotationY();
-    return Math.round((radians * 180) / Math.PI) % 360;
+    const degrees = (radians * 180) / Math.PI;
+    return Math.round(((degrees % 360) + 360) % 360);
   };
 
   return {
