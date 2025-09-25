@@ -33,7 +33,8 @@ export function useObjectPlacement() {
     if (!placedObject) return;
 
     const currentRotation = placedObject.rotation || [0, 0, 0];
-    const newRotationY = (currentRotation[1] + Math.PI / 2) % (Math.PI * 2);
+    const newRotationY =
+      (currentRotation[1] + Math.PI / 2 + Math.PI * 2) % (Math.PI * 2);
     const newRotation: [number, number, number] = [
       currentRotation[0],
       newRotationY,
