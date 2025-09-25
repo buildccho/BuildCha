@@ -10,4 +10,5 @@ export type BuildingPartData = {
     color: string;
   }[];
   position?: [number, number, number];
+  rotation?: [number, number, number];
 };

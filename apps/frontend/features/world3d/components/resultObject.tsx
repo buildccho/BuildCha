@@ -3,7 +3,7 @@ import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useMemo } from "react";
 import * as THREE from "three";
-import { useObjectStore } from "@/lib/store";
+import { useObjectStore } from "@/stores/store";
 import type { BuildingPartData } from "@/types";
 
 const TriangleWall = ({ size }: { size: [number, number, number] }) => {
@@ -65,7 +65,7 @@ export function Buildings({
   buildingData: BuildingPartData;
 }) {
   return (
-    <group>
+    <group position={buildingData.position} rotation={buildingData.rotation}>
       {buildingData.parts?.map((part, i) => (
         <BuildingPart
           // biome-ignore lint/suspicious/noArrayIndexKey: key
@@ -83,17 +83,15 @@ export function Buildings({
 
 export default function ResultObject() {
   const data = useObjectStore((state) => state.objectData);
-  const setObjectData = useObjectStore((state) => state.setObjectData);
 
   const Object3D = useMemo(() => {
     if (!data || !data.BuildingPartData) {
-      setObjectData(null);
       return null;
     }
 
     // 例: JSON内のオブジェクト定義を基に描画
     return <Buildings buildingData={data.BuildingPartData} />;
-  }, [data, setObjectData]);
+  }, [data]);
 
   return (
     <>

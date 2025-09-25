@@ -1,4 +1,4 @@
-import BgSky from "@/components/bgSky";
+import BgSky from "@/components/layout/bgSky";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (

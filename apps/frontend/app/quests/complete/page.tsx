@@ -1,8 +1,8 @@
 import { Home } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import QuestCard from "@/components/questCard";
 import { Button } from "@/components/ui/button";
+import QuestCard from "@/features/quest/components/questCard";
 
 export default function CompletePage() {
   return (
