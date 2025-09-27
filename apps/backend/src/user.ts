@@ -1,33 +1,23 @@
-import { zValidator } from "@hono/zod-validator";
-import type { Session, User } from "better-auth";
+import { PrismaD1 } from "@prisma/adapter-d1";
+import type { User } from "better-auth";
 import { Hono } from "hono";
 import { describeRoute } from "hono-openapi";
-import { z } from "zod";
+import { resolver, validator } from "hono-openapi/zod";
+import { PrismaClient } from "../generated/prisma/client";
 import prismaClients from "./lib/prisma";
+import { UserSchema } from "./prisma/schemas";
 
-const user = new Hono<{
-  Bindings: CloudflareBindings;
-  Variables: {
-    user: User | null;
-    session: Session | null;
-  };
-}>();
+// PATCH用: 更新可能なフィールドだけ抽出し、全て任意にする
+export const UpdateUserSchema = UserSchema.pick({
+  name: true,
+  email: true,
+  imageUrl: true,
+}).partial();
 
-// ユーザー情報更新のスキーマ
-const UpdateUserSchema = z
-  .object({
-    name: z.string().min(1).optional().or(z.literal("")),
-    email: z.string().email().optional().or(z.literal("")),
-    image: z.string().optional().or(z.literal("")),
-  })
-  .transform((data) => ({
-    name: data.name && data.name !== "" ? data.name : undefined,
-    email: data.email && data.email !== "" ? data.email : undefined,
-    image: data.image && data.image !== "" ? data.image : undefined,
-  }));
-
-user
-  /* ユーザー情報取得 */
+const app = new Hono<{
+  Bindings: { DB: D1Database };
+  Variables: { user?: User };
+}>()
   .get(
     "/",
     describeRoute({
@@ -37,7 +27,7 @@ user
         200: {
           description: "ユーザー情報の取得",
           content: {
-            "application/json": {},
+            "application/json": { schema: resolver(UserSchema) },
           },
         },
         401: {
@@ -47,43 +37,34 @@ user
     }),
     async (c) => {
       const user = c.get("user");
-      if (!user) return c.json({ message: "ユーザーが見つかりません" }, 401);
-
-      return c.json(
-        {
-          user,
-        },
-        200,
-      );
+      if (!user) {
+        //HACK: ここでuserがnullになる問題を解決する
+        return c.json({ message: "ユーザーが見つかりません" }, 401);
+      }
+      const prisma = new PrismaClient({
+        adapter: new PrismaD1(c.env.DB),
+      });
+      const userInfo = await prisma.user.findUnique({
+        where: { id: user.id },
+      });
+      if (!userInfo) {
+        return c.json({ message: "ユーザーが見つかりません" }, 401);
+      }
+      return c.json(userInfo);
     },
   )
-
   /* ユーザー情報更新 */
   .patch(
     "/",
-    zValidator("json", UpdateUserSchema),
+    validator("json", UpdateUserSchema),
     describeRoute({
       tags: ["User"],
       description: "ユーザー情報の更新",
-      requestBody: {
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                name: { type: "string" },
-                email: { type: "string", format: "email" },
-                image: { type: "string" },
-              },
-            },
-          },
-        },
-      },
       responses: {
         200: {
           description: "ユーザー情報の更新成功",
           content: {
-            "application/json": {},
+            "application/json": { schema: resolver(UpdateUserSchema) },
           },
         },
         401: {
@@ -94,24 +75,22 @@ user
         },
       },
     }),
+    validator("json", UpdateUserSchema),
     async (c) => {
       const user = c.get("user");
       if (!user) return c.json({ message: "認証が必要です" }, 401);
 
-      const { name, email, image } = c.req.valid("json");
-
+      const body = c.req.valid("json");
       try {
         const prisma = await prismaClients.fetch(c.env.DB);
         const updatedUser = await prisma.user.update({
           where: { id: user.id },
           data: {
-            ...(name && { name }),
-            ...(email && { email }),
-            ...(image && { image }),
-            updatedAt: new Date(),
+            ...(body.name !== undefined && { name: body.name }),
+            ...(body.email !== undefined && { email: body.email }),
+            ...(body.imageUrl !== undefined && { imageUrl: body.imageUrl }),
           },
         });
-
         return c.json(
           {
             message: "ユーザー情報を更新しました",
@@ -126,4 +105,4 @@ user
     },
   );
 
-export default user;
+export default app;

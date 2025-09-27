@@ -23,6 +23,7 @@ const app = new Hono<{
       origin: [
         "http://localhost:3000",
         "https://frontend.buildcha.workers.dev",
+        "http://127.0.0.1:8787",
       ],
       allowHeaders: ["Content-Type", "Authorization"],
       allowMethods: ["POST", "GET", "PATCH", "DELETE", "OPTIONS"],
@@ -54,6 +55,7 @@ const app = new Hono<{
 
   .get("/", async (c) => {
     const prisma = await prismaClients.fetch(c.env.DB);
+    console.log(c.env);
     const users = await prisma.user.findMany();
     console.log("users", users);
     return c.json({ message: "Hello, BuildCha!" });

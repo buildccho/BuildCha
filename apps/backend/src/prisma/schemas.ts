@@ -99,15 +99,15 @@ export const UserSchema = z.object({
   email: z.email(),
   emailVerified: z.boolean(),
   imageUrl: z.url(),
-  level: z.number(),
-  score: z.number(),
+  level: z.number().default(1),
+  score: z.number().default(0),
   createdAt: z.date(),
   updatedAt: z.date(),
   sessions: z.array(SessionSchema),
   accounts: z.array(AccountSchema),
   isAnonymous: z.boolean().optional(),
-  userObjects: z.array(UserObjectSchema),
-  maps: z.array(MapSchema),
+  userObjects: z.array(UserObjectSchema).optional(),
+  maps: z.array(MapSchema).optional(),
 });
 
 export const VerificationSchema = z.object({
