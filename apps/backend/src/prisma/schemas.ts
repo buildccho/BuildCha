@@ -106,8 +106,8 @@ export const UserSchema = z.object({
   sessions: z.array(SessionSchema),
   accounts: z.array(AccountSchema),
   isAnonymous: z.boolean().optional(),
-  userObjects: z.array(UserObjectSchema).optional(),
-  maps: z.array(MapSchema).optional(),
+  userObjects: z.array(UserObjectSchema),
+  maps: z.array(MapSchema),
 });
 
 export const VerificationSchema = z.object({

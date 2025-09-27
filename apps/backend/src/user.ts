@@ -38,7 +38,6 @@ const app = new Hono<{
     async (c) => {
       const user = c.get("user");
       if (!user) {
-        //HACK: ここでuserがnullになる問題を解決する
         return c.json({ message: "ユーザーが見つかりません" }, 401);
       }
       const prisma = new PrismaClient({
