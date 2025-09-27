@@ -55,7 +55,6 @@ const app = new Hono<{
 
   .get("/", async (c) => {
     const prisma = await prismaClients.fetch(c.env.DB);
-    console.log(c.env);
     const users = await prisma.user.findMany();
     console.log("users", users);
     return c.json({ message: "Hello, BuildCha!" });
