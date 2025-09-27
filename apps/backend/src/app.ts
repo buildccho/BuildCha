@@ -22,7 +22,6 @@ const app = new Hono<{
     cors({
       origin: [
         "http://localhost:3000",
-        "https://localhost:8787",
         "https://frontend.buildcha.workers.dev",
       ],
       allowHeaders: ["Content-Type", "Authorization"],
