@@ -11,7 +11,7 @@ import { UserSchema } from "./prisma/schemas";
 export const UpdateUserSchema = UserSchema.pick({
   name: true,
   email: true,
-  imageUrl: true,
+  image: true,
 }).partial();
 
 const app = new Hono<{
@@ -87,7 +87,7 @@ const app = new Hono<{
           data: {
             ...(body.name !== undefined && { name: body.name }),
             ...(body.email !== undefined && { email: body.email }),
-            ...(body.imageUrl !== undefined && { imageUrl: body.imageUrl }),
+            ...(body.image !== undefined && { imageUrl: body.image }),
           },
         });
         return c.json(
