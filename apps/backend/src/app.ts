@@ -6,6 +6,7 @@ import { openAPISpecs } from "hono-openapi";
 import ai from "./ai";
 import { createAuth } from "./lib/auth";
 import prismaClients from "./lib/prisma";
+import map from "./map";
 import user from "./user";
 
 const app = new Hono<{
@@ -61,7 +62,8 @@ const app = new Hono<{
 
   /* ルート設定 */
   .route("/user", user)
-  .route("/ai", ai);
+  .route("/ai", ai)
+  .route("/maps", map);
 
 /* OpenAPIドキュメントの設定 */
 app
