@@ -40,9 +40,7 @@ const app = new Hono<{
       if (!user) {
         return c.json({ message: "ユーザーが見つかりません" }, 401);
       }
-      const prisma = new PrismaClient({
-        adapter: new PrismaD1(c.env.DB),
-      });
+      const prisma = await prismaClients.fetch(c.env.DB);
       const userInfo = await prisma.user.findUnique({
         where: { id: user.id },
       });
