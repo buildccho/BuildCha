@@ -3,16 +3,16 @@ import type { User } from "better-auth";
 import { Hono } from "hono";
 import { describeRoute } from "hono-openapi";
 import { resolver, validator } from "hono-openapi/zod";
+import { z } from "zod";
 import { PrismaClient } from "../generated/prisma/client";
 import prismaClients from "./lib/prisma";
 import { UserSchema } from "./prisma/schemas";
 
-// PATCH用: 更新可能なフィールドだけ抽出し、全て任意にする
-export const UpdateUserSchema = UserSchema.pick({
-  name: true,
-  email: true,
-  image: true,
-}).partial();
+const UpdateUserSchema = z.object({
+  name: z.string().optional(),
+  email: z.email().optional(),
+  image: z.url().optional(),
+});
 
 const app = new Hono<{
   Bindings: { DB: D1Database };
@@ -49,13 +49,12 @@ const app = new Hono<{
       if (!userInfo) {
         return c.json({ message: "ユーザーが見つかりません" }, 401);
       }
-      return c.json(userInfo);
+      return c.json(userInfo, 200);
     },
   )
   /* ユーザー情報更新 */
   .patch(
     "/",
-    validator("json", UpdateUserSchema),
     describeRoute({
       tags: ["User"],
       description: "ユーザー情報の更新",
@@ -63,7 +62,7 @@ const app = new Hono<{
         200: {
           description: "ユーザー情報の更新成功",
           content: {
-            "application/json": { schema: resolver(UpdateUserSchema) },
+            "application/json": { schema: resolver(UserSchema) },
           },
         },
         401: {
@@ -90,13 +89,7 @@ const app = new Hono<{
             ...(body.image !== undefined && { imageUrl: body.image }),
           },
         });
-        return c.json(
-          {
-            message: "ユーザー情報を更新しました",
-            user: updatedUser,
-          },
-          200,
-        );
+        return c.json(updatedUser, 200);
       } catch (error) {
         console.error("ユーザー情報更新エラー:", error);
         return c.json({ message: "ユーザー情報の更新に失敗しました" }, 400);
