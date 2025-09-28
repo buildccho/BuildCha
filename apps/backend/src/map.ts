@@ -6,8 +6,8 @@ import { z } from "zod";
 import prismaClients from "./lib/prisma";
 import { MapSchema } from "./prisma/schemas";
 
-const UpdateMapSchema = z.object({
-  name: z.string(),
+const UpdateMapSchema = MapSchema.pick({
+  name: true,
 });
 
 const app = new Hono<{
