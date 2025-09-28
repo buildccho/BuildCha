@@ -106,7 +106,7 @@ const app = new Hono<{
     async (c) => {
       const user = c.get("user");
       if (!user) return c.json({ message: "認証が必要です" }, 401);
-      const { name } = await c.req.json();
+      const { name } = c.req.valid("json");
       const prisma = await prismaClients.fetch(c.env.DB);
       const newMap = await prisma.map.create({
         data: {
@@ -156,7 +156,7 @@ const app = new Hono<{
       const user = c.get("user");
       if (!user) return c.json({ message: "認証が必要です" }, 401);
       const id = c.req.param("id");
-      const { name } = await c.req.json();
+      const { name } = c.req.valid("json");
       const prisma = await prismaClients.fetch(c.env.DB);
       const mapInfo = await prisma.map.findFirst({
         where: { id, userId: user.id },
