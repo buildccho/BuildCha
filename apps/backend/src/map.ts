@@ -65,6 +65,20 @@ const app = new Hono<{
           },
         },
       ],
+      responses: {
+        200: {
+          description: "マップ情報の取得",
+          content: {
+            "application/json": { schema: resolver(MapSchema) },
+          },
+        },
+        401: {
+          description: "認証が必要です",
+        },
+        404: {
+          description: "マップが見つかりません",
+        },
+      },
     }),
     async (c) => {
       const user = c.get("user");
