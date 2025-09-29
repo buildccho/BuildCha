@@ -32,7 +32,7 @@ export default function CompletePage() {
           <div className="bg-white rounded-xl py-8 px-10 w-fit shrink-0 shadow">
             <Image
               src={"/house.png"}
-              alt="house"
+              alt="家"
               width={200}
               height={200}
               className="object-cover block"
@@ -43,7 +43,7 @@ export default function CompletePage() {
             <div className="flex items-center gap-2">
               <Image
                 src={"/AICharacter.png"}
-                alt="star"
+                alt="AIキャラ"
                 width={44}
                 height={44}
                 className="object-cover block"
