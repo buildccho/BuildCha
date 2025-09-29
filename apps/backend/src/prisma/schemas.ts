@@ -65,15 +65,13 @@ export const MapSchema = z.object({
 
 export const QuestSchema = z.object({
   id: z.string(),
-  createAt: z.date(),
+  createdAt: z.date(),
   name: z.string(),
-  image: z.url().optional(),
+  imageUrl: z.url(),
   level: z.number(),
   challenge: z.string().optional(),
   score: z.number(),
   difficulty: z.enum(["Easy", "Medium", "Hard"]),
-  answerObject: z.array(PartsSchema),
-  userObject: z.array(UserObjectSchema),
 });
 
 export const AccountSchema = z.object({
