@@ -1,18 +1,15 @@
-import { PrismaD1 } from "@prisma/adapter-d1";
 import type { User } from "better-auth";
 import { Hono } from "hono";
 import { describeRoute } from "hono-openapi";
 import { resolver, validator } from "hono-openapi/zod";
-import { z } from "zod";
-import { PrismaClient } from "../generated/prisma/client";
 import prismaClients from "./lib/prisma";
 import { UserSchema } from "./prisma/schemas";
 
-const UpdateUserSchema = z.object({
-  name: z.string().optional(),
-  email: z.email().optional(),
-  image: z.url().optional(),
-});
+const UpdateUserSchema = UserSchema.pick({
+  name: true,
+  email: true,
+  image: true,
+}).partial();
 
 const app = new Hono<{
   Bindings: { DB: D1Database };
@@ -40,9 +37,7 @@ const app = new Hono<{
       if (!user) {
         return c.json({ message: "ユーザーが見つかりません" }, 401);
       }
-      const prisma = new PrismaClient({
-        adapter: new PrismaD1(c.env.DB),
-      });
+      const prisma = await prismaClients.fetch(c.env.DB);
       const userInfo = await prisma.user.findUnique({
         where: { id: user.id },
       });

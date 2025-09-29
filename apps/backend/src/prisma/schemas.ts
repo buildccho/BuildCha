@@ -61,7 +61,6 @@ export const MapSchema = z.object({
   createdAt: z.date(),
   name: z.string(),
   updateAt: z.date(),
-  userObjects: z.array(UserObjectSchema),
 });
 
 export const QuestSchema = z.object({
