@@ -63,7 +63,7 @@ const app = new Hono<{
   /* ルート設定 */
   .route("/user", user)
   .route("/ai", ai)
-  .route("/quest", quest);
+  .route("/quests", quest);
 
 /* OpenAPIドキュメントの設定 */
 app
