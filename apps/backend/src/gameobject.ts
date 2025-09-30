@@ -4,25 +4,16 @@ import { describeRoute } from "hono-openapi";
 import { resolver, validator } from "hono-openapi/zod";
 import { z } from "zod";
 import prismaClients from "./lib/prisma";
-import { UserObjectSchema } from "./prisma/schemas";
-
-// JSON配列型の定義（position, rotation, boundingBox用）
-const JsonNumberArray = z.union([
-  z
-    .string()
-    .transform((s) => JSON.parse(s))
-    .pipe(z.array(z.number())),
-  z.array(z.number()),
-]);
+import { JsonNumberArray, UserObjectSchema } from "./prisma/schemas";
 
 // 作成用スキーマ
 const CreateUserObjectSchema = z.object({
   name: z.string(),
   questId: z.string(),
   mapId: z.string(),
-  position: z.array(z.number()).length(3),            // 3D座標 (x, y, z) のみ許可
-  rotation: z.array(z.number()).length(3),            // 同上
-  boundingBox: z.array(z.number()).length(6),         // AABBなら[minX, minY, minZ, maxX, maxY, maxZ]
+  position: z.array(z.number()).length(3), // 3D座標 (x, y, z) のみ許可
+  rotation: z.array(z.number()).length(3), // 同上
+  boundingBox: z.array(z.number()).length(6), // AABBなら[minX, minY, minZ, maxX, maxY, maxZ]
   objectPrecision: z.number(),
 });
 
@@ -292,7 +283,25 @@ const app = new Hono<{
         return c.json(updatedObject, 200);
       } catch (error) {
         console.error("オブジェクト更新エラー:", error);
-        return c.json({ message: "オブジェクトの更新に失敗しました" }, 400);
+
+        // Prismaエラーの詳細チェック
+        if (error && typeof error === "object" && "code" in error) {
+          switch ((error as any).code) {
+            case "P2002":
+              return c.json({ message: "重複したデータが存在します" }, 400);
+            case "P2003":
+              return c.json({ message: "関連するデータが見つかりません" }, 400);
+            case "P2025":
+              return c.json({ message: "必要なデータが見つかりません" }, 404);
+            default:
+              return c.json(
+                { message: "データベースエラーが発生しました" },
+                500,
+              );
+          }
+        }
+
+        return c.json({ message: "オブジェクトの更新に失敗しました" }, 500);
       }
     },
   )

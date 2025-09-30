@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 // Stringの場合はtransformでJSON.parseしてから配列に変換する
-const JsonNumberArray = z.union([
+export const JsonNumberArray = z.union([
   z
     .string()
     .transform((s) => JSON.parse(s))
