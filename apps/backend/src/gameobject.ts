@@ -30,9 +30,9 @@ const CreateUserObjectSchema = z.object({
 const UpdateUserObjectSchema = z
   .object({
     name: z.string(),
-    position: z.array(z.number()).min(1),
-    rotation: z.array(z.number()).min(1),
-    boundingBox: z.array(z.number()).min(1),
+    position: z.array(z.number()).length(3),
+    rotation: z.array(z.number()).length(3),
+    boundingBox: z.array(z.number()).length(6),
     objectPrecision: z.number(),
   })
   .partial();
