@@ -338,10 +338,31 @@ const app = new Hono<{
         return c.json({ message: "オブジェクトが見つかりません" }, 404);
       }
 
-      await prisma.userObject.delete({
-        where: { id },
-      });
-      return c.json({ message: "オブジェクトが削除されました" }, 200);
+      try {
+        await prisma.userObject.delete({
+          where: { id },
+        });
+        return c.json({ message: "オブジェクトが削除されました" }, 200);
+      } catch (error) {
+        console.error("オブジェクト削除エラー:", error);
+        if (error && typeof error === "object" && "code" in error) {
+          switch ((error as any).code) {
+            case "P2003":
+              return c.json(
+                { message: "関連するデータが存在するため削除できません" },
+                400,
+              );
+            case "P2025":
+              return c.json({ message: "オブジェクトが見つかりません" }, 404);
+            default:
+              return c.json(
+                { message: "データベースエラーが発生しました" },
+                500,
+              );
+          }
+        }
+        return c.json({ message: "オブジェクトの削除に失敗しました" }, 500);
+      }
     },
   );
 
