@@ -4,6 +4,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { openAPISpecs } from "hono-openapi";
 import ai from "./ai";
+import gameobject from "./gameobject";
 import { createAuth } from "./lib/auth";
 import prismaClients from "./lib/prisma";
 import map from "./map";
@@ -65,7 +66,8 @@ const app = new Hono<{
   .route("/user", user)
   .route("/ai", ai)
   .route("/quests", quest)
-  .route("/maps", map);
+  .route("/maps", map)
+  .route("/objects", gameobject);
 
 /* OpenAPIドキュメントの設定 */
 app
