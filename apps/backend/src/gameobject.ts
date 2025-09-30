@@ -20,9 +20,9 @@ const CreateUserObjectSchema = z.object({
   name: z.string(),
   questId: z.string(),
   mapId: z.string(),
-  position: z.array(z.number()).min(1),
-  rotation: z.array(z.number()).min(1),
-  boundingBox: z.array(z.number()).min(1),
+  position: z.array(z.number()).length(3),            // 3D座標 (x, y, z) のみ許可
+  rotation: z.array(z.number()).length(3),            // 同上
+  boundingBox: z.array(z.number()).length(6),         // AABBなら[minX, minY, minZ, maxX, maxY, maxZ]
   objectPrecision: z.number(),
 });
 
