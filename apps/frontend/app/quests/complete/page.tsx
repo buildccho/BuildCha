@@ -10,7 +10,7 @@ export default function CompletePage() {
     <main className="w-full min-h-screen grid place-items-center p-4 lg:py-6">
       <div className="max-w-6xl grid w-full px-6 py-6 lg:px-9 lg:py-9 xl:px-12 xl:py-12 rounded-3xl gap-6 xl:gap-9 bg-white/60 border border-white backdrop-blur-sm shadow-lg shadow-black/5">
         <div className="flex flex-row gap-2 items-center justify-between py-1">
-          <h1 className="text-2xl lg:text-3xl font-bold">
+          <h1 className="text-2xl xl:text-3xl font-bold">
             クエストクリア！家を作ったよ
           </h1>
           <div className="flex gap-3">

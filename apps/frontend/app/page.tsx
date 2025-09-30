@@ -2,10 +2,10 @@ import { Hammer } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import MyTown from "@/components/layout/myTown";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { generateTextShadow } from "@/lib/text-shadow";
+import { AccountSettingDialog } from "../components/layout/accountSettingDialog";
 
 export default function Home() {
   const style = generateTextShadow({
@@ -31,12 +31,7 @@ export default function Home() {
           </div>
         </div>
         <div className="z-30 max-w-sm w-full relative pt-5 pr-12 place-self-end shrink-0">
-          <Avatar className="bg-neutral-200 border-4 border-white shadow size-20 absolute top-0 right-0 z-40">
-            <AvatarImage
-              src={"https://api.dicebear.com/9.x/bottts/svg?scale=80"}
-            />
-            <AvatarFallback>SC</AvatarFallback>
-          </Avatar>
+          <AccountSettingDialog />
           <div className="bg-white/65 border border-white backdrop-blur-md rounded-xl px-2 py-0.5 w-full divide-y divide-foreground/15">
             <div className="flex items-center gap-6 w-full py-2 px-2">
               <div className="text-sm shrink-0">
