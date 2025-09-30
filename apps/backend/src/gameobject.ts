@@ -20,9 +20,9 @@ const CreateUserObjectSchema = z.object({
   name: z.string(),
   questId: z.string(),
   mapId: z.string(),
-  position: z.array(z.number()).length(3),
-  rotation: z.array(z.number()).length(3),
-  boundingBox: z.array(z.number()).length(3),
+  position: z.array(z.number()).min(1),
+  rotation: z.array(z.number()).min(1),
+  boundingBox: z.array(z.number()).min(1),
   objectPrecision: z.number(),
 });
 
@@ -30,9 +30,9 @@ const CreateUserObjectSchema = z.object({
 const UpdateUserObjectSchema = z
   .object({
     name: z.string(),
-    position: z.array(z.number()).length(3),
-    rotation: z.array(z.number()).length(3),
-    boundingBox: z.array(z.number()).length(3),
+    position: z.array(z.number()).min(1),
+    rotation: z.array(z.number()).min(1),
+    boundingBox: z.array(z.number()).min(1),
     objectPrecision: z.number(),
   })
   .partial();
@@ -152,6 +152,29 @@ const app = new Hono<{
       const prisma = await prismaClients.fetch(c.env.DB);
 
       try {
+        // 1. クエストの存在確認
+        const quest = await prisma.quest.findUnique({
+          where: { id: data.questId },
+        });
+        if (!quest) {
+          return c.json({ message: "指定されたクエストが見つかりません" }, 400);
+        }
+
+        // 2. マップの存在確認（ユーザー所有チェック込み）
+        const map = await prisma.map.findFirst({
+          where: { id: data.mapId, userId: user.id },
+        });
+        if (!map) {
+          return c.json(
+            {
+              message:
+                "指定されたマップが見つからないか、アクセス権限がありません",
+            },
+            400,
+          );
+        }
+
+        // 3. オブジェクト作成
         const newObject = await prisma.userObject.create({
           data: {
             name: data.name,
@@ -171,7 +194,25 @@ const app = new Hono<{
         return c.json(newObject, 200);
       } catch (error) {
         console.error("オブジェクト作成エラー:", error);
-        return c.json({ message: "オブジェクトの作成に失敗しました" }, 400);
+
+        // Prismaエラーの詳細チェック
+        if (error && typeof error === "object" && "code" in error) {
+          switch (error.code) {
+            case "P2002":
+              return c.json({ message: "重複したデータが存在します" }, 400);
+            case "P2003":
+              return c.json({ message: "関連するデータが見つかりません" }, 400);
+            case "P2025":
+              return c.json({ message: "必要なデータが見つかりません" }, 404);
+            default:
+              return c.json(
+                { message: "データベースエラーが発生しました" },
+                500,
+              );
+          }
+        }
+
+        return c.json({ message: "オブジェクトの作成に失敗しました" }, 500);
       }
     },
   )
