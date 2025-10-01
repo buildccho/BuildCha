@@ -3,7 +3,7 @@ import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useEffect, useState } from "react";
 import { useDeviceDetection } from "@/hooks/useDeviceDetection";
-import { useObjectStore } from "@/stores/store";
+import { useObjectStore } from "@/stores";
 import { useObjectPlacement } from "../hooks/useObjectPlacement";
 import Ground from "./ground";
 import HoverGuide from "./hoverGuide";

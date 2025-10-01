@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { client } from "@/lib/rpc-client";
-import { useObjectStore } from "@/stores/store";
+import { useObjectStore } from "@/stores";
 
 type History = {
   role: "user" | "assistant";

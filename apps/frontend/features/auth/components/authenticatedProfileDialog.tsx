@@ -1,4 +1,5 @@
 "use client";
+
 import { RefreshCcw } from "lucide-react";
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -13,17 +14,35 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { client } from "@/lib/rpc-client";
+import type { User } from "@/types";
 
 const initialAvatarImage = `https://api.dicebear.com/9.x/bottts/svg?scale=90`;
 
-export const AccountSettingDialog = () => {
-  const [newAvatarImage, setNewAvatarImage] = useState(initialAvatarImage);
+export function AuthenticatedProfileDialog({ user }: { user: User }) {
+  const [newAvatarImage, setNewAvatarImage] = useState<string>(
+    user.image || initialAvatarImage,
+  );
+
+  const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const name = formData.get("name") as string;
+
+    await client.user.$patch({
+      json: {
+        name: name,
+        image: newAvatarImage || undefined,
+      },
+    });
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Avatar className="bg-neutral-200 border-4 border-white shadow size-20 absolute top-0 right-0 z-40">
-          <AvatarImage src={initialAvatarImage} />
-          <AvatarFallback>SC</AvatarFallback>
+          <AvatarImage src={user.image || initialAvatarImage} />
+          <AvatarFallback>{user.name?.[0] || "U"}</AvatarFallback>
         </Avatar>
       </DialogTrigger>
       <DialogContent className="p-9 rounded-2xl">
@@ -33,7 +52,7 @@ export const AccountSettingDialog = () => {
             なまえやアイコンをかえることができるよ！
           </DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col gap-6 pt-4">
+        <form className="flex flex-col gap-6 pt-4" onSubmit={handleSave}>
           <div className="flex gap-5 items-center">
             <Avatar
               className="bg-neutral-200 size-20 cursor-pointer relative"
@@ -43,7 +62,7 @@ export const AccountSettingDialog = () => {
                 setNewAvatarImage(newAvatarImage);
               }}
             >
-              <AvatarImage src={newAvatarImage} alt="アイコン" />
+              <AvatarImage src={newAvatarImage || undefined} alt="アイコン" />
               <div className="absolute inset-0 flex items-center justify-center hover:bg-foreground/20 text-transparent hover:text-background">
                 <RefreshCcw className="size-6 stroke-3" />
               </div>
@@ -52,14 +71,22 @@ export const AccountSettingDialog = () => {
               <Label className="font-semibold" htmlFor="name">
                 なまえ
               </Label>
-              <Input type="text" className="py-2.5 text-base" id="name" />
+              <Input
+                type="text"
+                name="name"
+                className="py-2.5 text-base"
+                id="name"
+                required
+                defaultValue={user.name || ""}
+                placeholder="なまえを入力してください"
+              />
             </div>
           </div>
-          <Button size="lg" className="font-bold">
+          <Button size="lg" className="font-bold" type="submit">
             保存
           </Button>
-        </div>
+        </form>
       </DialogContent>
     </Dialog>
   );
-};
+}
