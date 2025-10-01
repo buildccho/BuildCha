@@ -23,16 +23,15 @@ export function AuthenticatedProfileDialog({ user }: { user: User }) {
   const [newAvatarImage, setNewAvatarImage] = useState<string>(
     user.image || initialAvatarImage,
   );
+  const [newName, setNewName] = useState<string>(user.name || "");
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const name = formData.get("name") as string;
 
     await client.user.$patch({
       json: {
-        name: name,
-        image: newAvatarImage || undefined,
+        name: newName === user.name ? undefined : newName,
+        image: newAvatarImage === user.image ? undefined : newAvatarImage,
       },
     });
   };
@@ -73,16 +72,20 @@ export function AuthenticatedProfileDialog({ user }: { user: User }) {
               </Label>
               <Input
                 type="text"
-                name="name"
                 className="py-2.5 text-base"
                 id="name"
-                required
-                defaultValue={user.name || ""}
                 placeholder="なまえを入力してください"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
               />
             </div>
           </div>
-          <Button size="lg" className="font-bold" type="submit">
+          <Button
+            size="lg"
+            className="font-bold"
+            type="submit"
+            disabled={newName === user.name && newAvatarImage === user.image}
+          >
             保存
           </Button>
         </form>
