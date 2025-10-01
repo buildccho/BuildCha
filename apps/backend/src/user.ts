@@ -2,6 +2,7 @@ import type { User } from "better-auth";
 import { Hono } from "hono";
 import { describeRoute } from "hono-openapi";
 import { resolver, validator } from "hono-openapi/zod";
+import { z } from "zod";
 import prismaClients from "./lib/prisma";
 import { UserSchema } from "./prisma/schemas";
 
@@ -10,6 +11,8 @@ const UpdateUserSchema = UserSchema.pick({
   email: true,
   image: true,
 }).partial();
+// ユーザー情報取得スキーマにユーザが作ったオブジェクト数を追加
+const GetUserSchema = UserSchema.extend({ userObjectCount: z.number() });
 
 const app = new Hono<{
   Bindings: { DB: D1Database };
@@ -24,7 +27,7 @@ const app = new Hono<{
         200: {
           description: "ユーザー情報の取得",
           content: {
-            "application/json": { schema: resolver(UserSchema) },
+            "application/json": { schema: resolver(GetUserSchema) },
           },
         },
         401: {
@@ -44,7 +47,12 @@ const app = new Hono<{
       if (!userInfo) {
         return c.json({ message: "ユーザーが見つかりません" }, 401);
       }
-      return c.json(userInfo, 200);
+      // UserObjectの数をカウント
+      const userObjectCount = await prisma.userObject.count({
+        where: { userId: user.id },
+      });
+      const userInfoWithCount = { ...userInfo, userObjectCount };
+      return c.json(userInfoWithCount, 200);
     },
   )
   /* ユーザー情報更新 */
