@@ -1,7 +1,8 @@
 "use client";
 
-import { RefreshCcw } from "lucide-react";
+import { Loader2, RefreshCcw } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { client } from "@/lib/rpc-client";
+import { useAuthStore } from "@/stores";
 import type { User } from "@/types";
 
 const initialAvatarImage = `https://api.dicebear.com/9.x/bottts/svg?scale=90`;
@@ -24,20 +26,53 @@ export function AuthenticatedProfileDialog({ user }: { user: User }) {
     user.image || initialAvatarImage,
   );
   const [newName, setNewName] = useState<string>(user.name || "");
+  const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const setUser = useAuthStore((state) => state.setUser);
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsLoading(true);
 
-    await client.user.$patch({
-      json: {
-        name: newName === user.name ? undefined : newName,
-        image: newAvatarImage === user.image ? undefined : newAvatarImage,
-      },
-    });
+    try {
+      const response = await client.user.$patch({
+        json: {
+          name: newName === user.name ? undefined : newName,
+          image: newAvatarImage === user.image ? undefined : newAvatarImage,
+        },
+      });
+
+      if (response.ok) {
+        // ローカル状態を更新
+        const updatedUser = await response.json();
+        const fixedUser = {
+          ...updatedUser,
+          createdAt: new Date(updatedUser.createdAt),
+          updatedAt: new Date(updatedUser.updatedAt),
+        };
+
+        setUser(fixedUser);
+
+        // 成功トーストを表示
+        toast.success("プロフィールをかえたよ！");
+
+        // ダイアログを閉じる
+        setOpen(false);
+      } else {
+        throw new Error("プロフィールをかえられなかったよ");
+      }
+    } catch (err) {
+      // エラートーストを表示
+      toast.error(
+        err instanceof Error ? err.message : "プロフィールをかえられなかったよ",
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Avatar className="bg-neutral-200 border-4 border-white shadow size-20 absolute top-0 right-0 z-40">
           <AvatarImage src={user.image || initialAvatarImage} />
@@ -84,9 +119,12 @@ export function AuthenticatedProfileDialog({ user }: { user: User }) {
             size="lg"
             className="font-bold"
             type="submit"
-            disabled={newName === user.name && newAvatarImage === user.image}
+            disabled={
+              (newName === user.name && newAvatarImage === user.image) ||
+              isLoading
+            }
           >
-            保存
+            {isLoading ? <Loader2 className="size-4 animate-spin" /> : "保存"}
           </Button>
         </form>
       </DialogContent>
