@@ -81,7 +81,7 @@ const app = new Hono<{
           data: {
             ...(body.name !== undefined && { name: body.name }),
             ...(body.email !== undefined && { email: body.email }),
-            ...(body.image !== undefined && { imageUrl: body.image }),
+            ...(body.image !== undefined && { image: body.image }),
           },
         });
         return c.json(updatedUser, 200);
