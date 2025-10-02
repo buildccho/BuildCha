@@ -11,6 +11,13 @@ export const createAuth = (db: D1Database): ReturnType<typeof betterAuth> => {
   });
   return betterAuth({
     database: prismaAdapter(prisma, { provider: "sqlite" }),
+    advanced: {
+      defaultCookieAttributes: {
+        sameSite: "none",
+        secure: true,
+        partitioned: true,
+      },
+    },
     plugins: [anonymous(), openAPI()],
   });
 };
