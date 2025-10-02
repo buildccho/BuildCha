@@ -11,6 +11,15 @@ export const createAuth = (db: D1Database): ReturnType<typeof betterAuth> => {
   });
   return betterAuth({
     database: prismaAdapter(prisma, { provider: "sqlite" }),
+    advanced: {
+      crossSubDomainCookies: {
+        enabled: true,
+      },
+    },
+    trustedOrigins: [
+      "http://localhost:3000",
+      "https://frontend.buildcha.workers.dev",
+    ],
     plugins: [anonymous(), openAPI()],
   });
 };
