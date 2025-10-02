@@ -24,4 +24,5 @@ export type User = {
   createdAt: Date;
   updatedAt: Date;
   isAnonymous: boolean | null;
+  userObjectCount?: number;
 };
