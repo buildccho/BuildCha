@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 // Stringの場合はtransformでJSON.parseしてから配列に変換する
-export const JsonNumberArray = z.union([
+const JsonNumberArray = z.union([
   z
     .string()
     .transform((s) => JSON.parse(s))
@@ -40,16 +40,16 @@ export const SessionSchema = z.object({
   userId: z.string(),
 });
 
-export const UserObjectSchema = z.object({
+export const ObjectSchema = z.object({
   id: z.string(),
   createAt: z.date(),
   userId: z.string(),
   name: z.string(),
   mapId: z.string(),
   questId: z.string(),
-  position: JsonNumberArray,
-  rotation: JsonNumberArray,
-  boundingBox: JsonNumberArray,
+  position: JsonNumberArray.default([0, 0, 0]),
+  rotation: JsonNumberArray.default([0, 0, 0]),
+  boundingBox: JsonNumberArray.default([0, 0, 0]),
   objectPrecision: z.number(),
   chatHistory: z.array(ChatHistorySchema),
   parts: z.array(PartsSchema),
