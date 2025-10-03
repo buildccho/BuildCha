@@ -51,7 +51,7 @@ const app = new Hono<{
   .get(
     "/",
     describeRoute({
-      tags: ["GameObject"],
+      tags: ["UserObject"],
       description: "ユーザーオブジェクト一覧の取得",
       responses: {
         200: {
@@ -84,7 +84,7 @@ const app = new Hono<{
   .get(
     "/:id",
     describeRoute({
-      tags: ["GameObject"],
+      tags: ["UserObject"],
       description: "IDでユーザーオブジェクトの取得",
       parameters: [
         {
@@ -133,7 +133,7 @@ const app = new Hono<{
   .post(
     "/",
     describeRoute({
-      tags: ["GameObject"],
+      tags: ["UserObject"],
       description: "ユーザーオブジェクトの作成",
       responses: {
         200: {
@@ -218,7 +218,7 @@ const app = new Hono<{
   .patch(
     "/:id",
     describeRoute({
-      tags: ["GameObject"],
+      tags: ["UserObject"],
       description: "ユーザーオブジェクト情報の更新",
       parameters: [
         {
@@ -317,7 +317,7 @@ const app = new Hono<{
   .delete(
     "/:id",
     describeRoute({
-      tags: ["GameObject"],
+      tags: ["UserObject"],
       description: "ユーザーオブジェクトの削除",
       parameters: [
         {
