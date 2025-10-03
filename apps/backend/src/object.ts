@@ -4,9 +4,19 @@ import { describeRoute } from "hono-openapi";
 import { resolver, validator } from "hono-openapi/zod";
 import { z } from "zod";
 import prismaClients from "./lib/prisma";
-import { ObjectSchema } from "./prisma/schemas";
+import { ChatHistorySchema, ObjectSchema, PartsSchema } from "./prisma/schemas";
 
-//TODO: partsとchatHistoryの変更するようにする
+// PartやChatHistoryの作成・更新用スキーマ
+const CreateUpdatePartSchema = PartsSchema.omit({
+  id: true,
+  createdAt: true,
+  userObjectId: true,
+});
+const CreateUpdateChatSchema = ChatHistorySchema.omit({
+  id: true,
+  createdAt: true,
+  userObjectId: true,
+});
 // 作成用スキーマ
 const CreateObjectSchema = ObjectSchema.pick({
   name: true,
@@ -16,6 +26,9 @@ const CreateObjectSchema = ObjectSchema.pick({
   rotation: true,
   boundingBox: true,
   objectPrecision: true,
+}).extend({
+  parts: z.array(CreateUpdatePartSchema).default([]),
+  chatHistory: z.array(CreateUpdateChatSchema).default([]),
 });
 // 更新用スキーマ
 const UpdateObjectSchema = ObjectSchema.pick({
@@ -24,7 +37,12 @@ const UpdateObjectSchema = ObjectSchema.pick({
   rotation: true,
   boundingBox: true,
   objectPrecision: true,
-}).partial();
+})
+  .extend({
+    parts: z.array(CreateUpdatePartSchema).default([]),
+    chatHistory: z.array(CreateUpdateChatSchema).default([]),
+  })
+  .partial();
 
 const app = new Hono<{
   Bindings: { DB: D1Database };
@@ -135,7 +153,9 @@ const app = new Hono<{
     validator("json", CreateObjectSchema),
     async (c) => {
       const user = c.get("user");
-      if (!user) return c.json({ message: "認証が必要です" }, 401);
+      if (!user) {
+        return c.json({ message: "認証が必要です" }, 401);
+      }
 
       const data = c.req.valid("json");
       const prisma = await prismaClients.fetch(c.env.DB);
@@ -173,6 +193,19 @@ const app = new Hono<{
           rotation: JSON.stringify(data.rotation),
           boundingBox: JSON.stringify(data.boundingBox),
           objectPrecision: data.objectPrecision,
+          parts: {
+            create: data.parts.map((part) => ({
+              ...part,
+              position: JSON.stringify(part.position),
+              rotation: JSON.stringify(part.rotation),
+              size: JSON.stringify(part.size),
+            })),
+          },
+          chatHistory: {
+            create: data.chatHistory.map((chat) => ({
+              ...chat,
+            })),
+          },
         },
         include: {
           chatHistory: true,
@@ -248,6 +281,30 @@ const app = new Hono<{
           ...(data.objectPrecision !== undefined && {
             objectPrecision: data.objectPrecision,
           }),
+          // partsは一旦全削除してから再作成
+          ...(Array.isArray(data.parts) && data.parts.length > 0
+            ? {
+                parts: {
+                  deleteMany: { userObjectId: id },
+                  create: data.parts.map(
+                    (part: (typeof data.parts)[number]) => ({
+                      ...part,
+                      userObjectId: id,
+                      position: JSON.stringify(part.position),
+                      rotation: JSON.stringify(part.rotation),
+                      size: JSON.stringify(part.size),
+                    }),
+                  ),
+                },
+              }
+            : {}),
+          ...(data.chatHistory !== undefined && {
+            chatHistory: {
+              create: data.chatHistory.map((chat) => ({
+                ...chat,
+              })),
+            },
+          }),
         },
         include: {
           chatHistory: true,
@@ -298,6 +355,14 @@ const app = new Hono<{
       if (!existingObject) {
         return c.json({ message: "オブジェクトが見つかりません" }, 404);
       }
+
+      // 削除処理を追加
+      await prisma.userObject.delete({
+        where: { id },
+      });
+
+      // 正常終了レスポンス
+      return c.json({ message: "削除しました" }, 200);
     },
   );
 

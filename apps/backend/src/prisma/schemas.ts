@@ -1,29 +1,28 @@
 import { z } from "zod";
 
 // Stringの場合はtransformでJSON.parseしてから配列に変換する
-const JsonNumberArray = z.union([
+export const JsonNumberArray = z.union([
   z
     .string()
     .transform((s) => JSON.parse(s))
     .pipe(z.array(z.number())),
   z.array(z.number()),
 ]);
-
-const ChatHistorySchema = z.object({
+export const ChatHistorySchema = z.object({
   id: z.string(),
-  createdAt: z.date(),
+  createdAt: z.string(),
   userObjectId: z.string(),
   role: z.enum(["user", "system"]),
   message: z.string(),
 });
-const PartsSchema = z.object({
+export const PartsSchema = z.object({
   id: z.string(),
-  createdAt: z.date(),
+  createdAt: z.string(),
   size: JsonNumberArray,
   type: z.string(),
   color: z.string(),
-  position: JsonNumberArray,
-  rotation: JsonNumberArray,
+  position: JsonNumberArray.default([0, 0, 0]),
+  rotation: JsonNumberArray.default([0, 0, 0]),
   userObjectId: z.string().optional(), //Answer Objectのときはnull
   role: z.enum(["Answer", "User"]),
 });
@@ -33,8 +32,8 @@ export const SessionSchema = z.object({
   id: z.string(),
   expiresAt: z.date(),
   token: z.string(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
   ipAddress: z.string().optional(),
   userAgent: z.string().optional(),
   userId: z.string(),
@@ -42,7 +41,7 @@ export const SessionSchema = z.object({
 
 export const ObjectSchema = z.object({
   id: z.string(),
-  createAt: z.date(),
+  createAt: z.string(),
   userId: z.string(),
   name: z.string(),
   mapId: z.string(),
@@ -58,14 +57,14 @@ export const ObjectSchema = z.object({
 export const MapSchema = z.object({
   id: z.string(),
   userId: z.string(),
-  createdAt: z.date(),
+  createdAt: z.string(),
   name: z.string(),
-  updateAt: z.date(),
+  updateAt: z.string(),
 });
 
 export const QuestSchema = z.object({
   id: z.string(),
-  createdAt: z.date(),
+  createdAt: z.string(),
   name: z.string(),
   imageUrl: z.url(),
   level: z.number(),
@@ -82,12 +81,12 @@ export const AccountSchema = z.object({
   accessToken: z.string().optional(),
   refreshToken: z.string().optional(),
   idToken: z.string().optional(),
-  accessTokenExpiresAt: z.date().optional(),
-  refreshTokenExpiresAt: z.date().optional(),
+  accessTokenExpiresAt: z.string().optional(),
+  refreshTokenExpiresAt: z.string().optional(),
   scope: z.string().optional(),
   password: z.string().optional(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
 });
 
 export const UserSchema = z.object({
@@ -98,8 +97,8 @@ export const UserSchema = z.object({
   image: z.url(),
   level: z.number(),
   score: z.number(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
   isAnonymous: z.boolean().optional(),
 });
 
@@ -107,7 +106,7 @@ export const VerificationSchema = z.object({
   id: z.string(),
   identifier: z.string(),
   value: z.string(),
-  expiresAt: z.date(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  expiresAt: z.string(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
 });
