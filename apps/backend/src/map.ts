@@ -4,10 +4,13 @@ import { describeRoute } from "hono-openapi";
 import { resolver, validator } from "hono-openapi/zod";
 import { z } from "zod";
 import prismaClients from "./lib/prisma";
-import { MapSchema } from "./prisma/schemas";
+import { MapSchema, ObjectSchema } from "./prisma/schemas";
 
 const UpdateMapSchema = MapSchema.pick({
   name: true,
+});
+const GetMapResponseSchema = MapSchema.extend({
+  userObjects: z.array(ObjectSchema),
 });
 
 const app = new Hono<{
@@ -69,7 +72,7 @@ const app = new Hono<{
         200: {
           description: "マップ情報の取得",
           content: {
-            "application/json": { schema: resolver(MapSchema) },
+            "application/json": { schema: resolver(GetMapResponseSchema) },
           },
         },
         401: {
@@ -89,6 +92,7 @@ const app = new Hono<{
       const prisma = await prismaClients.fetch(c.env.DB);
       const mapInfo = await prisma.map.findFirst({
         where: { id, userId: user.id },
+        include: { userObjects: true },
       });
       if (!mapInfo) {
         return c.json({ message: "マップが見つかりません" }, 404);
