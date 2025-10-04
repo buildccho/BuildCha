@@ -21,8 +21,8 @@ export const PartsSchema = z.object({
   size: JsonNumberArray,
   type: z.string(),
   color: z.string(),
-  position: JsonNumberArray.default([0, 0, 0]),
-  rotation: JsonNumberArray.default([0, 0, 0]),
+  position: JsonNumberArray,
+  rotation: JsonNumberArray,
   userObjectId: z.string().optional(), //Answer Objectのときはnull
   role: z.enum(["Answer", "User"]),
 });
