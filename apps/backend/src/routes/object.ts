@@ -3,8 +3,12 @@ import { Hono } from "hono";
 import { describeRoute } from "hono-openapi";
 import { resolver, validator } from "hono-openapi/zod";
 import { z } from "zod";
-import prismaClients from "./lib/prisma";
-import { ChatHistorySchema, ObjectSchema, PartsSchema } from "./prisma/schemas";
+import prismaClients from "../lib/prisma";
+import {
+  ChatHistorySchema,
+  ObjectSchema,
+  PartsSchema,
+} from "../prisma/schemas";
 
 // PartやChatHistoryの作成・更新用スキーマ
 const CreateUpdatePartSchema = PartsSchema.omit({

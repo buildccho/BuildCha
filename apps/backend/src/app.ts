@@ -6,10 +6,10 @@ import { openAPISpecs } from "hono-openapi";
 import ai from "./ai";
 import { createAuth } from "./lib/auth";
 import prismaClients from "./lib/prisma";
-import map from "./map";
-import object from "./object";
-import quest from "./quest";
-import user from "./user";
+import map from "./routes/map";
+import object from "./routes/object";
+import quest from "./routes/quest";
+import user from "./routes/user";
 
 const app = new Hono<{
   Bindings: CloudflareBindings;
