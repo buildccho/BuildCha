@@ -3,10 +3,11 @@ import { describeRoute } from "hono-openapi";
 import { resolver, validator } from "hono-openapi/zod";
 import { z } from "zod";
 import { getAnswerObjectImageUrls } from "../moc/getAnswerObject";
-import { createChatBotResponse } from "./chatBot";
+import { addDemoDataToVectorStore, createChatBotResponse } from "./chatBot";
 import { compareImages } from "./compareImages";
 import { create3DObjectFromMessage } from "./create3DObject";
 import {
+  AddDocumentsInputSchema,
   ChatBotConversationHistorySchema,
   CompareObjectInputSchema,
   CompareObjectOutputSchema,
@@ -123,7 +124,6 @@ const app = new Hono<{ Bindings: CloudflareBindings }>()
       return c.json({ score, results });
     },
   )
-
   .post(
     "/chatBot",
     describeRoute({
@@ -180,6 +180,51 @@ const app = new Hono<{ Bindings: CloudflareBindings }>()
       } catch (e) {
         const message =
           e instanceof Error ? e.message : "チャットボット応答失敗";
+        return c.json({ message }, 500);
+      }
+    },
+  )
+  .post(
+    // ベクトルストアにデータを追加するためのエンドポイント（管理者用）
+    "/addDocuments",
+    describeRoute({
+      description: "ベクトルストアにPDFドキュメントを追加するエンドポイント",
+      tags: ["AI"],
+      responses: {
+        200: {
+          description: "ドキュメント追加成功",
+          content: {
+            "application/json": {
+              schema: resolver(
+                z.object({
+                  message: z.string().meta({ example: "ドキュメント追加成功" }),
+                }),
+              ),
+            },
+          },
+        },
+        400: {
+          description: "バリデーションエラー",
+          content: { "application/json": { schema: resolver(ErrorSchema) } },
+        },
+        500: {
+          description: "サーバーエラー",
+          content: { "application/json": { schema: resolver(ErrorSchema) } },
+        },
+      },
+    }),
+    validator("form", AddDocumentsInputSchema),
+    async (c) => {
+      const { pdfFile, idDeleteExistDocuments } = c.req.valid("form");
+      try {
+        await addDemoDataToVectorStore(
+          c.env,
+          pdfFile as File,
+          idDeleteExistDocuments === "true",
+        ); //NOTE: formはstringで受け取るため"true"と比較
+        return c.json({ message: "ドキュメント追加成功" }, 200);
+      } catch (e) {
+        const message = e instanceof Error ? e.message : "ドキュメント追加失敗";
         return c.json({ message }, 500);
       }
     },

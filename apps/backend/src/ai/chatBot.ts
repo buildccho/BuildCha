@@ -1,6 +1,8 @@
 import { CloudflareVectorizeStore } from "@langchain/cloudflare";
+import { WebPDFLoader } from "@langchain/community/document_loaders/web/pdf";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
+import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { getConfig } from "../config";
 import type { ChatBotConversationHistorySchema } from "./schemas";
 
@@ -25,6 +27,20 @@ const searchVectorStore = async (
 ): Promise<string[]> => {
   const results = await vectorizeStore.similaritySearch(query, 3);
   return results.map((r) => r.pageContent);
+};
+
+// ベクトルデータベースに保存されているデータを消去する関数
+//HACK: ここがタイムアウトしてしまう
+const clearVectorStore = async (vectorizeStore: CloudflareVectorizeStore) => {
+  while (true) {
+    // topK を 50 に変更
+    const allDocs = await vectorizeStore.similaritySearch("", 50);
+    const ids = allDocs
+      .map((doc) => doc.metadata.id)
+      .filter((id): id is string => !!id);
+    if (ids.length === 0) return;
+    await vectorizeStore.delete({ ids });
+  }
 };
 
 const systemInstruction = `
@@ -76,23 +92,36 @@ export const createChatBotResponse = async (
   }
 };
 //TODO: データ追加用の関数/エンドポイントを実装
-export const addDemoDataToVectorStore = async (env: CloudflareBindings) => {
+export const addDemoDataToVectorStore = async (
+  env: CloudflareBindings,
+  pdfFile: File,
+  deleteExistDocuments: boolean,
+) => {
   const vectorizeStore = getVectorizeStore(env);
-  await vectorizeStore.addDocuments([
-    {
-      pageContent:
-        "BuildChaは、小学生を対象にした3Dオブジェクト作成アプリです。",
-      metadata: { id: "1" },
-    },
-    {
-      pageContent:
-        "BuildChaでは、簡単な操作で3Dオブジェクトを作成し、友達と共有できます。",
-      metadata: { id: "2" },
-    },
-    {
-      pageContent:
-        "BuildChaは、子供たちが創造力を発揮し、3Dモデリングの基礎を学ぶのに役立ちます。",
-      metadata: { id: "3" },
-    },
-  ]);
+  if (deleteExistDocuments) {
+    await clearVectorStore(vectorizeStore);
+  }
+  const pdfLoader = new WebPDFLoader(pdfFile, {
+    splitPages: true,
+    pdfjs: () => import("pdfjs-serverless"),
+  });
+  const docs = await pdfLoader.load();
+  const textSplitter = new RecursiveCharacterTextSplitter({
+    chunkSize: 100,
+    chunkOverlap: 50,
+  });
+  const splitDocs = await textSplitter.splitDocuments(docs);
+
+  // metadataの値がオブジェクトの場合は文字列化し、プリミティブ型のみを許可
+  const flatDocs = splitDocs.map((doc) => ({
+    ...doc,
+    metadata: Object.fromEntries(
+      Object.entries(doc.metadata || {}).map(([k, v]) => [
+        k,
+        typeof v === "object" && v !== null ? JSON.stringify(v) : v,
+      ]),
+    ),
+  }));
+
+  await vectorizeStore.addDocuments(flatDocs);
 };

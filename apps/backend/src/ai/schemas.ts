@@ -99,3 +99,20 @@ export const ChatBotConversationHistorySchema = z
 export type ChatBotConversationHistorySchema = z.infer<
   typeof ChatBotConversationHistorySchema
 >;
+
+// ベクトルストアにドキュメントを追加する際のスキーマ
+export const AddDocumentsInputSchema = z.object({
+  pdfFile: z.file().mime("application/pdf").meta({
+    example: "PDFファイル",
+    description: "ベクトルストアに追加するPDFファイル",
+  }),
+  idDeleteExistDocuments: z
+    .enum(["true", "false"])
+    .default("false")
+    .optional()
+    .meta({
+      description: "既存のドキュメントを削除するかどうか",
+      default: "false",
+    }),
+});
+export type AddDocumentsInputSchema = z.infer<typeof AddDocumentsInputSchema>;
