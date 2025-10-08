@@ -19,8 +19,8 @@
     "build": "pnpm build:prisma && pnpm build:tsc",
     "build:tsc": "tsc",
     "build:prisma": "npx prisma generate",
-    "create-vectorize":"npx wrangler vectorize create buildcha-vector  --dimensions 1536 --metric cosine",
-    "delete-vectorize":"npx wrangler vectorize delete buildcha-vector"
+    "create-vectorize": "npx wrangler vectorize create buildcha-vector  --dimensions 1536 --metric cosine",
+    "delete-vectorize": "npx wrangler vectorize delete buildcha-vector"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.7.2",
