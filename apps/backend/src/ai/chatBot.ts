@@ -29,20 +29,6 @@ const searchVectorStore = async (
   return results.map((r) => r.pageContent);
 };
 
-// ベクトルデータベースに保存されているデータを消去する関数
-//HACK: ここがタイムアウトしてしまう
-const clearVectorStore = async (vectorizeStore: CloudflareVectorizeStore) => {
-  while (true) {
-    // topK を 50 に変更
-    const allDocs = await vectorizeStore.similaritySearch("", 50);
-    const ids = allDocs
-      .map((doc) => doc.metadata.id)
-      .filter((id): id is string => !!id);
-    if (ids.length === 0) return;
-    await vectorizeStore.delete({ ids });
-  }
-};
-
 const systemInstruction = `
 あなたは子供向けの質問応答AIです。以下の制約条件と入力文をもとに、質問に答えてください。
 参照情報を使用して答えてもよいです。
@@ -95,12 +81,8 @@ export const createChatBotResponse = async (
 export const addDemoDataToVectorStore = async (
   env: CloudflareBindings,
   pdfFile: File,
-  deleteExistDocuments: boolean,
 ) => {
   const vectorizeStore = getVectorizeStore(env);
-  if (deleteExistDocuments) {
-    await clearVectorStore(vectorizeStore);
-  }
   const pdfLoader = new WebPDFLoader(pdfFile, {
     splitPages: true,
     pdfjs: () => import("pdfjs-serverless"),

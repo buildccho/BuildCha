@@ -215,13 +215,9 @@ const app = new Hono<{ Bindings: CloudflareBindings }>()
     }),
     validator("form", AddDocumentsInputSchema),
     async (c) => {
-      const { pdfFile, idDeleteExistDocuments } = c.req.valid("form");
+      const { pdfFile } = c.req.valid("form");
       try {
-        await addDemoDataToVectorStore(
-          c.env,
-          pdfFile as File,
-          idDeleteExistDocuments === "true",
-        ); //NOTE: formはstringで受け取るため"true"と比較
+        await addDemoDataToVectorStore(c.env, pdfFile as File); //NOTE: formはstringで受け取るため"true"と比較
         return c.json({ message: "ドキュメント追加成功" }, 200);
       } catch (e) {
         const message = e instanceof Error ? e.message : "ドキュメント追加失敗";

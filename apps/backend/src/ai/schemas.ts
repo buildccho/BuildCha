@@ -106,9 +106,5 @@ export const AddDocumentsInputSchema = z.object({
     example: "PDFファイル",
     description: "ベクトルストアに追加するPDFファイル",
   }),
-  isDeleteExistDocuments: z.enum(["true", "false"]).default("false").meta({
-    description: "既存のドキュメントを削除するかどうか",
-    default: "false",
-  }),
 });
 export type AddDocumentsInputSchema = z.infer<typeof AddDocumentsInputSchema>;
