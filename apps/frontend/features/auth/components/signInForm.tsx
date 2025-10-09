@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
 import { updateUserAction } from "@/features/auth/actions/updateUser";
 import { createMapAction } from "@/features/world3d/actions/createMap";
 import { authClient } from "@/lib/auth-client";
@@ -17,46 +18,54 @@ export default function SignInForm() {
   const router = useRouter();
   const [avatarImage, setAvatarImage] = useState<string>(initialAvatarImage);
   const [error, setError] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsLoading(true);
     setError("");
-    const formData = new FormData(e.currentTarget);
-    const name = String(formData.get("name") ?? "").trim();
-    if (!name) {
-      setError("なまえを入力してね〜");
-      return;
+    try {
+      const formData = new FormData(e.currentTarget);
+      const name = String(formData.get("name") ?? "").trim();
+      if (!name) {
+        setError("なまえを入力してね〜");
+        return;
+      }
+
+      // 匿名ログイン
+      const res = await authClient.signIn.anonymous();
+      if (res.error) {
+        setError(res.error.message || "ログインに失敗しました");
+        return;
+      }
+
+      // ユーザー情報更新
+      const updateResult = await updateUserAction({
+        name: name,
+        image: avatarImage,
+      });
+
+      if (!updateResult.success) {
+        setError(updateResult.error);
+        return;
+      }
+
+      // マップ作成
+      const createResult = await createMapAction("First Town");
+
+      if (!createResult.success) {
+        setError(createResult.error);
+        return;
+      }
+
+      // トップに移動
+      router.push("/");
+    } catch (error) {
+      console.error(error);
+      setError(error instanceof Error ? error.message : "エラーが発生しました");
+    } finally {
+      setIsLoading(false);
     }
-
-    // 匿名ログイン
-    const res = await authClient.signIn.anonymous();
-    if (res.error) {
-      console.error(res.error.code, res.error.message);
-      setError(res.error.message || "ログインに失敗しました");
-      return;
-    }
-
-    // ユーザー情報更新
-    const updateResult = await updateUserAction({
-      name: name,
-      image: avatarImage,
-    });
-
-    if (!updateResult.success) {
-      setError(updateResult.error);
-      return;
-    }
-
-    // マップ作成
-    const createResult = await createMapAction("First Town");
-
-    if (!createResult.success) {
-      setError(createResult.error);
-      return;
-    }
-
-    // トップに移動
-    router.push("/");
   };
 
   return (
@@ -94,8 +103,16 @@ export default function SignInForm() {
         size={"lg"}
         className="w-full text-base font-bold h-auto py-3 shadow"
         type="submit"
+        disabled={isLoading}
       >
-        はじめる
+        {isLoading ? (
+          <>
+            <Spinner />
+            あなたのまちを作っているよ〜
+          </>
+        ) : (
+          "はじめる"
+        )}
       </Button>
     </form>
   );
