@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { AuthInitializer } from "@/components/auth/authInitializer";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -29,7 +28,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthInitializer>{children}</AuthInitializer>
+        {children}
         <Toaster richColors position="top-center" />
       </body>
     </html>
