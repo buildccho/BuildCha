@@ -4,7 +4,18 @@ import Link from "next/link";
 import MyTown from "@/components/layout/myTown";
 import { Button } from "@/components/ui/button";
 import { ProfileSection } from "@/features/auth/components/profileSection";
+import {
+  createMap,
+  fetchMapById,
+  fetchMaps,
+} from "@/features/world3d/api/maps";
+import { fetchObjectById } from "@/features/world3d/api/objects";
 import { generateTextShadow } from "@/lib/text-shadow";
+import type { BuildingPartData } from "@/types";
+
+const jsonNumberArrayParser = (json: string) => {
+  return JSON.parse(json) as [number, number, number];
+};
 
 export default async function Home() {
   const style = generateTextShadow({
@@ -13,6 +24,34 @@ export default async function Home() {
     blur: 1,
     digits: 1,
   });
+
+  const maps = await fetchMaps();
+  if (maps.length === 0) {
+    await createMap("First Town");
+  }
+  const map = await fetchMapById(maps[0].id);
+  if (map === null) {
+    return null;
+  }
+
+  const objectsData: BuildingPartData[] = await Promise.all(
+    map.userObjects.map(async (object) => {
+      const objectData = await fetchObjectById(object.id);
+      return {
+        ...object,
+        parts: objectData.parts.map((part) => ({
+          ...part,
+          position: jsonNumberArrayParser(part.position),
+          rotation: jsonNumberArrayParser(part.rotation),
+          size: jsonNumberArrayParser(part.size),
+          role: part.role as "Answer" | "User",
+        })),
+        position: jsonNumberArrayParser(object.position),
+        rotation: jsonNumberArrayParser(object.rotation),
+        boundingBox: jsonNumberArrayParser(object.boundingBox),
+      };
+    }),
+  );
 
   return (
     <main className="mx-auto py-10 px-4 md:px-6 lg:px-8 xl:px-10 min-h-svh flex">
@@ -46,7 +85,7 @@ export default async function Home() {
         </Button>
       </div>
       <div className="fixed inset-0 z-0">
-        <MyTown />
+        <MyTown objectsData={objectsData} />
       </div>
     </main>
   );

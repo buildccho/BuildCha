@@ -1,16 +1,24 @@
+export type Parts = {
+  id?: string;
+  type: string;
+  position: number[];
+  rotation: number[];
+  size: number[];
+  color: string;
+  role?: "Answer" | "User";
+  createdAt?: string;
+  userObjectId?: string | null;
+};
+
 export type BuildingPartData = {
   id?: string;
   chat?: string;
   name?: string;
-  parts: {
-    type: string;
-    position: number[];
-    rotation: number[];
-    size: number[];
-    color: string;
-  }[];
+  parts: Parts[];
   position?: [number, number, number];
   rotation?: [number, number, number];
+  boundingBox?: [number, number, number];
+  objectPrecision?: number;
 };
 
 export type User = {
@@ -21,8 +29,8 @@ export type User = {
   image: string | null;
   level?: number;
   score?: number;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   isAnonymous: boolean | null;
   userObjectCount?: number;
 };
