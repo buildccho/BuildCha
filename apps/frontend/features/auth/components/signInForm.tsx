@@ -46,6 +46,7 @@ export default function SignInForm() {
       });
 
       if (!updateResult.success) {
+        console.error(updateResult.error);
         setError(updateResult.error);
         return;
       }
