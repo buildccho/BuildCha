@@ -21,8 +21,12 @@ export default function SignInForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
-    const formData = new FormData(e.target as HTMLFormElement);
-    const name = formData.get("name") as string;
+    const formData = new FormData(e.currentTarget);
+    const name = String(formData.get("name") ?? "").trim();
+    if (!name) {
+      setError("なまえを入力してね〜");
+      return;
+    }
 
     // 匿名ログイン
     const res = await authClient.signIn.anonymous();
@@ -78,7 +82,12 @@ export default function SignInForm() {
           <Label className="font-semibold" htmlFor="name">
             なまえ
           </Label>
-          <Input type="text" className="py-3 text-base bg-white" name="name" />
+          <Input
+            type="text"
+            className="py-3 text-base bg-white"
+            id="name"
+            name="name"
+          />
         </div>
       </div>
       <Button

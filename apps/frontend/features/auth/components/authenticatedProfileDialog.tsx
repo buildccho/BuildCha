@@ -38,7 +38,7 @@ export function AuthenticatedProfileDialog({ user }: { user: User }) {
         image: newAvatarImage === user.image ? undefined : newAvatarImage,
       });
 
-      if (res) {
+      if (res.success) {
         toast.success("プロフィールをかえたよ！");
         setOpen(false);
       } else {

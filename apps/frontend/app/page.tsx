@@ -25,15 +25,16 @@ export default async function Home() {
     digits: 1,
   });
 
-  const maps = await fetchMaps();
-  if (maps.length === 0) {
-    await createMap("First Town");
+  // マップを取得 or 作成
+  let mapList = await fetchMaps();
+  if (mapList.length === 0) {
+    const newMap = await createMap("First Town");
+    mapList = [newMap];
   }
-  const map = await fetchMapById(maps[0].id);
-  if (map === null) {
-    return null;
-  }
+  const map = await fetchMapById(mapList[0].id);
+  if (!map) return null;
 
+  // オブジェクトを取得
   const objectsData: BuildingPartData[] = await Promise.all(
     map.userObjects.map(async (object) => {
       const objectData = await fetchObjectById(object.id);

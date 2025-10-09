@@ -6,7 +6,6 @@ export async function ProfileSection() {
   const user = await fetchUser();
 
   if (!user) {
-    console.error(user);
     return null;
   }
 

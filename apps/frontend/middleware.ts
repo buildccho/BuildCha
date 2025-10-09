@@ -9,25 +9,32 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const authenticated = await client.user.$get(
-    {},
-    {
-      headers: {
-        Cookie: request.cookies.toString(),
+  const cookieHeader = request.cookies.toString();
+  try {
+    const res = await client.user.$get(
+      {},
+      {
+        headers: {
+          Cookie: cookieHeader,
+        },
       },
-    },
-  );
-  if (authenticated.status !== 200) {
-    console.error(authenticated.status, (await authenticated.json()).message);
+    );
+    if (!res.ok) {
+      let msg = "";
+      try {
+        const body = await res.json();
+        msg = body?.message ?? "";
+      } catch {
+        msg = "ユーザー情報の取得に失敗しました";
+      }
+      console.error(res.status, msg);
+      return NextResponse.redirect(new URL("/start", request.url));
+    }
+    return NextResponse.next();
+  } catch (err) {
+    console.error("auth check failed in middleware:", err);
     return NextResponse.redirect(new URL("/start", request.url));
   }
-  if (authenticated.status === 200 && !isPublicRoute) {
-    return NextResponse.next();
-  }
-
-  console.log("redirecting to start", await authenticated.json());
-
-  return NextResponse.redirect(new URL("/start", request.url));
 }
 
 export const config = {
