@@ -18,6 +18,12 @@ export const createAuth = (db: D1Database): ReturnType<typeof betterAuth> => {
         partitioned: true,
       },
     },
+    trustedOrigins: [
+      "http://localhost:3000",
+      "http://localhost:8787",
+      "https://frontend.buildcha.workers.dev",
+      "https://backend.buildcha.workers.dev",
+    ],
     plugins: [anonymous(), openAPI()],
   });
 };
