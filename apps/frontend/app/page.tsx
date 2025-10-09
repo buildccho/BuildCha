@@ -35,9 +35,12 @@ export default async function Home() {
   if (!map) return null;
 
   // オブジェクトを取得
-  const objectsData: BuildingPartData[] = await Promise.all(
+  const rawObjects: (BuildingPartData | null)[] = await Promise.all(
     map.userObjects.map(async (object) => {
       const objectData = await fetchObjectById(object.id);
+      if (!objectData) {
+        return null;
+      }
       return {
         ...object,
         parts: objectData.parts.map((part) => ({
@@ -52,6 +55,10 @@ export default async function Home() {
         boundingBox: jsonNumberArrayParser(object.boundingBox),
       };
     }),
+  );
+
+  const objectsData: BuildingPartData[] = rawObjects.filter(
+    (data): data is BuildingPartData => data !== null,
   );
 
   return (
