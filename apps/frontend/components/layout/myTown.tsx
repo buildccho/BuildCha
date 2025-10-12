@@ -1,23 +1,10 @@
 "use client";
-import { Cloud, Clouds, Html, OrbitControls, Sky } from "@react-three/drei";
+import { Cloud, Clouds, OrbitControls, Sky } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { Hammer, Move, RotateCw } from "lucide-react";
-import { useState } from "react";
 import * as THREE from "three";
 import Ground from "@/features/world3d/components/ground";
-import { Buildings } from "@/features/world3d/components/resultObject";
-import type { BuildingPartData } from "@/types";
-import { Button } from "../ui/button";
 
-export default function MyTown({
-  objectsData,
-}: {
-  objectsData: BuildingPartData[];
-}) {
-  const [selectedObject, setSelectedObject] = useState<BuildingPartData | null>(
-    null,
-  );
-
+export default function MyTown() {
   return (
     <div className="w-full h-full grow">
       <Canvas shadows camera={{ fov: 45, position: [5, 15, -40] }}>
@@ -60,32 +47,10 @@ export default function MyTown({
             position={[90, 23, 70]}
           />
         </Clouds>
-
         <mesh castShadow position={[0, 3.5, 0]}>
           <boxGeometry args={[2, 5, 2]} />
           <meshLambertMaterial color="#008080" />
         </mesh>
-
-        {/* 配置されたオブジェクト */}
-        {objectsData.map((object) => (
-          // biome-ignore lint/a11y/noStaticElementInteractions: クリックで選択解除
-          <group
-            key={object.id}
-            onClick={() => {
-              setSelectedObject(object);
-            }}
-            onPointerOver={(e) => e.stopPropagation()}
-            onPointerOut={(e) => e.stopPropagation()}
-            onPointerDown={(e) => e.stopPropagation()}
-            onPointerUp={(e) => e.stopPropagation()}
-            onPointerMove={(e) => e.stopPropagation()}
-          >
-            <Buildings buildingData={object} />
-          </group>
-        ))}
-
-        {selectedObject && <Controls object={selectedObject} />}
-
         {/* 地面 */}
         <Ground />
         <OrbitControls
@@ -95,31 +60,3 @@ export default function MyTown({
     </div>
   );
 }
-
-const Controls = ({ object }: { object: BuildingPartData }) => {
-  return (
-    <Html
-      position={[
-        object.position?.[0] || 0,
-        (object.position?.[1] || 0) + 7,
-        object.position?.[2] || 0,
-      ]}
-      center
-    >
-      <div className="bg-white/70 border border-white backdrop-blur-sm rounded-xl p-1 shrink-0 relative flex gap-0.5">
-        <Button variant="ghost" className="font-semibold">
-          <Hammer />
-          作りかえる
-        </Button>
-        <Button variant="ghost" onClick={() => {}} className="font-semibold">
-          <RotateCw />
-          まわす
-        </Button>
-        <Button variant="ghost" onClick={() => {}} className="font-semibold">
-          <Move />
-          うごかす
-        </Button>
-      </div>
-    </Html>
-  );
-};

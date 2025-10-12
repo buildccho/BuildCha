@@ -1,7 +1,11 @@
-import { Progress } from "@/components/ui/progress";
-import type { User } from "@/types";
+"use client";
 
-export function UserProfileCard({ user }: { user: User }) {
+import { Progress } from "@/components/ui/progress";
+import { useAuthStore } from "@/stores";
+
+export function UserProfileCard() {
+  const { user, isAuthenticated } = useAuthStore();
+
   return (
     <div className="bg-white/65 border border-white backdrop-blur-md rounded-xl px-2 py-0.5 w-full divide-y divide-foreground/15">
       <div className="flex items-center gap-6 w-full py-2 px-2">
@@ -12,7 +16,7 @@ export function UserProfileCard({ user }: { user: User }) {
           </span>
         </div>
         <div className="font-bold w-full text-center">
-          {user ? user.name || "匿名ユーザー" : "ゲスト"}
+          {isAuthenticated && user ? user.name || "匿名ユーザー" : "ゲスト"}
         </div>
       </div>
       <div className="flex items-center gap-6 w-full py-2 px-2">

@@ -3,7 +3,7 @@ import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useMemo } from "react";
 import * as THREE from "three";
-import { useObjectStore } from "@/stores/objectStore";
+import { useObjectStore } from "@/stores";
 import type { BuildingPartData } from "@/types";
 
 const TriangleWall = ({ size }: { size: [number, number, number] }) => {
