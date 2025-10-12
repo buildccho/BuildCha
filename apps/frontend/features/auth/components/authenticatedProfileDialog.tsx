@@ -15,8 +15,9 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { client } from "@/lib/rpc-client";
+import { useAuthStore } from "@/stores";
 import type { User } from "@/types";
-import { updateUserAction } from "../actions/updateUser";
 
 const initialAvatarImage = `https://api.dicebear.com/9.x/bottts/svg?scale=90`;
 
@@ -27,19 +28,35 @@ export function AuthenticatedProfileDialog({ user }: { user: User }) {
   const [newName, setNewName] = useState<string>(user.name || "");
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const setUser = useAuthStore((state) => state.setUser);
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      const res = await updateUserAction({
-        name: newName === user.name ? undefined : newName,
-        image: newAvatarImage === user.image ? undefined : newAvatarImage,
+      const response = await client.user.$patch({
+        json: {
+          name: newName === user.name ? undefined : newName,
+          image: newAvatarImage === user.image ? undefined : newAvatarImage,
+        },
       });
 
-      if (res.success) {
+      if (response.ok) {
+        // ローカル状態を更新
+        const updatedUser = await response.json();
+        const fixedUser = {
+          ...updatedUser,
+          createdAt: new Date(updatedUser.createdAt),
+          updatedAt: new Date(updatedUser.updatedAt),
+        };
+
+        setUser(fixedUser);
+
+        // 成功トーストを表示
         toast.success("プロフィールをかえたよ！");
+
+        // ダイアログを閉じる
         setOpen(false);
       } else {
         throw new Error("プロフィールをかえられなかったよ");
@@ -66,7 +83,7 @@ export function AuthenticatedProfileDialog({ user }: { user: User }) {
         <DialogHeader>
           <DialogTitle>プロフィール</DialogTitle>
           <DialogDescription>
-            なまえやアバターをかえることができるよ！
+            なまえやアイコンをかえることができるよ！
           </DialogDescription>
         </DialogHeader>
         <form className="flex flex-col gap-6 pt-4" onSubmit={handleSave}>
@@ -75,7 +92,7 @@ export function AuthenticatedProfileDialog({ user }: { user: User }) {
               className="bg-neutral-200 size-20 cursor-pointer relative"
               onClick={() => {
                 const newSeed = Math.floor(Math.random() * 100);
-                const newAvatarImage = `${initialAvatarImage}&seed=${newSeed}`;
+                const newAvatarImage = `https://api.dicebear.com/9.x/bottts/svg?scale=90&seed=${newSeed}`;
                 setNewAvatarImage(newAvatarImage);
               }}
             >

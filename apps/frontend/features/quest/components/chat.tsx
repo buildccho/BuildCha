@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { client } from "@/lib/rpc-client";
-import { useObjectStore } from "@/stores/objectStore";
+import { useObjectStore } from "@/stores";
 
 type History = {
   role: "user" | "assistant";
@@ -134,6 +134,7 @@ export default function Chat() {
           )}
         </div>
       </ScrollArea>
+
       <div className="relative">
         <form
           className="flex gap-2"
