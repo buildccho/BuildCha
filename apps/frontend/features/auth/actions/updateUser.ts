@@ -29,20 +29,11 @@ export async function updateUserAction(user: {
     );
 
     if (!response.ok) {
-      let errorMessage = "ユーザー情報の更新に失敗しました";
-
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.message || errorMessage;
-      } catch {
-        const text = await response.text();
-        console.warn("Non-JSON error response:", text);
-        errorMessage = text || errorMessage;
-      }
-
+      const error = await response.json();
+      console.error(response.status, error.message);
       return {
         success: false,
-        error: errorMessage,
+        error: error.message || "ユーザー情報の更新に失敗しました",
       };
     }
 
