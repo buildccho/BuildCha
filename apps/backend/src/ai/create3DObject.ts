@@ -1,9 +1,24 @@
 import { ChatPromptTemplate } from "@langchain/core/prompts";
+import { Annotation, StateGraph } from "@langchain/langgraph";
 import { ChatOpenAI } from "@langchain/openai";
+import type { z } from "zod";
 import { getConfig } from "../config";
 import { CreateObjectOutputSchema } from "./schemas";
 
-const systemInstruction = `
+// 型エイリアス（parts の要素型）
+type Part = z.infer<typeof CreateObjectOutputSchema>["parts"][number];
+
+// Graph state
+const State = Annotation.Root({
+  userInput: Annotation<string>(),
+  history: Annotation<string>(),
+  firstObject: Annotation<z.infer<typeof CreateObjectOutputSchema>>(),
+  isTriangleRoof: Annotation<boolean>(),
+  isReCreateRoof: Annotation<boolean>(),
+});
+
+// 各プロンプトの定義
+const create3DObjectSystemPrompt = `
 # 3D Building Generation System Prompt (Exploration-first · Tofu House Default · Roof Fix · History Edit)
 
 You are the AI assistant of a city-building app for kids. When a user says things like “Make a cute house!”, you must return **exactly one** object **as JSON only**. If there is prior dialog, carry over the child’s preferences.
@@ -169,34 +184,84 @@ You are the AI assistant of a city-building app for kids. When a user says thing
   ]
 }}`;
 
+async function firstCreate3DObject(state: typeof State.State) {
+  const { OPENAI_API_KEY, USE_OPENAI_MODEL_NAME } = getConfig();
+  const model = new ChatOpenAI({
+    apiKey: OPENAI_API_KEY,
+    model: USE_OPENAI_MODEL_NAME,
+  });
+  const ai = model.withStructuredOutput(CreateObjectOutputSchema);
+  const promptTemplate = ChatPromptTemplate.fromMessages([
+    ["system", create3DObjectSystemPrompt],
+    ["user", "ユーザ入力:{input} ,履歴:{history}"],
+  ]);
+  const prompt = await promptTemplate.formatPromptValue({
+    input: state.userInput,
+    history: state.history,
+  });
+  const response = await ai.invoke(prompt);
+  return { firstObject: response }; // ✅ 部分状態で返す
+}
+
+async function condTriangleRoof(
+  state: typeof State.State,
+): Promise<"true" | "false"> {
+  const roofPanels = state.firstObject.parts.filter(
+    (part: Part) =>
+      part.type === "wall" && part.size[1] === 3 && part.rotation[0] !== 0,
+  );
+  return roofPanels.length === 2 ? "true" : "false";
+}
+
+// 再作成チェック用の中継ノード（状態変更なし）
+async function checkReCreateRoofNode(_state: typeof State.State) {
+  return {};
+}
+
+async function condNeedReCreate(
+  _state: typeof State.State,
+): Promise<"true" | "false"> {
+  // TODO: 実装（現状は常に false）
+  return "false";
+}
+
+async function reCreateRoof(
+  state: typeof State.State,
+): Promise<Partial<typeof State.State>> {
+  // TODO: ここで屋根座標/回転を補正し、firstObject を更新
+  return { firstObject: state.firstObject };
+}
+
+const chain = new StateGraph(State)
+  .addNode("createInitialObject", firstCreate3DObject)
+  .addNode("checkReCreateRoof", checkReCreateRoofNode)
+  .addNode("reCreateRoof", reCreateRoof)
+
+  .addEdge("__start__", "createInitialObject")
+
+  .addConditionalEdges("createInitialObject", condTriangleRoof, {
+    true: "checkReCreateRoof",
+    false: "__end__",
+  })
+
+  // 三角屋根なら、修正が必要かどうかで分岐
+  .addConditionalEdges("checkReCreateRoof", condNeedReCreate, {
+    true: "reCreateRoof",
+    false: "__end__",
+  })
+
+  .addEdge("reCreateRoof", "__end__")
+  .compile();
+
 export async function create3DObjectFromMessage(
   userInput: string,
   history: string,
 ) {
-  try {
-    const { OPENAI_API_KEY, USE_OPENAI_MODEL_NAME } = getConfig();
-    const model = new ChatOpenAI({
-      apiKey: OPENAI_API_KEY,
-      model: USE_OPENAI_MODEL_NAME,
-    });
-
-    //NOTE: withStructuredOutputを使用して出力形式を指定
-    const ai = model.withStructuredOutput(CreateObjectOutputSchema);
-
-    const promptTemplate = ChatPromptTemplate.fromMessages([
-      ["system", systemInstruction],
-      ["user", "ユーザ入力:{input}, 履歴:{history}"],
-    ]);
-
-    // SystemMessageは除外し、HumanMessageとAIMessageのみ履歴として渡す
-    const prompt = await promptTemplate.formatPromptValue({
-      input: userInput,
-      history: history,
-    });
-    const response = await ai.invoke(prompt);
-    return response;
-  } catch (error) {
-    console.error(error);
-    throw new Error("Failed to create 3D data");
-  }
+  const state = await chain.invoke({
+    userInput,
+    history,
+    isTriangleRoof: false,
+    isReCreateRoof: false,
+  });
+  return state.firstObject;
 }
