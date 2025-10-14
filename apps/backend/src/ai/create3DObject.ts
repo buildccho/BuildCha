@@ -221,15 +221,201 @@ async function checkReCreateRoofNode(_state: typeof State.State) {
 async function condNeedReCreate(
   _state: typeof State.State,
 ): Promise<"true" | "false"> {
-  // TODO: 実装（現状は常に false）
+  const parts = _state.firstObject.parts;
+  const roofParts = parts.filter(
+    (p) => p.type === "wall" && Math.abs(p.rotation[0]) > 0.1,
+  );
+  const wallParts = parts.filter(
+    (p) => p.type === "wall" && Math.abs(p.rotation[0]) < 0.1,
+  );
+  const [roofA, roofB] = roofParts;
+
+  // ===== 判定①: 屋根が壁に接していない =====
+  // 屋根の下端のY座標 ≒ 屋根のposition.y - (size.y/2)
+  // 壁の上端のY座標 ≒ 壁のposition.y + (size.y/2)
+  const wallTopY = Math.max(
+    ...wallParts.map((w) => w.position[1] + w.size[1] / 2),
+  );
+  const roofBottomYs = roofParts.map((r) => r.position[1] - r.size[1] / 2);
+  const minRoofBottomY = Math.min(...roofBottomYs);
+  if (Math.abs(minRoofBottomY - wallTopY) > 0.3) {
+    return "true";
+  }
+
+  // ===== 判定②: 屋根の頂点が壁の中心線上にない =====
+  // 壁の中央X,Z平均を求め、屋根のX,Z中心の平均と比較
+  const wallCenterX =
+    wallParts.reduce((a, w) => a + w.position[0], 0) / wallParts.length;
+  const wallCenterZ =
+    wallParts.reduce((a, w) => a + w.position[2], 0) / wallParts.length;
+  const roofPeakX = (roofA.position[0] + roofB.position[0]) / 2;
+  const roofPeakZ = (roofA.position[2] + roofB.position[2]) / 2;
+
+  const distXZ = Math.sqrt(
+    (roofPeakX - wallCenterX) ** 2 + (roofPeakZ - wallCenterZ) ** 2,
+  );
+  if (distXZ > 0.3) {
+    return "true";
+  }
+
+  // ===== 判定③: 2つの屋根パーツがくっついていない =====
+  // 2屋根のZまたはX軸距離が離れすぎていないか確認
+  const dist = Math.sqrt(
+    (roofA.position[0] - roofB.position[0]) ** 2 +
+      (roofA.position[1] - roofB.position[1]) ** 2 +
+      (roofA.position[2] - roofB.position[2]) ** 2,
+  );
+
+  if (dist > 2.5 || dist < 0.5) {
+    return "true";
+  }
   return "false";
 }
 
 async function reCreateRoof(
   state: typeof State.State,
 ): Promise<Partial<typeof State.State>> {
-  // TODO: ここで屋根座標/回転を補正し、firstObject を更新
-  return { firstObject: state.firstObject };
+  type Obj = typeof state.firstObject;
+  const prev: Obj = state.firstObject;
+
+  const parts: Part[] = prev.parts.slice();
+  const isUprightWall = (p: Part) =>
+    p.type === "wall" && Math.abs(p.rotation[0]) < 0.1;
+  const isTiltRoof = (p: Part) =>
+    p.type === "wall" && Math.abs(p.rotation[0]) > 0.1;
+
+  const floors = parts.filter((p) => p.type === "floor");
+  const wallsUpright = parts.filter(isUprightWall);
+  const openings = parts.filter(
+    (p) => p.type === "door" || p.type === "window" || p.type === "chimney",
+  );
+  const decorations = parts.filter(
+    (p) =>
+      !["floor", "wall", "triangleWall", "door", "window", "chimney"].includes(
+        p.type,
+      ),
+  );
+
+  // 幅・奥行・壁高
+  const deg90 = 1.5708;
+  const nearly = (a: number, b: number, eps = 1e-3) => Math.abs(a - b) < eps;
+
+  const frontBack = wallsUpright.filter((w) => nearly(w.rotation[1], 0));
+  const leftRight = wallsUpright.filter((w) =>
+    nearly(Math.abs(w.rotation[1]), deg90),
+  );
+
+  const widthX =
+    frontBack.length > 0
+      ? frontBack.reduce((a, w) => a + w.size[0], 0) / frontBack.length
+      : 4;
+
+  const depthZ =
+    leftRight.length > 0
+      ? leftRight.reduce((a, w) => a + w.size[0], 0) / leftRight.length
+      : 4;
+
+  const wallHeight =
+    wallsUpright.length > 0
+      ? wallsUpright.reduce((a, w) => a + w.size[1], 0) / wallsUpright.length
+      : 3;
+
+  const wallTopY = Math.max(
+    ...wallsUpright.map((w) => w.position[1] + w.size[1] / 2),
+    3,
+  );
+
+  // 既存色の継承
+  const oldRoof = parts.find(isTiltRoof);
+  const roofColor = oldRoof?.color ?? "#8B0000";
+  const sideWallColor =
+    frontBack[0]?.color ?? wallsUpright[0]?.color ?? "#D2691E";
+
+  // === 勾配とサイズ計算（ここがキモ） ===
+  const T = 0.2; // 厚み
+  const THETA = 1.05; // ★勾配 (≈60°) ←必要なら設定で調整可
+  const overhangZ = 0.25; // 前後のひさし（任意）
+
+  const sin = Math.sin(THETA);
+  const cos = Math.cos(THETA);
+
+  // 「半奥行き + ひさし」を投影でカバーする長さ H
+  const halfDepth = depthZ / 2;
+  const Hneeded = (halfDepth + overhangZ) / Math.max(1e-6, sin);
+  const H = Math.max(2.2, Hneeded); // 破綻防止の下限
+
+  // 位置（公式）
+  const zOffset = (H / 2) * sin - (T / 2) * cos;
+  const roofCenterY = wallTopY + (H / 2) * cos + (T / 2) * sin;
+
+  const roofPanelSize: [number, number, number] = [widthX, H, T];
+
+  const upSlope: Part = {
+    type: "wall",
+    position: [0, roofCenterY, +zOffset],
+    rotation: [-THETA, 0, 0],
+    size: roofPanelSize,
+    color: roofColor,
+  };
+  const downSlope: Part = {
+    type: "wall",
+    position: [0, roofCenterY, -zOffset],
+    rotation: [THETA, 0, 0],
+    size: roofPanelSize,
+    color: roofColor,
+  };
+  // === 三角壁（ガブル）: 幅=家の「奥行き」、高さ=棟の持ち上がり ===
+  const triT = 0.1;
+
+  // 棟の持ち上がり（縦方向）= H * cosθ
+  const triH = H * Math.cos(THETA);
+
+  // 三角の中心Yは、底辺（= 壁天端）から triH/2 だけ上
+  const triY = wallTopY + triH / 2;
+
+  // ★幅は Z 方向（= 奥行き）。屋根のひさし分も足すとスキマが出ません
+  const triWidth = depthZ + 2 * overhangZ;
+
+  // 壁との z-fighting 回避で、ほんの少し内側に
+  const sideInset = triT / 2;
+  const leftX = -(widthX / 2 - sideInset);
+  const rightX = +(widthX / 2 - sideInset);
+
+  const leftTri: Part = {
+    type: "triangleWall",
+    position: [leftX, triY, 0],
+    rotation: [0, -deg90, 0], // ← 側面なので Y±90°
+    size: [triWidth, triH, triT], // ← [幅(=奥行き), 高さ, 厚み]
+    color: sideWallColor,
+  };
+
+  const rightTri: Part = {
+    type: "triangleWall",
+    position: [rightX, triY, 0],
+    rotation: [0, deg90, 0],
+    size: [triWidth, triH, triT],
+    color: sideWallColor,
+  };
+
+  // 最終パーツ（床→壁→屋根→開口→装飾）
+  const newParts: Part[] = [
+    ...floors,
+    ...wallsUpright,
+    upSlope,
+    downSlope,
+    leftTri,
+    rightTri,
+    ...openings,
+    ...decorations,
+  ];
+
+  const nextObj: Obj = { ...prev, parts: newParts };
+
+  return {
+    firstObject: nextObj,
+    isTriangleRoof: true,
+    isReCreateRoof: true,
+  };
 }
 
 const chain = new StateGraph(State)
