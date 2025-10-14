@@ -207,8 +207,7 @@ async function condTriangleRoof(
   state: typeof State.State,
 ): Promise<"true" | "false"> {
   const roofPanels = state.firstObject.parts.filter(
-    (part: Part) =>
-      part.type === "wall" && part.size[1] === 3 && part.rotation[0] !== 0,
+    (part: Part) => part.type === "wall" && part.rotation[0] !== 0,
   );
   return roofPanels.length === 2 ? "true" : "false";
 }
