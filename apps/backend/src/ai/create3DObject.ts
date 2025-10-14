@@ -147,14 +147,14 @@ You are the AI assistant of a city-building app for kids. When a user says thing
   "name": "あかい屋根の家",
   "parts": [
     {{ "type": "floor", "position": [0,0,0], "rotation": [0,0,0], "size": [4,0.2,4], "color": "#FFFFE0" }},
-    {{ "type": "wall", "position": [0,1.5,-2], "rotation": [0,0,0], "size": [4,3,0.2], "color": "#D2691E" }},
-    {{ "type": "wall", "position": [0,1.5, 2], "rotation": [0,0,0], "size": [4,3,0.2], "color": "#D2691E" }},
-    {{ "type": "wall", "position": [-2,1.5,0], "rotation": [0,1.5708,0], "size": [4,3,0.2], "color": "#D2691E" }},
-    {{ "type": "wall", "position": [ 2,1.5,0], "rotation": [0,1.5708,0], "size": [4,3,0.2], "color": "#D2691E" }},
-    {{ "type": "wall", "position": [0,4.0757, 1.0502], "rotation": [-0.84,0,0], "size": [4,3,0.2], "color": "#8B0000" }},
-    {{ "type": "wall", "position": [0,4.0757,-1.0502], "rotation": [ 0.84,0,0], "size": [4,3,0.2], "color": "#8B0000" }},
-    {{ "type": "triangleWall", "position": [-1.9,3,0], "rotation": [0,-1.5708,0], "size": [4,2,0.1], "color": "#D2691E" }},
-    {{ "type": "triangleWall", "position": [ 1.9,3,0], "rotation": [0, 1.5708,0], "size": [4,2,0.1], "color": "#D2691E" }},
+    {{ "type": "wall", "position": [0,1.5,-2], "rotation": [0,0,0], "size": [4,3,0.2], "color": "#EDEDED" }},
+    {{ "type": "wall", "position": [0,1.5, 2], "rotation": [0,0,0], "size": [4,3,0.2], "color": "#EDEDED" }},
+    {{ "type": "wall", "position": [-2,1.5,0], "rotation": [0,1.5708,0], "size": [4,3,0.2], "color": "#EDEDED" }},
+    {{ "type": "wall", "position": [ 2,1.5,0], "rotation": [0,1.5708,0], "size": [4,3,0.2], "color": "#EDEDED" }},
+    {{ "type": "wall", "position": [0,4.0757, 1.0502], "rotation": [-0.84,0,0], "size": [4,3,0.2], "color": "#EDEDED" }},
+    {{ "type": "wall", "position": [0,4.0757,-1.0502], "rotation": [ 0.84,0,0], "size": [4,3,0.2], "color": "#EDEDED" }},
+    {{ "type": "triangleWall", "position": [-1.9,3,0], "rotation": [0,-1.5708,0], "size": [4,2,0.1], "color": "#EDEDED" }},
+    {{ "type": "triangleWall", "position": [ 1.9,3,0], "rotation": [0, 1.5708,0], "size": [4,2,0.1], "color": "#EDEDED" }},
     {{ "type": "door", "position": [0,1,2.11], "rotation": [0,0,0], "size": [0.8,2,0.1], "color": "#4A4A4A" }},
     {{ "type": "window","position": [1,1.2,2.11], "rotation": [0,0,0], "size": [1,1,0.1], "color": "#87CEEB" }}
   ]
@@ -174,8 +174,8 @@ You are the AI assistant of a city-building app for kids. When a user says thing
     {{ "type": "wall",  "position": [-2,1.5,0], "rotation": [0,1.5708,0], "size": [4,3,0.2], "color": "#EDEDED" }},
     {{ "type": "wall",  "position": [ 2,1.5,0], "rotation": [0,1.5708,0], "size": [4,3,0.2], "color": "#EDEDED" }},
 
-    {{ "type": "wall", "position": [0,4.0757, 1.0502], "rotation": [-0.84,0,0], "size": [4,3,0.2], "color": "#8B0000" }},
-    {{ "type": "wall", "position": [0,4.0757,-1.0502], "rotation": [ 0.84,0,0], "size": [4,3,0.2], "color": "#8B0000" }},
+    {{ "type": "wall", "position": [0,4.0757, 1.0502], "rotation": [-0.84,0,0], "size": [4,3,0.2], "color": "#EDEDED" }},
+    {{ "type": "wall", "position": [0,4.0757,-1.0502], "rotation": [ 0.84,0,0], "size": [4,3,0.2], "color": "#EDEDED" }},
     {{ "type": "triangleWall", "position": [-1.9,3,0], "rotation": [0,-1.5708,0], "size": [4,2,0.1], "color": "#EDEDED" }},
     {{ "type": "triangleWall", "position": [ 1.9,3,0], "rotation": [0, 1.5708,0], "size": [4,2,0.1], "color": "#EDEDED" }},
 
@@ -371,7 +371,7 @@ async function reCreateRoof(
   const triH = H * Math.cos(THETA);
 
   // 三角の中心Yは、底辺（= 壁天端）から triH/2 だけ上
-  const triY = wallTopY + triH / 2;
+  const triY = wallTopY;
 
   // ★幅は Z 方向（= 奥行き）。屋根のひさし分も足すとスキマが出ません
   const triWidth = depthZ + 2 * overhangZ;
