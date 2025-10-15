@@ -11,6 +11,26 @@ export type BuildingPartData = {
   }[];
   position?: [number, number, number];
   rotation?: [number, number, number];
+  boundingBox?: [number, number, number];
+};
+
+export type UserObject = {
+  id: string;
+  name: string;
+  parts: {
+    position: [number, number, number];
+    rotation: [number, number, number];
+    size: [number, number, number];
+    id: string;
+    type: string;
+    color: string;
+    role: string;
+    createdAt: string;
+    userObjectId: string | null;
+  }[];
+  position: [number, number, number];
+  rotation: [number, number, number];
+  boundingBox: [number, number, number];
 };
 
 export type User = {
