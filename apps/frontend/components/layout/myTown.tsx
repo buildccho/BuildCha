@@ -3,8 +3,12 @@ import { Cloud, Clouds, OrbitControls, Sky } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import * as THREE from "three";
 import Ground from "@/features/world3d/components/ground";
+import { Buildings } from "@/features/world3d/components/resultObject";
+import { useGetMyTown } from "@/features/world3d/hooks/useGetMaps";
 
 export default function MyTown() {
+  const { map, isLoading } = useGetMyTown();
+
   return (
     <div className="w-full h-full grow">
       <Canvas shadows camera={{ fov: 45, position: [5, 15, -40] }}>
@@ -47,10 +51,16 @@ export default function MyTown() {
             position={[90, 23, 70]}
           />
         </Clouds>
-        <mesh castShadow position={[0, 3.5, 0]}>
-          <boxGeometry args={[2, 5, 2]} />
-          <meshLambertMaterial color="#008080" />
-        </mesh>
+
+        {!isLoading &&
+          map?.userObjects.map((object) => (
+            <Buildings buildingData={object} key={object.id} />
+          ))}
+
+        {/* <mesh castShadow position={[0, 3.5, 0]} key={object.id}>
+              <boxGeometry args={[2, 5, 2]} />
+              <meshLambertMaterial color="#008080" />
+            </mesh> */}
         {/* 地面 */}
         <Ground />
         <OrbitControls

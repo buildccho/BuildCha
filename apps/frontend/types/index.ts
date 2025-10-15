@@ -26,3 +26,12 @@ export type User = {
   isAnonymous: boolean | null;
   userObjectCount?: number;
 };
+
+export type Quest = {
+  id: string;
+  name: string;
+  imageUrl: string;
+  difficulty: "Easy" | "Medium" | "Hard";
+  score: number;
+  level: number;
+};

@@ -8,6 +8,9 @@
   "compatibility_flags": [
     "nodejs_compat"
   ],
+  "observability": {
+    "enabled": true
+  },
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
