@@ -92,7 +92,9 @@ const app = new Hono<{
       const prisma = await prismaClients.fetch(c.env.DB);
       const mapInfo = await prisma.map.findFirst({
         where: { id, userId: user.id },
-        include: { userObjects: true },
+        include: {
+          userObjects: { include: { parts: true, chatHistory: true } },
+        },
       });
       if (!mapInfo) {
         return c.json({ message: "マップが見つかりません" }, 404);
