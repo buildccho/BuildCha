@@ -1,11 +1,29 @@
 import { ChevronLeft } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Chat from "@/features/quest/components/chat";
 import { DifficultyBadge } from "@/features/quest/components/questCard";
 import ResultObject from "@/features/world3d/components/resultObject";
+import { client } from "@/lib/rpc-client";
 
-export default function QuestDetailPage() {
+export default async function QuestDetailPage({
+  params,
+}: {
+  params: Promise<{ questId: string }>;
+}) {
+  const { questId } = await params;
+  const res = await client.quests[":id"].$get({
+    param: {
+      id: questId,
+    },
+  });
+  if (!res.ok) {
+    console.error(res.statusText);
+    return <div>Error</div>;
+  }
+  const quest = await res.json();
+  console.log("quest", quest);
   return (
     <main className="w-full flex flex-col md:h-svh grow mx-auto xl:container max-w-7xl px-4 py-2 xl:py-6">
       <div className="flex justify-between items-end">
@@ -17,8 +35,10 @@ export default function QuestDetailPage() {
             </Link>
           </Button>
           <div className="flex items-center gap-1 xl:gap-2 pl-2">
-            <h2 className="text-xl xl:text-2xl font-bold">家</h2>
-            <DifficultyBadge difficulty="Medium" />
+            <h2 className="text-xl xl:text-2xl font-bold">{quest.name}</h2>
+            <DifficultyBadge
+              difficulty={quest.difficulty as "Easy" | "Medium" | "Hard"}
+            />
           </div>
         </div>
         <Button size={"lg"} asChild>
@@ -27,8 +47,16 @@ export default function QuestDetailPage() {
       </div>
 
       <div className="grid gap-x-4 gap-y-5 xl:gap-x-8 lg:gap-y-5 py-3 lg:py-4 xl:py-5 grid-cols-1 md:grid-cols-7 md:grid-rows-7 grow h-[calc(100%-100px)]">
-        <div className="bg-white rounded-xl p-4 xl:p-6 col-span-1 md:col-span-3 md:row-span-3">
+        <div className="bg-white flex flex-col gap-2 rounded-xl p-4 xl:p-6 col-span-1 md:col-span-3 md:row-span-3 pb-4">
           <h2 className="text-base xl:text-lg">お手本</h2>
+          <div className="w-full h-full grow max-h-full flex items-center justify-center relative">
+            <Image
+              src={"/house.png"}
+              alt="お手本"
+              fill
+              className="object-contain block"
+            />
+          </div>
         </div>
         <div className="bg-white rounded-xl h-full flex flex-col p-4 xl:p-6 col-span-1 md:col-span-3 md:row-span-4 md:col-start-1 md:row-start-4">
           <h2 className="text-base xl:text-lg">結果</h2>
