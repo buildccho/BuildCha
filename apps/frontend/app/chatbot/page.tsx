@@ -1,4 +1,4 @@
-import { ArrowLeft, MessageCircle } from "lucide-react";
+import { ChevronLeft, MessageCircle } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -13,12 +13,12 @@ export const metadata: Metadata = {
 
 export default function ChatBotPage() {
   return (
-    <main className="flex h-svh flex-col overflow-hidden bg-[radial-gradient(circle_at_top,_#dff1ff_0%,_#f6edff_35%,_#ffffff_100%)]">
-      <div className="mx-auto flex h-full w-full max-w-5xl flex-col gap-6 px-4 py-8 sm:px-8 lg:px-10">
+    <main className="flex h-svh flex-col bg-[radial-gradient(circle_at_top,_#dff1ff_0%,_#f6edff_35%,_#ffffff_100%)]">
+      <div className="mx-auto flex h-full w-full max-w-5xl flex-col gap-3 sm:gap-6 px-4 py-6 lg:py-8 sm:px-8 lg:px-10">
         <div className="flex items-center justify-between">
-          <Button variant="ghost" size="sm" asChild>
+          <Button variant={"link"} size={"sm"} asChild>
             <Link href="/">
-              <ArrowLeft className="size-4" />
+              <ChevronLeft className="size-3.5" />
               ホームへもどる
             </Link>
           </Button>
@@ -29,8 +29,8 @@ export default function ChatBotPage() {
           </div>
         </div>
 
-        <header className="flex flex-col gap-3 text-center sm:text-left">
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+        <header className="flex flex-col gap-1 sm:gap-2.5 pl-1.5 text-start">
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
             Q&Aチャットボット
           </h1>
           <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
@@ -38,7 +38,7 @@ export default function ChatBotPage() {
           </p>
         </header>
 
-        <section className="relative flex flex-1 min-h-0 rounded-3xl border border-border/70 bg-white/90 p-4 shadow-2xl backdrop-blur-md sm:p-6 lg:p-8">
+        <section className="relative flex flex-1 min-h-0 rounded-3xl border border-white bg-white/80 p-4 shadow-2xl shadow-accent-foreground/10 backdrop-blur-md sm:p-6 lg:p-8">
           <ChatBotPanel />
         </section>
       </div>

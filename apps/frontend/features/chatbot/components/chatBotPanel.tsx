@@ -92,9 +92,9 @@ export function ChatBotPanel() {
   const canSubmit = input.trim().length > 0 && !isPending;
 
   return (
-    <div className="flex h-full w-full flex-col gap-6 overflow-hidden min-h-0">
-      <ScrollArea className="flex-1 h-full min-h-0 overflow-hidden rounded-2xl border border-border/60 bg-background/70 p-4 shadow-inner">
-        <div className="flex flex-col gap-5">
+    <div className="flex h-full w-full flex-col gap-5 min-h-0">
+      <ScrollArea className="flex-1 h-full min-h-0 rounded-2xl">
+        <div className="flex flex-col gap-4">
           {messages.map((message) => (
             <ChatBubble key={message.id} message={message} />
           ))}
@@ -132,22 +132,22 @@ export function ChatBotPanel() {
             placeholder="例：スコアを上げるコツはある？"
             autoComplete="off"
             disabled={isPending}
+            className="md:text-base"
           />
           <InputGroupAddon align="inline-end">
             <InputGroupButton
               type="submit"
               disabled={!canSubmit}
-              size="sm"
               className="font-semibold"
             >
               {isPending ? (
                 <>
-                  <Spinner className="size-4" />
+                  <Spinner className="size-5" />
                   送信中…
                 </>
               ) : (
                 <>
-                  <SendHorizonal className="size-4" />
+                  <SendHorizonal className="size-5" />
                   送信
                 </>
               )}
@@ -173,7 +173,7 @@ function ChatBubble({ message }: ChatBubbleProps) {
           <AvatarImage src="/AICharacter.png" alt="BuildCha Bot" />
           <AvatarFallback>B</AvatarFallback>
         </Avatar>
-        <div className="rounded-2xl bg-white px-4 py-3 text-sm shadow-sm ring-1 ring-inset ring-border/60">
+        <div className="rounded-xl bg-white px-4 py-3 text-sm shadow-sm border border-muted">
           <p className="whitespace-pre-line leading-relaxed">
             {message.content}
           </p>
@@ -185,7 +185,7 @@ function ChatBubble({ message }: ChatBubbleProps) {
   return (
     <div className="flex w-full justify-end">
       <div className="flex max-w-[75%] items-start gap-3">
-        <div className="rounded-2xl bg-primary px-4 py-3 text-sm text-primary-foreground shadow-sm">
+        <div className="rounded-xl bg-primary px-4 py-3 text-sm text-primary-foreground shadow-sm">
           <p className="whitespace-pre-line leading-relaxed">
             {message.content}
           </p>
