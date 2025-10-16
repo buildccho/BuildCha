@@ -3,8 +3,23 @@ import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
 import { client } from "@/lib/rpc-client";
 
-const jsonNumberArrayParser = (json: string) => {
-  return JSON.parse(json) as [number, number, number];
+const jsonNumberArrayParser = (json: string): [number, number, number] => {
+  try {
+    const data = JSON.parse(json);
+    if (
+      Array.isArray(data) &&
+      data.length === 3 &&
+      data.every((item) => typeof item === "number")
+    ) {
+      return data as [number, number, number];
+    }
+  } catch (error) {
+    console.error(
+      `Invalid JSON format: ${json} ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
+
+  return [0, 0, 0];
 };
 
 const fetcherMaps = async () => {
@@ -20,31 +35,23 @@ export const useGetMaps = () => {
   return { maps: data, error, isLoading, mutate };
 };
 
-async function createMap(url: string, { arg }: { arg: string }) {
-  await client.maps.$post({
+async function createMap(_key: string, { arg }: { arg: string }) {
+  const res = await client.maps.$post({
     json: {
       name: arg,
     },
   });
+  if (!res.ok) {
+    const msg = await res.text().catch(() => res.statusText);
+    throw new Error(`Failed to create map: ${res.status} ${msg}`);
+  }
+  return res.json();
 }
 
 export const useCreateMap = () => {
-  const { trigger, isMutating } = useSWRMutation(
-    "create-map",
-    (url, { arg }: { arg: string }) => createMap(url, { arg }),
-  );
+  const { trigger, isMutating } = useSWRMutation("create-map", createMap);
   return { trigger, isMutating };
 };
-
-/**
- * 1. /にアクセス
- * 2. get-mapsを呼び出す
- * 3. マップが存在しない場合はcreate-mapを呼び出す
- * 4. get-mapsをmutateする
- * 5. マップが存在する場合はマップを返す
- * 6. mapIdから詳細を取得
- *
- */
 
 const fetcherMap = (mapId: string) => async () => {
   const res = await client.maps[":id"].$get({
@@ -74,10 +81,11 @@ const fetcherMap = (mapId: string) => async () => {
   return buildingData;
 };
 
-export const useGetMap = (mapId: string) => {
+export const useGetMap = (mapId: string | undefined) => {
+  const key = mapId ? `get-map-${mapId}` : null;
   const { data, error, isLoading } = useSWR(
-    `get-map-${mapId}`,
-    fetcherMap(mapId),
+    key,
+    mapId ? fetcherMap(mapId) : null,
   );
   return { map: data, error, isLoading };
 };
@@ -108,11 +116,7 @@ export const useGetMyTown = () => {
   const firstMapId = maps?.[0]?.id;
 
   // マップ詳細（IDがある時だけ）
-  const {
-    map,
-    error: mapError,
-    isLoading: mapLoading,
-  } = useGetMap(firstMapId ?? "");
+  const { map, error: mapError, isLoading: mapLoading } = useGetMap(firstMapId);
 
   const isLoading = mapsLoading || isCreating || isInitializing || mapLoading;
   const error = mapsError || mapError;
