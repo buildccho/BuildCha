@@ -11,6 +11,26 @@ export type BuildingPartData = {
   }[];
   position?: [number, number, number];
   rotation?: [number, number, number];
+  boundingBox?: [number, number, number];
+};
+
+export type UserObject = {
+  id: string;
+  name: string;
+  parts: {
+    position: [number, number, number];
+    rotation: [number, number, number];
+    size: [number, number, number];
+    id: string;
+    type: string;
+    color: string;
+    role: string;
+    createdAt: string;
+    userObjectId: string | null;
+  }[];
+  position: [number, number, number];
+  rotation: [number, number, number];
+  boundingBox: [number, number, number];
 };
 
 export type User = {
@@ -25,4 +45,13 @@ export type User = {
   updatedAt: Date;
   isAnonymous: boolean | null;
   userObjectCount?: number;
+};
+
+export type Quest = {
+  id: string;
+  name: string;
+  imageUrl: string;
+  difficulty: "Easy" | "Medium" | "Hard";
+  score: number;
+  level: number;
 };

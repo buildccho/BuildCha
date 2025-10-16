@@ -8,10 +8,9 @@ type AuthInitializerProps = {
 };
 
 export function AuthInitializer({ children }: AuthInitializerProps) {
-  const checkSession = useAuthStore((state) => state.checkSession);
+  const { checkSession } = useAuthStore();
 
   useEffect(() => {
-    // アプリ起動時に一度だけセッション確認
     checkSession();
   }, [checkSession]);
 
