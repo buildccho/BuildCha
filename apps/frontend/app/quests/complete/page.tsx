@@ -89,14 +89,14 @@ export default function CompletePage() {
             <h3 className="font-semibold text-base flex items-center gap-1.5">
               <RotateCw size={14} className="text-foreground/80" /> つくりなおす
             </h3>
-            <QuestCard difficulty="easy" />
+            {/* <QuestCard quest={quest} /> */}
           </div>
           <div className="flex flex-col gap-2 col-span-3">
             <h3 className="font-semibold text-base">次はどれをつくる？</h3>
             <div className="grid grid-cols-3 gap-2">
-              <QuestCard difficulty="easy" />
-              <QuestCard difficulty="normal" />
-              <QuestCard difficulty="hard" />
+              {/* <QuestCard quest={quest} />
+              <QuestCard quest={quest} />
+              <QuestCard quest={quest} /> */}
             </div>
           </div>
         </div>

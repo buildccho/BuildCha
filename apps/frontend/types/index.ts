@@ -54,4 +54,6 @@ export type Quest = {
   difficulty: "Easy" | "Medium" | "Hard";
   score: number;
   level: number;
+  challenge: string | null;
+  createdAt: Date;
 };
