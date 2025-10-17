@@ -33,14 +33,13 @@ const app = new Hono<{
   async (c) => {
     const { files } = c.req.valid("form");
     const path = c.req.param("path");
-    await Promise.all(
-      files.map((file) => {
-        const key = `${path}/${file.name}`;
-        return c.env.BUCKET.put(key, file).then((result) => ({ key, result }));
-      }),
-    );
+    const promises = files.map(async (file) => {
+      const key = `${path}/${file.name}`;
+      const result = await c.env.BUCKET.put(key, file);
+      return { key, result };
+    });
+    await Promise.all(promises);
     return c.json({ message: "ファイルアップロード成功" });
   },
 );
-
 export default app;
