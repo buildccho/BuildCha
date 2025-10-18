@@ -79,3 +79,248 @@ pnpm dev:front  # = pnpm --filter frontend dev
 4. コンテナ内ターミナルで `pnpm dev:back` / `pnpm dev:front` を利用してください
 
 
+
+## フォルダー構造 （AIのために）
+<details>
+
+<summary>フォルダー構造</summary>
+
+```
+.
+├── README.md
+├── apps
+│   ├── backend
+│   │   ├── README.md
+│   │   ├── dist
+│   │   │   ├── ai
+│   │   │   │   ├── chatBot.d.ts
+│   │   │   │   ├── chatBot.js
+│   │   │   │   ├── compareImages.d.ts
+│   │   │   │   ├── compareImages.js
+│   │   │   │   ├── create3DObject.d.ts
+│   │   │   │   ├── create3DObject.js
+│   │   │   │   ├── index.d.ts
+│   │   │   │   ├── index.js
+│   │   │   │   ├── roofAlignmentTool.d.ts
+│   │   │   │   ├── roofAlignmentTool.js
+│   │   │   │   ├── schemas.d.ts
+│   │   │   │   ├── schemas.js
+│   │   │   │   └── tools
+│   │   │   │       ├── githubTools.d.ts
+│   │   │   │       ├── githubTools.js
+│   │   │   │       ├── index.d.ts
+│   │   │   │       ├── index.js
+│   │   │   │       ├── vectorSearchTool.d.ts
+│   │   │   │       └── vectorSearchTool.js
+│   │   │   ├── app.d.ts
+│   │   │   ├── app.js
+│   │   │   ├── client.d.ts
+│   │   │   ├── client.js
+│   │   │   ├── config.d.ts
+│   │   │   ├── config.js
+│   │   │   ├── lib
+│   │   │   │   ├── auth.d.ts
+│   │   │   │   ├── auth.js
+│   │   │   │   ├── githubMcpClient.d.ts
+│   │   │   │   ├── githubMcpClient.js
+│   │   │   │   ├── prisma.d.ts
+│   │   │   │   └── prisma.js
+│   │   │   ├── map.d.ts
+│   │   │   ├── map.js
+│   │   │   ├── moc
+│   │   │   │   ├── getAnswerObject.d.ts
+│   │   │   │   └── getAnswerObject.js
+│   │   │   ├── prisma
+│   │   │   │   ├── schemas.d.ts
+│   │   │   │   └── schemas.js
+│   │   │   ├── quest.d.ts
+│   │   │   ├── quest.js
+│   │   │   ├── routes
+│   │   │   │   ├── map.d.ts
+│   │   │   │   ├── map.js
+│   │   │   │   ├── object.d.ts
+│   │   │   │   ├── object.js
+│   │   │   │   ├── quest.d.ts
+│   │   │   │   ├── quest.js
+│   │   │   │   ├── user.d.ts
+│   │   │   │   └── user.js
+│   │   │   ├── user.d.ts
+│   │   │   └── user.js
+│   │   ├── generated
+│   │   │   └── prisma
+│   │   │       ├── client.d.ts
+│   │   │       ├── client.js
+│   │   │       ├── default.d.ts
+│   │   │       ├── default.js
+│   │   │       ├── edge.d.ts
+│   │   │       ├── edge.js
+│   │   │       ├── index-browser.js
+│   │   │       ├── index.d.ts
+│   │   │       ├── index.js
+│   │   │       ├── libquery_engine-darwin-arm64.dylib.node
+│   │   │       ├── libquery_engine-linux-arm64-openssl-3.0.x.so.node
+│   │   │       ├── libquery_engine-linux-musl-arm64-openssl-3.0.x.so.node
+│   │   │       ├── package.json
+│   │   │       ├── query_engine_bg.js
+│   │   │       ├── query_engine_bg.wasm
+│   │   │       ├── runtime
+│   │   │       │   ├── edge-esm.js
+│   │   │       │   ├── edge.js
+│   │   │       │   ├── index-browser.d.ts
+│   │   │       │   ├── index-browser.js
+│   │   │       │   ├── library.d.ts
+│   │   │       │   ├── library.js
+│   │   │       │   ├── react-native.js
+│   │   │       │   ├── wasm-compiler-edge.js
+│   │   │       │   └── wasm-engine-edge.js
+│   │   │       ├── schema.prisma
+│   │   │       ├── wasm-edge-light-loader.mjs
+│   │   │       ├── wasm-worker-loader.mjs
+│   │   │       ├── wasm.d.ts
+│   │   │       └── wasm.js
+│   │   ├── images
+│   │   ├── jest.config.js
+│   │   ├── migrations
+│   │   │   ├── 0001_initial.sql
+│   │   │   ├── 0002_create_tables.sql
+│   │   │   └── 0003_update_table.sql
+│   │   ├── package.json
+│   │   ├── prisma
+│   │   │   └── schema.prisma
+│   │   ├── src
+│   │   │   ├── ai
+│   │   │   │   ├── chatBot.ts
+│   │   │   │   ├── compareImages.ts
+│   │   │   │   ├── create3DObject.ts
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── schemas.ts
+│   │   │   │   └── tools
+│   │   │   │       ├── githubTools.ts
+│   │   │   │       ├── index.ts
+│   │   │   │       └── vectorSearchTool.ts
+│   │   │   ├── app.ts
+│   │   │   ├── client.ts
+│   │   │   ├── config.ts
+│   │   │   ├── lib
+│   │   │   │   ├── auth.ts
+│   │   │   │   └── prisma.ts
+│   │   │   ├── moc
+│   │   │   │   └── getAnswerObject.ts
+│   │   │   ├── prisma
+│   │   │   │   └── schemas.ts
+│   │   │   └── routes
+│   │   │       ├── map.ts
+│   │   │       ├── object.ts
+│   │   │       ├── quest.ts
+│   │   │       └── user.ts
+│   │   ├── test
+│   │   │   ├── __mocks__
+│   │   │   │   └── cloudflareWorkersMock.ts
+│   │   │   └── createObject.test.ts
+│   │   ├── tsconfig.json
+│   │   ├── worker-configuration.d.ts
+│   │   └── wrangler.jsonc
+│   └── frontend
+│       ├── Dockerfile
+│       ├── README.md
+│       ├── app
+│       │   ├── chatbot
+│       │   │   └── page.tsx
+│       │   ├── favicon.ico
+│       │   ├── globals.css
+│       │   ├── layout.tsx
+│       │   ├── page.tsx
+│       │   ├── quests
+│       │   │   ├── complete
+│       │   │   │   └── page.tsx
+│       │   │   ├── detail
+│       │   │   │   └── page.tsx
+│       │   │   ├── layout.tsx
+│       │   │   ├── page.tsx
+│       │   │   └── position
+│       │   │       └── page.tsx
+│       │   └── start
+│       │       └── page.tsx
+│       ├── cloudflare-env.d.ts
+│       ├── components
+│       │   ├── auth
+│       │   │   └── authInitializer.tsx
+│       │   ├── layout
+│       │   │   ├── bgSky.tsx
+│       │   │   └── myTown.tsx
+│       │   └── ui
+│       │       ├── avatar.tsx
+│       │       ├── badge.tsx
+│       │       ├── button.tsx
+│       │       ├── dialog.tsx
+│       │       ├── input-group.tsx
+│       │       ├── input.tsx
+│       │       ├── label.tsx
+│       │       ├── progress.tsx
+│       │       ├── scroll-area.tsx
+│       │       ├── sonner.tsx
+│       │       ├── spinner.tsx
+│       │       └── textarea.tsx
+│       ├── components.json
+│       ├── features
+│       │   ├── auth
+│       │   │   ├── components
+│       │   │   │   ├── authenticatedProfileDialog.tsx
+│       │   │   │   ├── profileSection.tsx
+│       │   │   │   ├── signInButton.tsx
+│       │   │   │   ├── signInForm.tsx
+│       │   │   │   └── userProfileCard.tsx
+│       │   │   └── hooks
+│       │   │       └── useSignIn.ts
+│       │   ├── chatbot
+│       │   │   └── components
+│       │   │       └── chatBotPanel.tsx
+│       │   ├── quest
+│       │   │   └── components
+│       │   │       ├── chat.tsx
+│       │   │       └── questCard.tsx
+│       │   └── world3d
+│       │       ├── components
+│       │       │   ├── ground.tsx
+│       │       │   ├── hoverGuide.tsx
+│       │       │   ├── resultObject.tsx
+│       │       │   ├── rotationControl.tsx
+│       │       │   ├── sceneSetup.tsx
+│       │       │   └── selectPosition.tsx
+│       │       ├── hooks
+│       │       │   ├── useGetMaps.ts
+│       │       │   └── useObjectPlacement.ts
+│       │       └── utils
+│       │           ├── buildingCalculations.ts
+│       │           └── buildingRotation.ts
+│       ├── hooks
+│       │   └── useDeviceDetection.ts
+│       ├── lib
+│       │   ├── auth-client.ts
+│       │   ├── rpc-client.ts
+│       │   ├── text-shadow.ts
+│       │   └── utils.ts
+│       ├── next-env.d.ts
+│       ├── next.config.ts
+│       ├── open-next.config.ts
+│       ├── package.json
+│       ├── postcss.config.mjs
+│       ├── public
+│       │   ├── AICharacter.png
+│       │   └── house.png
+│       ├── stores
+│       │   ├── authStore.ts
+│       │   ├── index.ts
+│       │   └── objectStore.ts
+│       ├── tsconfig.json
+│       ├── types
+│       │   └── index.ts
+│       └── wrangler.jsonc
+├── biome.json
+├── compose.yml
+├── package.json
+├── pnpm-lock.yaml
+├── pnpm-workspace.yaml
+└── tree.txt
+```
+</details>

@@ -8,6 +8,7 @@ declare namespace Cloudflare {
 	interface Env {
 		OPENAI_API_KEY: string;
 		DATABASE_URL: string;
+        GITHUB_TOKEN: string;
 		USE_OPENAI_MODEL_NAME: string;
 		BETTER_AUTH_SECRET: string;
 		BETTER_AUTH_URL: string;
