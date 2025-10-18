@@ -113,7 +113,8 @@ export const createChatBotResponse = async (
     ];
 
     const result = await agentBuilder.invoke({ messages });
-    return result.messages;
+    const lastMessage = result.messages.at(-1);
+    return lastMessage?.content;
   } catch (error) {
     throw new Error(
       "チャットボットの応答生成中にエラーが発生しました: " +
