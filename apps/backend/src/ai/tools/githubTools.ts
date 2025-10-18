@@ -21,7 +21,18 @@ export const getGithubFileTool = tool(
     });
 
     if (!res.ok) throw new Error(`GitHub API ${res.status} ${res.statusText}`);
-    return await res.text();
+
+    const contentType = res.headers.get("Content-Type") || "";
+    if (
+      contentType.startsWith("text/") ||
+      contentType.includes("charset=utf-8")
+    ) {
+      return await res.text();
+    } else {
+      // バイナリの場合はbase64で返す
+      const buffer = await res.arrayBuffer();
+      return Buffer.from(buffer).toString("base64");
+    }
   },
   {
     name: "github_get_file",
