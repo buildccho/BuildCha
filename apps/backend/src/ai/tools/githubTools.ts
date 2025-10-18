@@ -32,12 +32,12 @@ export const getGithubFileTool = tool(
   },
 );
 
-// README.mdをそのまま返す簡易ツール（説明文はそのまま）
+// リポジトリ全体のツリーを取得してtree形式のテキストを返すツール
 export const githubListFilesAndFoldersTool = tool(
   async () => getGithubFileTool.invoke({ path: "README.md" }),
   {
     name: "github_list_files_and_folders",
     description:
-      "GitHubリポジトリ内のフォルダとファイルを再帰的に探索し、tree形式で一覧表示します。",
+      "GitHubリポジトリ内のファイルとフォルダの一覧をtree形式で取得するツール。",
   },
 );
