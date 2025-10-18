@@ -17,12 +17,13 @@
 	//     "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 	//   }
 	// ],
-	// "r2_buckets": [
-	//   {
-	//     "binding": "MY_BUCKET",
-	//     "bucket_name": "my-bucket"
-	//   }
-	// ],
+	"r2_buckets": [
+		{
+		"binding": "BUCKET",
+		"bucket_name": "buildcha",
+		"preview_bucket_name": "buildcha"
+		}
+	],
 	"d1_databases": [
 		{
 			"binding": "DB",
