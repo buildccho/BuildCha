@@ -6,7 +6,7 @@
     "esModuleInterop": true,
     "strict": true,
     "skipLibCheck": true,
-    "lib": ["ESNext", "DOM"],
+    "lib": ["ESNext"],
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
     "outDir": "./dist",
