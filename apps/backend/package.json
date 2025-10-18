@@ -30,6 +30,8 @@
     "@langchain/langgraph": "^0.4.9",
     "@langchain/openai": "^0.6.9",
     "@langchain/textsplitters": "^0.1.0",
+    "@modelcontextprotocol/sdk": "^1.20.1",
+    "@modelcontextprotocol/server-github": "^2025.4.8",
     "@prisma/adapter-d1": "^6.15.0",
     "@prisma/client": "^6.15.0",
     "@scalar/hono-api-reference": "^0.9.18",
