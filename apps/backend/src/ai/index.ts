@@ -2,7 +2,6 @@ import { Hono } from "hono";
 import { describeRoute } from "hono-openapi";
 import { resolver, validator } from "hono-openapi/zod";
 import { z } from "zod";
-import { getAnswerObjectImageUrls } from "../moc/getAnswerObject";
 import { addDemoDataToVectorStore, createChatBotResponse } from "./chatBot";
 import { compareImages } from "./compareImages";
 import { create3DObjectFromMessage } from "./create3DObject";
@@ -71,7 +70,7 @@ const app = new Hono<{ Bindings: CloudflareBindings }>()
   )
 
   .post(
-    "/compareObject",
+    "/compareObject/:questId",
     describeRoute({
       description: "AIオブジェクト比較エンドポイント",
       tags: ["AI"],
@@ -94,22 +93,17 @@ const app = new Hono<{ Bindings: CloudflareBindings }>()
     }),
     validator("form", CompareObjectInputSchema),
     async (c) => {
+      const { topView, bottomView, leftView, rightView, frontView, backView } =
+        c.req.valid("form");
+      const questId = c.req.param("questId");
       const {
-        questId,
-        topView,
-        bottomView,
-        leftView,
-        rightView,
-        frontView,
-        backView,
-      } = c.req.valid("form");
-      const correctObjectUrls = getAnswerObjectImageUrls(questId); //TODO: ここはDBから取得するようにする
-      if (!correctObjectUrls) {
-        return c.json(
-          { message: "正解オブジェクトが見つかりませんでした。" },
-          404,
-        );
-      }
+        answerTopView,
+        answerBottomView,
+        answerLeftView,
+        answerRightView,
+        answerFrontView,
+        answerBackView,
+      } = await getAnswerImageFromR2(c.env, questId);
       const { score, results } = await compareImages(
         {
           topView: topView as File,
@@ -119,7 +113,14 @@ const app = new Hono<{ Bindings: CloudflareBindings }>()
           frontView: frontView as File,
           backView: backView as File,
         },
-        correctObjectUrls,
+        {
+          topView: answerTopView as File,
+          bottomView: answerBottomView as File,
+          leftView: answerLeftView as File,
+          rightView: answerRightView as File,
+          frontView: answerFrontView as File,
+          backView: answerBackView as File,
+        },
       );
       return c.json({ score, results });
     },
@@ -225,4 +226,52 @@ const app = new Hono<{ Bindings: CloudflareBindings }>()
       }
     },
   );
+
+const getAnswerImageFromR2 = async (
+  env: CloudflareBindings,
+  questId: string,
+): Promise<Record<string, File | null>> => {
+  try {
+    const bucket = env.BUCKET;
+
+    const views = [
+      { key: "answerTopView", path: `objectImages/topView/${questId}.png` },
+      {
+        key: "answerBottomView",
+        path: `objectImages/bottomView/${questId}.png`,
+      },
+      { key: "answerLeftView", path: `objectImages/leftView/${questId}.png` },
+      { key: "answerRightView", path: `objectImages/rightView/${questId}.png` },
+      { key: "answerFrontView", path: `objectImages/frontView/${questId}.png` },
+      { key: "answerBackView", path: `objectImages/backView/${questId}.png` },
+    ];
+    const objectPromises = views.map((v) => bucket.get(v.path));
+    const objects = await Promise.all(objectPromises);
+
+    const result: Record<string, File | null> = {};
+
+    await Promise.all(
+      objects.map(async (obj, idx) => {
+        const viewInfo = views[idx];
+        if (obj === null) {
+          throw new Error(
+            `R2に正解画像が存在しません (path: ${viewInfo.path})`,
+          );
+        } else {
+          const blob = await obj.blob();
+          const filename = `${questId}_${viewInfo.key}.png`;
+          const file = new File([blob], filename, {
+            type: blob.type || "image/png",
+          });
+          result[viewInfo.key] = file;
+        }
+      }),
+    );
+    return result;
+  } catch (error) {
+    throw new Error(
+      `R2から正解画像の取得に失敗しました (questId: ${questId}): ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
+};
 export default app;

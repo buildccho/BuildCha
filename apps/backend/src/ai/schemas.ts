@@ -55,7 +55,6 @@ export const CreateObjectInputSchema = z.object({
 });
 
 export const CompareObjectInputSchema = z.object({
-  questId: z.string().meta({ example: "クエストID" }),
   topView: z.file().mime("image/png").meta({ example: "上面画像" }),
   bottomView: z.file().mime("image/png").meta({ example: "下面画像" }),
   leftView: z.file().mime("image/png").meta({ example: "左側面画像" }),

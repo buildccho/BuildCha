@@ -51,6 +51,7 @@ pnpm dev:back   # = pnpm --filter backend dev
 - ポート: `http://localhost:8787`
 - Prisma スキーマを変更した際は `pnpm --filter backend build:prisma` を再実行してください。
 - D1 のスキーマ変更は `pnpm --filter backend local:migration` で適用できます。
+- prismaのスキーマを変更した場合は `npx prisma migrate diff --from-local-d1 --to-schema-datamodel ./prisma/schema.prisma --script --output migrations/名前.sql` でマイグレーションファイルを生成し、`apps/backend/migrations` に追加してください。
 
 ### フロントエンド (Next.js)
 ```bash

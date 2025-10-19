@@ -7,7 +7,6 @@ import { QuestSchema } from "../prisma/schemas";
 
 const UpdateQuestSchema = QuestSchema.pick({
   name: true,
-  imageUrl: true,
   level: true,
   challenge: true,
   score: true,
@@ -15,7 +14,6 @@ const UpdateQuestSchema = QuestSchema.pick({
 }).partial();
 const CreateQuestSchema = QuestSchema.pick({
   name: true,
-  imageUrl: true,
   level: true,
   challenge: true,
   score: true,

@@ -26,31 +26,33 @@ const systemInstruction = `
 //NOTE: userObjectImagesはFileオブジェクトの連想配列、correctObjectUrlsはWebURLの連想配列
 export const compareImages = async (
   userObjectImages: { [key: string]: File },
-  correctObjectUrls: { [key: string]: string },
+  answerObjectImages: { [key: string]: File },
 ) => {
+  const views = Object.keys(userObjectImages);
   const results: {
     [view: string]: { score: number; comment: string };
   } = {};
-  for (const view of Object.keys(userObjectImages)) {
-    try {
-      const userFile = userObjectImages[view];
-      const correctUrl = correctObjectUrls[view];
-      if (!userFile || !correctUrl) {
-        results[view] = { score: 0, comment: "画像が不足しています" };
-        continue;
-      }
-      const userDataUrl = await blobLikeToDataUrl(userFile);
-      const correctBlob = await fetch(correctUrl).then((r) => r.blob());
-      const correctDataUrl = await blobLikeToDataUrl(correctBlob);
 
-      results[view] = await compareTwoImages(userDataUrl, correctDataUrl);
-    } catch (_e) {
-      results[view] = {
-        score: 0,
-        comment: "比較中にエラーが発生しました",
-      };
-    }
-  }
+  await Promise.all(
+    views.map(async (view) => {
+      try {
+        const userFile = userObjectImages[view];
+        const answerFile = answerObjectImages[view];
+        if (!userFile || !answerFile) {
+          results[view] = { score: 0, comment: "画像が不足しています" };
+          return;
+        }
+        const userDataUrl = await blobLikeToDataUrl(userFile);
+        const answerDataUrl = await blobLikeToDataUrl(answerFile);
+        results[view] = await compareTwoImages(userDataUrl, answerDataUrl);
+      } catch (_e) {
+        results[view] = {
+          score: 0,
+          comment: "比較中にエラーが発生しました",
+        };
+      }
+    }),
+  );
 
   const scores = Object.values(results).map((r) => r.score);
   const overallScore =
@@ -63,14 +65,15 @@ export const compareImages = async (
 
 const compareTwoImages = async (
   userDataUrl: string,
-  correctDataUrl: string,
+  answerDataUrl: string,
 ): Promise<{ score: number; comment: string }> => {
   try {
-    const { OPENAI_API_KEY, USE_OPENAI_MODEL_NAME } = getConfig();
-
+    const { OPENAI_API_KEY } = getConfig();
+    const USE_OPENAI_MODEL_NAME = "gpt-4.1-mini"; // 生成速度とコストを考慮して固定
     const model = new ChatOpenAI({
       apiKey: OPENAI_API_KEY,
       model: USE_OPENAI_MODEL_NAME,
+      maxTokens: 256,
     });
     const ai = model.withStructuredOutput(CompareObjectOutputSchema);
 
@@ -80,7 +83,7 @@ const compareTwoImages = async (
         content: [
           { type: "text", text: "次の2枚の画像を比較してください。" },
           { type: "image_url", image_url: { url: userDataUrl } },
-          { type: "image_url", image_url: { url: correctDataUrl } },
+          { type: "image_url", image_url: { url: answerDataUrl } },
         ],
       }),
     ]);
