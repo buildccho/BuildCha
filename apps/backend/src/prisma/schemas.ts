@@ -66,7 +66,6 @@ export const QuestSchema = z.object({
   id: z.string(),
   createdAt: z.string(),
   name: z.string(),
-  imageUrl: z.url(),
   level: z.number(),
   challenge: z.string().optional(),
   score: z.number(),

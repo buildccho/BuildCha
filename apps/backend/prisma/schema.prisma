@@ -83,7 +83,6 @@ model Quest {
   id               String    @id @default(uuid())
   createdAt       DateTime  @default(now())
   name             String
-  imageUrl        String
   level            Int
   challenge        String?
   score            Int

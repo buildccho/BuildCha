@@ -26,7 +26,7 @@ const systemInstruction = `
 //NOTE: userObjectImagesはFileオブジェクトの連想配列、correctObjectUrlsはWebURLの連想配列
 export const compareImages = async (
   userObjectImages: { [key: string]: File },
-  correctObjectUrls: { [key: string]: string },
+  answerObjectImages: { [key: string]: File },
 ) => {
   const results: {
     [view: string]: { score: number; comment: string };
@@ -34,16 +34,14 @@ export const compareImages = async (
   for (const view of Object.keys(userObjectImages)) {
     try {
       const userFile = userObjectImages[view];
-      const correctUrl = correctObjectUrls[view];
-      if (!userFile || !correctUrl) {
+      const answerFile = answerObjectImages[view];
+      if (!userFile || !answerFile) {
         results[view] = { score: 0, comment: "画像が不足しています" };
         continue;
       }
       const userDataUrl = await blobLikeToDataUrl(userFile);
-      const correctBlob = await fetch(correctUrl).then((r) => r.blob());
-      const correctDataUrl = await blobLikeToDataUrl(correctBlob);
-
-      results[view] = await compareTwoImages(userDataUrl, correctDataUrl);
+      const answerDataUrl = await blobLikeToDataUrl(answerFile);
+      results[view] = await compareTwoImages(userDataUrl, answerDataUrl);
     } catch (_e) {
       results[view] = {
         score: 0,
@@ -63,7 +61,7 @@ export const compareImages = async (
 
 const compareTwoImages = async (
   userDataUrl: string,
-  correctDataUrl: string,
+  answerDataUrl: string,
 ): Promise<{ score: number; comment: string }> => {
   try {
     const { OPENAI_API_KEY, USE_OPENAI_MODEL_NAME } = getConfig();
@@ -80,7 +78,7 @@ const compareTwoImages = async (
         content: [
           { type: "text", text: "次の2枚の画像を比較してください。" },
           { type: "image_url", image_url: { url: userDataUrl } },
-          { type: "image_url", image_url: { url: correctDataUrl } },
+          { type: "image_url", image_url: { url: answerDataUrl } },
         ],
       }),
     ]);
