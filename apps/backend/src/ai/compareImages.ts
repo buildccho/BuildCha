@@ -87,7 +87,6 @@ const compareTwoImages = async (
         ],
       }),
     ]);
-    console.log("compareTwoImages result:", res);
     return {
       score: Number(res.score),
       comment: String(res.comment),
