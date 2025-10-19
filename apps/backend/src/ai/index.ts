@@ -231,36 +231,45 @@ const getAnswerImageFromR2 = async (
   env: CloudflareBindings,
   questId: string,
 ): Promise<Record<string, File | null>> => {
-  const bucket = env.BUCKET;
+  try {
+    const bucket = env.BUCKET;
 
-  const views = [
-    { key: "answerTopView", path: `objectImages/topView/${questId}.png` },
-    { key: "answerBottomView", path: `objectImages/bottomView/${questId}.png` },
-    { key: "answerLeftView", path: `objectImages/leftView/${questId}.png` },
-    { key: "answerRightView", path: `objectImages/rightView/${questId}.png` },
-    { key: "answerFrontView", path: `objectImages/frontView/${questId}.png` },
-    { key: "answerBackView", path: `objectImages/backView/${questId}.png` },
-  ];
-  const objectPromises = views.map((v) => bucket.get(v.path));
-  const objects = await Promise.all(objectPromises);
+    const views = [
+      { key: "answerTopView", path: `objectImages/topView/${questId}.png` },
+      {
+        key: "answerBottomView",
+        path: `objectImages/bottomView/${questId}.png`,
+      },
+      { key: "answerLeftView", path: `objectImages/leftView/${questId}.png` },
+      { key: "answerRightView", path: `objectImages/rightView/${questId}.png` },
+      { key: "answerFrontView", path: `objectImages/frontView/${questId}.png` },
+      { key: "answerBackView", path: `objectImages/backView/${questId}.png` },
+    ];
+    const objectPromises = views.map((v) => bucket.get(v.path));
+    const objects = await Promise.all(objectPromises);
 
-  const result: Record<string, File | null> = {};
+    const result: Record<string, File | null> = {};
 
-  await Promise.all(
-    objects.map(async (obj, idx) => {
-      const viewInfo = views[idx];
-      if (obj === null) {
-        result[viewInfo.key] = null;
-      } else {
-        const blob = await obj.blob();
-        const filename = `${questId}_${viewInfo.key}.png`;
-        const file = new File([blob], filename, {
-          type: blob.type || "image/png",
-        });
-        result[viewInfo.key] = file;
-      }
-    }),
-  );
-  return result;
+    await Promise.all(
+      objects.map(async (obj, idx) => {
+        const viewInfo = views[idx];
+        if (obj === null) {
+          result[viewInfo.key] = null;
+        } else {
+          const blob = await obj.blob();
+          const filename = `${questId}_${viewInfo.key}.png`;
+          const file = new File([blob], filename, {
+            type: blob.type || "image/png",
+          });
+          result[viewInfo.key] = file;
+        }
+      }),
+    );
+    return result;
+  } catch (error) {
+    throw new Error(
+      `R2から正解画像の取得に失敗しました (questId: ${questId}): ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
 };
 export default app;
