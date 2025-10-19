@@ -1,54 +1,24 @@
 import QuestCard from "@/features/quest/components/questCard";
-import { client } from "@/lib/rpc-client";
 import type { Quest } from "@/types";
 
-export default async function QuestList() {
-  let quests: Quest[] = [];
-
+const getQuests = async (): Promise<Quest[]> => {
   try {
-    const res = await client.quests.$get();
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_RPC_URL || "http://localhost:8787"}/quests`,
+    );
     if (!res.ok) {
-      console.error("Error fetching quests:", res.status, res.statusText, res);
-      quests = [];
-    } else {
-      const data = await res.json();
-      console.log("quests", data);
-      quests = data.map((quest) => ({
-        ...quest,
-        difficulty: quest.difficulty as "Easy" | "Medium" | "Hard",
-        createdAt: new Date(quest.createdAt),
-      }));
+      throw new Error(res.statusText);
     }
-
-    if (quests.length === 0) {
-      const newQuest = await client.quests.$post({
-        json: {
-          name: "家",
-          difficulty: "Easy",
-          score: 100,
-          level: 1,
-        },
-      });
-      if (!newQuest.ok) {
-        console.error(
-          "Error creating quest:",
-          newQuest.status,
-          newQuest.statusText,
-        );
-      } else {
-        const quest = await newQuest.json();
-        quests.unshift({
-          ...quest,
-          difficulty: quest.difficulty as "Easy" | "Medium" | "Hard",
-          createdAt: new Date(quest.createdAt),
-        } as Quest);
-        console.log("quests", quests);
-      }
-    }
+    const data = await res.json();
+    return data as Quest[];
   } catch (error) {
     console.error("Error fetching quests:", error);
-    quests = [];
+    throw error;
   }
+};
+
+export default async function QuestListPage() {
+  const quests = await getQuests();
 
   return (
     <main className="w-full xl:container max-w-7xl mx-auto px-4 py-6">
