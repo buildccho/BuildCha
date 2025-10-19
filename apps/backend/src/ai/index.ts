@@ -254,7 +254,9 @@ const getAnswerImageFromR2 = async (
       objects.map(async (obj, idx) => {
         const viewInfo = views[idx];
         if (obj === null) {
-          result[viewInfo.key] = null;
+          throw new Error(
+            `R2に正解画像が存在しません (path: ${viewInfo.path})`,
+          );
         } else {
           const blob = await obj.blob();
           const filename = `${questId}_${viewInfo.key}.png`;
