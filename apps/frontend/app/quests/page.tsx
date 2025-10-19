@@ -8,7 +8,7 @@ export default async function QuestList() {
   try {
     const res = await client.quests.$get();
     if (!res.ok) {
-      console.error(res.status, res.statusText);
+      console.error("Error fetching quests:", res.status, res.statusText, res);
       quests = [];
     } else {
       const data = await res.json();
@@ -24,15 +24,17 @@ export default async function QuestList() {
       const newQuest = await client.quests.$post({
         json: {
           name: "家",
-          imageUrl:
-            "https://images.unsplash.com/photo-1598228723793-52759bba239c?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1548",
           difficulty: "Easy",
           score: 100,
           level: 1,
         },
       });
       if (!newQuest.ok) {
-        console.error(newQuest.status, newQuest.statusText);
+        console.error(
+          "Error creating quest:",
+          newQuest.status,
+          newQuest.statusText,
+        );
       } else {
         const quest = await newQuest.json();
         quests.unshift({

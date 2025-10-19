@@ -1,10 +1,14 @@
 "use client";
 import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { useMemo } from "react";
+import { forwardRef, useImperativeHandle, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { useObjectStore } from "@/stores";
 import type { BuildingPartData } from "@/types";
+import {
+  CaptureController,
+  type CaptureControllerHandle,
+} from "./captureController";
 
 const TriangleWall = ({ size }: { size: [number, number, number] }) => {
   const [width, height, depth = 0.1] = size;
@@ -81,8 +85,13 @@ export function Buildings({
   );
 }
 
-export default function ResultObject() {
+export type ResultObjectHandle = {
+  capture: () => Promise<Record<string, Blob>>;
+};
+
+const ResultObject = forwardRef<ResultObjectHandle>((_props, ref) => {
   const data = useObjectStore((state) => state.objectData);
+  const captureRef = useRef<CaptureControllerHandle>(null);
 
   const Object3D = useMemo(() => {
     if (!data || !data.BuildingPartData) {
@@ -93,8 +102,36 @@ export default function ResultObject() {
     return <Buildings buildingData={data.BuildingPartData} />;
   }, [data]);
 
+  // 外部からキャプチャを呼び出せるようにする
+  useImperativeHandle(ref, () => ({
+    capture: async () => {
+      if (!captureRef.current) {
+        throw new Error("CaptureController is not ready");
+      }
+      return await captureRef.current.capture();
+    },
+  }));
+
   return (
     <>
+      {/* キャプチャ用の隠しCanvas（512x512の正方形） */}
+      {data && (
+        <div className="sr-only" style={{ width: "512px", height: "512px" }}>
+          <Canvas
+            shadows
+            camera={{ position: [10, 6, 10], fov: 50 }}
+            gl={{ preserveDrawingBuffer: true }}
+          >
+            <ambientLight intensity={1.6} />
+            <directionalLight position={[5, 10, 5]} intensity={2} castShadow />
+
+            <group position={[0, -1, 0]}>{Object3D}</group>
+            <CaptureController ref={captureRef} />
+          </Canvas>
+        </div>
+      )}
+
+      {/* 表示用Canvas */}
       {data ? (
         <Canvas shadows camera={{ position: [10, 6, 10], fov: 50 }}>
           <ambientLight intensity={1.6} />
@@ -110,4 +147,8 @@ export default function ResultObject() {
       )}
     </>
   );
-}
+});
+
+ResultObject.displayName = "ResultObject";
+
+export default ResultObject;
