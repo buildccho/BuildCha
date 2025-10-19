@@ -8,13 +8,14 @@ export type CaptureControllerHandle = {
 };
 
 type CaptureControllerProps = {
-  // 追加のpropsが必要な場合はここに定義
+  target?: THREE.Object3D | THREE.Object3D[];
+  padding?: number;
 };
 
 export const CaptureController = forwardRef<
   CaptureControllerHandle,
   CaptureControllerProps
->((props, ref) => {
+>(({ target, padding = 1.5 }, ref) => {
   const { gl, scene, camera } = useThree();
 
   const captureView = async (
@@ -39,44 +40,138 @@ export const CaptureController = forwardRef<
   };
 
   const captureAllViews = async (): Promise<Record<string, Blob>> => {
-    // モデルの境界ボックスを計算
-    const box = new THREE.Box3().setFromObject(scene);
-    const center = box.getCenter(new THREE.Vector3());
-    const size = box.getSize(new THREE.Vector3());
+    // カメラの元の状態を保存
+    const origPos = camera.position.clone();
+    const origQuat = camera.quaternion.clone();
+    const origUp = camera.up.clone();
 
-    // 最大サイズを取得してカメラ距離を計算
-    const maxDim = Math.max(size.x, size.y, size.z);
-    const fov = (camera as THREE.PerspectiveCamera).fov * (Math.PI / 180);
-    // 余白を持たせるために1.5倍
-    const distance = (maxDim / 2 / Math.tan(fov / 2)) * 1.5;
+    try {
+      // ターゲットオブジェクトの境界ボックスを計算
+      const box = new THREE.Box3();
 
-    const lookAt: [number, number, number] = [center.x, center.y, center.z];
+      if (target) {
+        // ターゲットが指定されている場合、そのオブジェクトのみから境界を計算
+        const targets = Array.isArray(target) ? target : [target];
+        for (const obj of targets) {
+          box.expandByObject(obj);
+        }
+      } else {
+        // ターゲット未指定の場合はシーン全体から計算
+        box.setFromObject(scene);
+      }
 
-    const views = {
-      front: await captureView(
-        [center.x, center.y, center.z + distance],
-        lookAt,
-      ),
-      back: await captureView(
-        [center.x, center.y, center.z - distance],
-        lookAt,
-      ),
-      left: await captureView(
-        [center.x - distance, center.y, center.z],
-        lookAt,
-      ),
-      right: await captureView(
-        [center.x + distance, center.y, center.z],
-        lookAt,
-      ),
-      top: await captureView([center.x, center.y + distance, center.z], lookAt),
-      bottom: await captureView(
-        [center.x, center.y - distance, center.z],
-        lookAt,
-      ),
-    };
+      // 空の境界ボックスをチェック
+      if (box.isEmpty()) {
+        console.warn("Bounding box is empty, using default camera position");
+        // デフォルト値を使用
+        const defaultDistance = 10;
+        const lookAt: [number, number, number] = [0, 0, 0];
 
-    return views;
+        const views = {
+          front: await captureView([0, 0, defaultDistance], lookAt),
+          back: await captureView([0, 0, -defaultDistance], lookAt),
+          left: await captureView([-defaultDistance, 0, 0], lookAt),
+          right: await captureView([defaultDistance, 0, 0], lookAt),
+          top: await captureView([0, defaultDistance, 0], lookAt),
+          bottom: await captureView([0, -defaultDistance, 0], lookAt),
+        };
+
+        return views;
+      }
+
+      const center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3());
+
+      // サイズが0または無限大でないかチェック
+      const sizeLengthSq = size.lengthSq();
+      if (sizeLengthSq === 0 || !Number.isFinite(sizeLengthSq)) {
+        console.warn(
+          "Invalid bounding box size, using default camera position",
+        );
+        const defaultDistance = 10;
+        const lookAt: [number, number, number] = [center.x, center.y, center.z];
+
+        const views = {
+          front: await captureView(
+            [center.x, center.y, center.z + defaultDistance],
+            lookAt,
+          ),
+          back: await captureView(
+            [center.x, center.y, center.z - defaultDistance],
+            lookAt,
+          ),
+          left: await captureView(
+            [center.x - defaultDistance, center.y, center.z],
+            lookAt,
+          ),
+          right: await captureView(
+            [center.x + defaultDistance, center.y, center.z],
+            lookAt,
+          ),
+          top: await captureView(
+            [center.x, center.y + defaultDistance, center.z],
+            lookAt,
+          ),
+          bottom: await captureView(
+            [center.x, center.y - defaultDistance, center.z],
+            lookAt,
+          ),
+        };
+
+        return views;
+      }
+
+      // 最大サイズを取得してカメラ距離を計算
+      const maxDim = Math.max(size.x, size.y, size.z);
+      const fov = (camera as THREE.PerspectiveCamera).fov * (Math.PI / 180);
+      // paddingを適用
+      const distance = (maxDim / 2 / Math.tan(fov / 2)) * padding;
+
+      const lookAt: [number, number, number] = [center.x, center.y, center.z];
+
+      const views = {
+        front: await captureView(
+          [center.x, center.y, center.z + distance],
+          lookAt,
+        ),
+        back: await captureView(
+          [center.x, center.y, center.z - distance],
+          lookAt,
+        ),
+        left: await captureView(
+          [center.x - distance, center.y, center.z],
+          lookAt,
+        ),
+        right: await captureView(
+          [center.x + distance, center.y, center.z],
+          lookAt,
+        ),
+        top: await captureView(
+          [center.x, center.y + distance, center.z],
+          lookAt,
+        ),
+        bottom: await captureView(
+          [center.x, center.y - distance, center.z],
+          lookAt,
+        ),
+      };
+
+      return views;
+    } finally {
+      // カメラの状態を元に戻す
+      camera.position.copy(origPos);
+      camera.quaternion.copy(origQuat);
+      camera.up.copy(origUp);
+      camera.updateMatrixWorld();
+
+      // OrbitControlsなどのコントロールが存在する場合は更新
+      const controls = gl as unknown as {
+        controls?: { update?: () => void };
+      };
+      if (controls.controls && typeof controls.controls.update === "function") {
+        controls.controls.update();
+      }
+    }
   };
 
   useImperativeHandle(ref, () => ({

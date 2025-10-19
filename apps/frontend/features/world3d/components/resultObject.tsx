@@ -89,65 +89,82 @@ export type ResultObjectHandle = {
   capture: () => Promise<Record<string, Blob>>;
 };
 
-const ResultObject = forwardRef<ResultObjectHandle>((_props, ref) => {
-  const data = useObjectStore((state) => state.objectData);
-  const captureRef = useRef<CaptureControllerHandle>(null);
+type ResultObjectProps = {};
 
-  const Object3D = useMemo(() => {
-    if (!data || !data.BuildingPartData) {
-      return null;
-    }
+const ResultObject = forwardRef<ResultObjectHandle, ResultObjectProps>(
+  (props, ref) => {
+    const data = useObjectStore((state) => state.objectData);
+    const captureRef = useRef<CaptureControllerHandle>(null);
+    const buildingGroupRef = useRef<THREE.Group>(null);
 
-    // 例: JSON内のオブジェクト定義を基に描画
-    return <Buildings buildingData={data.BuildingPartData} />;
-  }, [data]);
-
-  // 外部からキャプチャを呼び出せるようにする
-  useImperativeHandle(ref, () => ({
-    capture: async () => {
-      if (!captureRef.current) {
-        throw new Error("CaptureController is not ready");
+    const Object3D = useMemo(() => {
+      if (!data || !data.BuildingPartData) {
+        return null;
       }
-      return await captureRef.current.capture();
-    },
-  }));
 
-  return (
-    <>
-      {/* キャプチャ用の隠しCanvas（512x512の正方形） */}
-      {data && (
-        <div className="sr-only" style={{ width: "512px", height: "512px" }}>
-          <Canvas
-            shadows
-            camera={{ position: [10, 6, 10], fov: 50 }}
-            gl={{ preserveDrawingBuffer: true }}
-          >
+      // 例: JSON内のオブジェクト定義を基に描画
+      return (
+        <group ref={buildingGroupRef} position={[0, -1, 0]}>
+          <Buildings buildingData={data.BuildingPartData} />
+        </group>
+      );
+    }, [data]);
+
+    // 外部からキャプチャを呼び出せるようにする
+    useImperativeHandle(ref, () => ({
+      capture: async () => {
+        if (!captureRef.current) {
+          throw new Error("CaptureController is not ready");
+        }
+        return await captureRef.current.capture();
+      },
+    }));
+
+    return (
+      <>
+        {/* キャプチャ用の隠しCanvas（512x512の正方形） */}
+        {data && (
+          <div className="sr-only" style={{ width: "512px", height: "512px" }}>
+            <Canvas
+              shadows
+              camera={{ position: [10, 6, 10], fov: 50 }}
+              gl={{ preserveDrawingBuffer: true }}
+            >
+              <ambientLight intensity={1.6} />
+              <directionalLight
+                position={[5, 10, 5]}
+                intensity={2}
+                castShadow
+              />
+
+              {Object3D}
+              <CaptureController
+                ref={captureRef}
+                target={buildingGroupRef.current || undefined}
+                padding={1.5}
+              />
+            </Canvas>
+          </div>
+        )}
+
+        {/* 表示用Canvas */}
+        {data ? (
+          <Canvas shadows camera={{ position: [10, 6, 10], fov: 50 }}>
             <ambientLight intensity={1.6} />
             <directionalLight position={[5, 10, 5]} intensity={2} castShadow />
 
-            <group position={[0, -1, 0]}>{Object3D}</group>
-            <CaptureController ref={captureRef} />
+            {Object3D}
+            <OrbitControls />
           </Canvas>
-        </div>
-      )}
-
-      {/* 表示用Canvas */}
-      {data ? (
-        <Canvas shadows camera={{ position: [10, 6, 10], fov: 50 }}>
-          <ambientLight intensity={1.6} />
-          <directionalLight position={[5, 10, 5]} intensity={2} castShadow />
-
-          <group position={[0, -1, 0]}>{Object3D}</group>
-          <OrbitControls />
-        </Canvas>
-      ) : (
-        <p className="text-muted-foreground text-center grow grid items-center">
-          プロンプトを入力すると表示されます
-        </p>
-      )}
-    </>
-  );
-});
+        ) : (
+          <p className="text-muted-foreground text-center grow grid items-center">
+            プロンプトを入力すると表示されます
+          </p>
+        )}
+      </>
+    );
+  },
+);
 
 ResultObject.displayName = "ResultObject";
 

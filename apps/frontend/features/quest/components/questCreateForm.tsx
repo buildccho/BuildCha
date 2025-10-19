@@ -288,10 +288,14 @@ export function QuestCreateForm() {
             type="button"
             size="lg"
             className="flex-1"
-            disabled={isCapturing || !!capturedViews}
+            disabled={isCapturing}
             onClick={handleCapture}
           >
-            {isCapturing ? "キャプチャ中..." : "キャプチャ"}
+            {isCapturing
+              ? "キャプチャ中..."
+              : capturedViews
+                ? "再キャプチャ"
+                : "キャプチャ"}
           </Button>
           <Button
             type="button"
