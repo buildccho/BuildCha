@@ -28,27 +28,31 @@ export const compareImages = async (
   userObjectImages: { [key: string]: File },
   answerObjectImages: { [key: string]: File },
 ) => {
+  const views = Object.keys(userObjectImages);
   const results: {
     [view: string]: { score: number; comment: string };
   } = {};
-  for (const view of Object.keys(userObjectImages)) {
-    try {
-      const userFile = userObjectImages[view];
-      const answerFile = answerObjectImages[view];
-      if (!userFile || !answerFile) {
-        results[view] = { score: 0, comment: "画像が不足しています" };
-        continue;
+
+  await Promise.all(
+    views.map(async (view) => {
+      try {
+        const userFile = userObjectImages[view];
+        const answerFile = answerObjectImages[view];
+        if (!userFile || !answerFile) {
+          results[view] = { score: 0, comment: "画像が不足しています" };
+          return;
+        }
+        const userDataUrl = await blobLikeToDataUrl(userFile);
+        const answerDataUrl = await blobLikeToDataUrl(answerFile);
+        results[view] = await compareTwoImages(userDataUrl, answerDataUrl);
+      } catch (_e) {
+        results[view] = {
+          score: 0,
+          comment: "比較中にエラーが発生しました",
+        };
       }
-      const userDataUrl = await blobLikeToDataUrl(userFile);
-      const answerDataUrl = await blobLikeToDataUrl(answerFile);
-      results[view] = await compareTwoImages(userDataUrl, answerDataUrl);
-    } catch (_e) {
-      results[view] = {
-        score: 0,
-        comment: "比較中にエラーが発生しました",
-      };
-    }
-  }
+    }),
+  );
 
   const scores = Object.values(results).map((r) => r.score);
   const overallScore =
@@ -64,11 +68,12 @@ const compareTwoImages = async (
   answerDataUrl: string,
 ): Promise<{ score: number; comment: string }> => {
   try {
-    const { OPENAI_API_KEY, USE_OPENAI_MODEL_NAME } = getConfig();
-
+    const { OPENAI_API_KEY } = getConfig();
+    const USE_OPENAI_MODEL_NAME = "gpt-4.1-mini"; // 生成速度とコストを考慮して固定
     const model = new ChatOpenAI({
       apiKey: OPENAI_API_KEY,
       model: USE_OPENAI_MODEL_NAME,
+      maxTokens: 256,
     });
     const ai = model.withStructuredOutput(CompareObjectOutputSchema);
 
@@ -82,6 +87,7 @@ const compareTwoImages = async (
         ],
       }),
     ]);
+    console.log("compareTwoImages result:", res);
     return {
       score: Number(res.score),
       comment: String(res.comment),
