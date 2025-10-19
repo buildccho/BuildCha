@@ -2,10 +2,14 @@ import QuestCard from "@/features/quest/components/questCard";
 import type { Quest } from "@/types";
 
 const getQuests = async (): Promise<Quest[]> => {
+  const url = `${process.env.NEXT_PUBLIC_RPC_URL || "http://localhost:8787"}/quests`;
+  console.log("Fetching from:", url);
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_RPC_URL || "http://localhost:8787"}/quests`,
-    );
+    const res = await fetch(url, {
+      next: {
+        tags: ["quests"],
+      },
+    });
     if (!res.ok) {
       throw new Error(res.statusText);
     }
