@@ -50,7 +50,6 @@ export type User = {
 export type Quest = {
   id: string;
   name: string;
-  imageUrl: string;
   difficulty: "Easy" | "Medium" | "Hard";
   score: number;
   level: number;

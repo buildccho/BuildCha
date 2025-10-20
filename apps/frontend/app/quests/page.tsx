@@ -1,52 +1,28 @@
 import QuestCard from "@/features/quest/components/questCard";
-import { client } from "@/lib/rpc-client";
 import type { Quest } from "@/types";
 
-export default async function QuestList() {
-  let quests: Quest[] = [];
-
+const getQuests = async (): Promise<Quest[]> => {
+  const url = `${process.env.NEXT_PUBLIC_RPC_URL || "http://localhost:8787"}/quests`;
+  console.log("Fetching from:", url);
   try {
-    const res = await client.quests.$get();
+    const res = await fetch(url, {
+      next: {
+        tags: ["quests"],
+      },
+    });
     if (!res.ok) {
-      console.error(res.status, res.statusText);
-      quests = [];
-    } else {
-      const data = await res.json();
-      console.log("quests", data);
-      quests = data.map((quest) => ({
-        ...quest,
-        difficulty: quest.difficulty as "Easy" | "Medium" | "Hard",
-        createdAt: new Date(quest.createdAt),
-      }));
+      throw new Error(res.statusText);
     }
-
-    if (quests.length === 0) {
-      const newQuest = await client.quests.$post({
-        json: {
-          name: "家",
-          imageUrl:
-            "https://images.unsplash.com/photo-1598228723793-52759bba239c?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1548",
-          difficulty: "Easy",
-          score: 100,
-          level: 1,
-        },
-      });
-      if (!newQuest.ok) {
-        console.error(newQuest.status, newQuest.statusText);
-      } else {
-        const quest = await newQuest.json();
-        quests.unshift({
-          ...quest,
-          difficulty: quest.difficulty as "Easy" | "Medium" | "Hard",
-          createdAt: new Date(quest.createdAt),
-        } as Quest);
-        console.log("quests", quests);
-      }
-    }
+    const data = await res.json();
+    return data as Quest[];
   } catch (error) {
     console.error("Error fetching quests:", error);
-    quests = [];
+    throw error;
   }
+};
+
+export default async function QuestListPage() {
+  const quests = await getQuests();
 
   return (
     <main className="w-full xl:container max-w-7xl mx-auto px-4 py-6">
