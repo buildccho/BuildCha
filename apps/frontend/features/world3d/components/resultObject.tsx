@@ -1,7 +1,7 @@
 "use client";
 import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { forwardRef, useImperativeHandle, useMemo, useRef } from "react";
+import { forwardRef, useImperativeHandle, useRef } from "react";
 import * as THREE from "three";
 import { useObjectStore } from "@/stores";
 import type { BuildingPartData } from "@/types";
@@ -97,18 +97,7 @@ const ResultObject = forwardRef<ResultObjectHandle, ResultObjectProps>(
     const captureRef = useRef<CaptureControllerHandle>(null);
     const buildingGroupRef = useRef<THREE.Group>(null);
 
-    const Object3D = useMemo(() => {
-      if (!data || !data.BuildingPartData) {
-        return null;
-      }
-
-      // 例: JSON内のオブジェクト定義を基に描画
-      return (
-        <group ref={buildingGroupRef} position={[0, -1, 0]}>
-          <Buildings buildingData={data.BuildingPartData} />
-        </group>
-      );
-    }, [data]);
+    const hasBuilding = !!(data && data.BuildingPartData);
 
     // 外部からキャプチャを呼び出せるようにする
     useImperativeHandle(ref, () => ({
@@ -137,7 +126,11 @@ const ResultObject = forwardRef<ResultObjectHandle, ResultObjectProps>(
                 castShadow
               />
 
-              {Object3D}
+              {hasBuilding && (
+                <group ref={buildingGroupRef} position={[0, -1, 0]}>
+                  <Buildings buildingData={data.BuildingPartData} />
+                </group>
+              )}
               <CaptureController
                 ref={captureRef}
                 target={buildingGroupRef.current || undefined}
@@ -153,7 +146,11 @@ const ResultObject = forwardRef<ResultObjectHandle, ResultObjectProps>(
             <ambientLight intensity={1.6} />
             <directionalLight position={[5, 10, 5]} intensity={2} castShadow />
 
-            {Object3D}
+            {hasBuilding && (
+              <group position={[0, -1, 0]}>
+                <Buildings buildingData={data.BuildingPartData} />
+              </group>
+            )}
             <OrbitControls />
           </Canvas>
         ) : (
