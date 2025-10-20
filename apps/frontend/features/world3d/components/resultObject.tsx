@@ -97,7 +97,7 @@ const ResultObject = forwardRef<ResultObjectHandle, ResultObjectProps>(
     const captureRef = useRef<CaptureControllerHandle>(null);
     const buildingGroupRef = useRef<THREE.Group>(null);
 
-    const hasBuilding = !!(data && data.BuildingPartData);
+    const hasBuilding = !!data?.BuildingPartData;
 
     // 外部からキャプチャを呼び出せるようにする
     useImperativeHandle(ref, () => ({

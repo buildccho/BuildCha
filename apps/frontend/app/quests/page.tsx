@@ -1,20 +1,21 @@
 import QuestCard from "@/features/quest/components/questCard";
+import { client } from "@/lib/rpc-client";
 import type { Quest } from "@/types";
 
 const getQuests = async (): Promise<Quest[]> => {
-  const url = `${process.env.NEXT_PUBLIC_RPC_URL || "http://localhost:8787"}/quests`;
-  console.log("Fetching from:", url);
   try {
-    const res = await fetch(url, {
-      next: {
-        tags: ["quests"],
-      },
-    });
+    const res = await client.quests.$get();
     if (!res.ok) {
-      throw new Error(res.statusText);
+      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
     }
+
     const data = await res.json();
-    return data as Quest[];
+    const quests = data.map((quest) => ({
+      ...quest,
+      difficulty: quest.difficulty as "Easy" | "Medium" | "Hard",
+      createdAt: new Date(quest.createdAt),
+    }));
+    return quests;
   } catch (error) {
     console.error("Error fetching quests:", error);
     throw error;
