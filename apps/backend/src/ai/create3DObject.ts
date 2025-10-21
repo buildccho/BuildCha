@@ -15,6 +15,7 @@ const State = Annotation.Root({
   firstObject: Annotation<z.infer<typeof CreateObjectOutputSchema>>(),
   isTriangleRoof: Annotation<boolean>(),
   isReCreateRoof: Annotation<boolean>(),
+  modelName: Annotation<string>(),
 });
 
 // 各プロンプトの定義
@@ -185,10 +186,11 @@ You are the AI assistant of a city-building app for kids. When a user says thing
 }}`;
 
 async function firstCreate3DObject(state: typeof State.State) {
-  const { OPENAI_API_KEY, USE_OPENAI_MODEL_NAME } = getConfig();
+  const { OPENAI_API_KEY } = getConfig();
+
   const model = new ChatOpenAI({
     apiKey: OPENAI_API_KEY,
-    model: USE_OPENAI_MODEL_NAME,
+    model: state.modelName,
   });
   const ai = model.withStructuredOutput(CreateObjectOutputSchema);
   const promptTemplate = ChatPromptTemplate.fromMessages([
@@ -441,12 +443,14 @@ const chain = new StateGraph(State)
 export async function create3DObjectFromMessage(
   userInput: string,
   history: string,
+  modelName: string,
 ) {
   const state = await chain.invoke({
     userInput,
     history,
     isTriangleRoof: false,
     isReCreateRoof: false,
+    modelName,
   });
   return state.firstObject;
 }
