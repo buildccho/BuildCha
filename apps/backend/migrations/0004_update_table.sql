@@ -1,8 +1,3 @@
--- DropTable
-PRAGMA foreign_keys=off;
-DROP TABLE "langchain_cache";
-PRAGMA foreign_keys=on;
-
 -- RedefineTables
 PRAGMA defer_foreign_keys=ON;
 PRAGMA foreign_keys=OFF;
