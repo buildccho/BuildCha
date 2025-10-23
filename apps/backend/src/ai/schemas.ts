@@ -52,6 +52,10 @@ export const CreateObjectInputSchema = z.object({
       ]),
       description: "会話履歴(JSON文字列)",
     }),
+  modelName: z.string().min(1).meta({
+    example: "gpt-4.1",
+    description: "使用するAIモデルの名前",
+  }),
 });
 
 export const CompareObjectInputSchema = z.object({
