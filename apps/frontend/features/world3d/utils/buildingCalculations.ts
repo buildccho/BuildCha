@@ -49,6 +49,62 @@ export function calculateBuildingSize(
 }
 
 /**
+ * BuildingPartDataから3次元のboundingBoxを計算する
+ * @param data 建物データ
+ * @returns [width, height, depth] 3次元のサイズ
+ */
+export function calculateBoundingBox(
+  data: BuildingPartData,
+): [number, number, number] {
+  if (!data.parts || data.parts.length === 0) return [1, 1, 1];
+
+  let minX = Infinity;
+  let maxX = -Infinity;
+  let minY = Infinity;
+  let maxY = -Infinity;
+  let minZ = Infinity;
+  let maxZ = -Infinity;
+
+  data.parts.forEach((part) => {
+    const [x, y, z] = part.position;
+    const [sizeX, sizeY, sizeZ] = part.size;
+
+    // Y軸回転（ラジアン想定）
+    const ry = Array.isArray(part.rotation) ? (part.rotation[1] ?? 0) : 0;
+
+    const halfX = sizeX / 2;
+    const halfY = sizeY / 2;
+    const halfZ = sizeZ / 2;
+
+    // 回転矩形の軸揃え半径（XZ平面）
+    const cos = Math.cos(ry);
+    const sin = Math.sin(ry);
+    const extentX = Math.abs(halfX * cos) + Math.abs(halfZ * sin);
+    const extentZ = Math.abs(halfX * sin) + Math.abs(halfZ * cos);
+
+    const partMinX = x - extentX;
+    const partMaxX = x + extentX;
+    const partMinY = y - halfY;
+    const partMaxY = y + halfY;
+    const partMinZ = z - extentZ;
+    const partMaxZ = z + extentZ;
+
+    minX = Math.min(minX, partMinX);
+    maxX = Math.max(maxX, partMaxX);
+    minY = Math.min(minY, partMinY);
+    maxY = Math.max(maxY, partMaxY);
+    minZ = Math.min(minZ, partMinZ);
+    maxZ = Math.max(maxZ, partMaxZ);
+  });
+
+  const width = Math.ceil(maxX - minX);
+  const height = Math.ceil(maxY - minY);
+  const depth = Math.ceil(maxZ - minZ);
+
+  return [Math.max(1, width), Math.max(1, height), Math.max(1, depth)];
+}
+
+/**
  * ホバーガイドのサイズを計算する
  * @param objectData 建物データ
  * @param cellSize セルサイズ

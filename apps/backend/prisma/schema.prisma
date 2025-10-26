@@ -112,7 +112,7 @@ model UserObject {
   position         String // Store as JSON string, e.g. "[1.0,2.0,3.0]"
   rotation         String // Store as JSON string, e.g. "[0.0,0.0,0.0]"
   boundingBox     String // Store as JSON string, e.g. "[1.0,1.0,1.0]"
-  objectPrecision Float
+  objectPrecision Float?
 
   chatHistory      ChatHistory[]
   parts            Parts[]

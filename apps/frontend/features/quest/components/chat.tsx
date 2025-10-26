@@ -20,12 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { client } from "@/lib/rpc-client";
-import { useObjectStore } from "@/stores";
-
-type History = {
-  role: "user" | "assistant";
-  content: string;
-};
+import { type History, useObjectStore } from "@/stores";
 
 const MODEL_NAMES = [
   { value: "gpt-4.1-nano", label: "かんたんAI（はやい）" },
@@ -39,6 +34,8 @@ export default function Chat() {
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const setObjectData = useObjectStore((state) => state.setObjectData);
+  const setName = useObjectStore((state) => state.setName);
+  const setChatHistory = useObjectStore((state) => state.setChatHistory);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -65,16 +62,20 @@ export default function Chat() {
         return;
       }
       const data = await res.json();
-      setHistory((prev) => [
-        ...prev,
-        { role: "assistant", content: data.chat },
-      ]);
+      const newHistory: History[] = [
+        ...history,
+        { role: "user" as const, content: message },
+        { role: "assistant" as const, content: data.chat },
+      ];
+      setHistory(newHistory);
       setMessage("");
       setObjectData({
         BuildingPartData: {
           parts: data.parts,
         },
       });
+      setName(data.name);
+      setChatHistory(newHistory);
       setError(null);
     } catch (error) {
       console.error(error);
