@@ -87,81 +87,148 @@ export function Buildings({
 
 export type ResultObjectHandle = {
   capture: () => Promise<Record<string, Blob>>;
+  captureThumbnail: () => Promise<Blob>;
 };
 
-type ResultObjectProps = {};
+const ResultObject = forwardRef<ResultObjectHandle>((_props, ref) => {
+  const data = useObjectStore((state) => state.objectData);
+  const captureRef = useRef<CaptureControllerHandle>(null);
+  const buildingGroupRef = useRef<THREE.Group>(null);
+  const displayCanvasRef = useRef<HTMLCanvasElement>(null);
 
-const ResultObject = forwardRef<ResultObjectHandle, ResultObjectProps>(
-  (props, ref) => {
-    const data = useObjectStore((state) => state.objectData);
-    const captureRef = useRef<CaptureControllerHandle>(null);
-    const buildingGroupRef = useRef<THREE.Group>(null);
+  const hasBuilding = !!data?.BuildingPartData;
 
-    const hasBuilding = !!data?.BuildingPartData;
+  // 外部からキャプチャを呼び出せるようにする
+  useImperativeHandle(ref, () => ({
+    capture: async () => {
+      if (!captureRef.current) {
+        throw new Error("CaptureController is not ready");
+      }
+      return await captureRef.current.capture();
+    },
+    captureThumbnail: async () => {
+      if (!displayCanvasRef.current) {
+        throw new Error("Display canvas is not ready");
+      }
 
-    // 外部からキャプチャを呼び出せるようにする
-    useImperativeHandle(ref, () => ({
-      capture: async () => {
-        if (!captureRef.current) {
-          throw new Error("CaptureController is not ready");
-        }
-        return await captureRef.current.capture();
-      },
-    }));
+      // 現在の表示用Canvasから4:3の比率でキャプチャ
+      const sourceCanvas = displayCanvasRef.current;
 
-    return (
-      <>
-        {/* キャプチャ用の隠しCanvas（512x512の正方形） */}
-        {data && (
-          <div className="sr-only" style={{ width: "512px", height: "512px" }}>
-            <Canvas
-              shadows
-              camera={{ position: [10, 6, 10], fov: 50 }}
-              gl={{ preserveDrawingBuffer: true }}
-            >
-              <ambientLight intensity={1.6} />
-              <directionalLight
-                position={[5, 10, 5]}
-                intensity={2}
-                castShadow
-              />
+      // 4:3の比率で800x600pxのオフスクリーンCanvasを作成
+      const targetWidth = 800;
+      const targetHeight = 600;
+      const offscreenCanvas = document.createElement("canvas");
+      offscreenCanvas.width = targetWidth;
+      offscreenCanvas.height = targetHeight;
+      const ctx = offscreenCanvas.getContext("2d");
 
-              {hasBuilding && (
-                <group ref={buildingGroupRef} position={[0, -1, 0]}>
-                  <Buildings buildingData={data.BuildingPartData} />
-                </group>
-              )}
-              <CaptureController
-                ref={captureRef}
-                target={buildingGroupRef.current || undefined}
-                padding={1.5}
-              />
-            </Canvas>
-          </div>
-        )}
+      if (!ctx) {
+        throw new Error("Failed to get 2D context");
+      }
 
-        {/* 表示用Canvas */}
-        {data ? (
-          <Canvas shadows camera={{ position: [10, 6, 10], fov: 50 }}>
+      // ソースCanvasから中央部分を4:3の比率でクロップして描画
+      const sourceWidth = sourceCanvas.width;
+      const sourceHeight = sourceCanvas.height;
+      const sourceAspect = sourceWidth / sourceHeight;
+      const targetAspect = targetWidth / targetHeight;
+
+      let sx = 0;
+      let sy = 0;
+      let sWidth = sourceWidth;
+      let sHeight = sourceHeight;
+
+      // 4:3の比率でクロップ
+      if (sourceAspect > targetAspect) {
+        // ソースの方が横長の場合、横をクロップ
+        sWidth = sourceHeight * targetAspect;
+        sx = (sourceWidth - sWidth) / 2;
+      } else {
+        // ソースの方が縦長の場合、縦をクロップ
+        sHeight = sourceWidth / targetAspect;
+        sy = (sourceHeight - sHeight) / 2;
+      }
+
+      // クロップした部分を描画
+      ctx.drawImage(
+        sourceCanvas,
+        sx,
+        sy,
+        sWidth,
+        sHeight,
+        0,
+        0,
+        targetWidth,
+        targetHeight,
+      );
+
+      // BlobとしてPNG画像を返す
+      return new Promise<Blob>((resolve, reject) => {
+        offscreenCanvas.toBlob((blob) => {
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(new Error("Failed to create thumbnail blob"));
+          }
+        }, "image/png");
+      });
+    },
+  }));
+
+  return (
+    <>
+      {/* キャプチャ用の隠しCanvas（512x512の正方形） */}
+      {data && (
+        <div className="sr-only" style={{ width: "512px", height: "512px" }}>
+          <Canvas
+            shadows
+            camera={{ position: [10, 6, 10], fov: 50 }}
+            gl={{ preserveDrawingBuffer: true }}
+          >
             <ambientLight intensity={1.6} />
             <directionalLight position={[5, 10, 5]} intensity={2} castShadow />
 
             {hasBuilding && (
-              <group position={[0, -1, 0]}>
+              <group ref={buildingGroupRef} position={[0, -1, 0]}>
                 <Buildings buildingData={data.BuildingPartData} />
               </group>
             )}
-            <OrbitControls />
+            <CaptureController
+              ref={captureRef}
+              target={buildingGroupRef.current || undefined}
+              padding={1.5}
+            />
           </Canvas>
-        ) : (
-          <p className="text-muted-foreground text-center grow grid items-center">
-            プロンプトを入力すると表示されます
-          </p>
-        )}
-      </>
-    );
-  },
-);
+        </div>
+      )}
+
+      {/* 表示用Canvas */}
+      {data ? (
+        <Canvas
+          shadows
+          camera={{ position: [10, 6, 10], fov: 50 }}
+          gl={{ preserveDrawingBuffer: true }}
+          onCreated={({ gl }) => {
+            displayCanvasRef.current = gl.domElement;
+          }}
+        >
+          <ambientLight intensity={1.6} />
+          <directionalLight position={[5, 10, 5]} intensity={2} castShadow />
+
+          {hasBuilding && (
+            <group position={[0, -1, 0]}>
+              <Buildings buildingData={data.BuildingPartData} />
+            </group>
+          )}
+          <OrbitControls />
+        </Canvas>
+      ) : (
+        <p className="text-muted-foreground text-center grow grid items-center">
+          プロンプトを入力すると表示されます
+        </p>
+      )}
+    </>
+  );
+});
 
 ResultObject.displayName = "ResultObject";
 

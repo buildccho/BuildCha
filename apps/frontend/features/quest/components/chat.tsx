@@ -94,7 +94,7 @@ export default function Chat() {
   return (
     <>
       <ScrollArea
-        className="h-full overflow-y-auto py-5"
+        className="h-full overflow-y-auto py-3 xl:py-5"
         ref={(scrollArea) => {
           if (scrollArea && (history.length > 0 || isPending)) {
             const scrollContainer = scrollArea.querySelector(
