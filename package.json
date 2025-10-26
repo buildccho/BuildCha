@@ -14,7 +14,7 @@
     "dev:back": "pnpm -F backend dev",
     "dev:front": "pnpm -F frontend dev",
     "dev": "pnpm dev:back && pnpm dev:front",
-    "build:front": "pnpm -F frontend run build",
+    "build:front": "npx next-sitemap && pnpm -F frontend run build",
     "build:back": "pnpm -F backend run build",
     "build": "pnpm build:back && pnpm build:front",
     "deploy:front": "pnpm -F frontend run deploy",
