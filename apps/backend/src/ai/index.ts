@@ -24,7 +24,6 @@ const ErrorSchema = z.object({
 
 const app = new Hono<{
   Bindings: CloudflareBindings;
-  D1Database: D1Database;
   Variables: { user?: User };
 }>()
   .post(
