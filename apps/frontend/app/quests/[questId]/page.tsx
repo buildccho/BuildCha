@@ -51,7 +51,7 @@ export default async function QuestDetailPage({
           <h2 className="text-base xl:text-lg">お手本</h2>
           <div className="w-full h-full grow max-h-full flex items-center justify-center relative">
             <Image
-              src={"/house.png"}
+              src={`https://pub-68bb760998324b59b97c4622e8ba2d68.r2.dev/thumbnail/${questId}.png`}
               alt="お手本"
               fill
               className="object-contain block"

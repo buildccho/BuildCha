@@ -6,16 +6,17 @@ export default function QuestCard({ quest }: { quest: Quest }) {
   return (
     <Link
       href={`/quests/${quest.id}`}
-      className={`${quest.difficulty === "Easy" ? "bg-background" : quest.difficulty === "Medium" ? "bg-yellow-50" : "bg-purple-50"} shadow rounded-2xl p-2.5 block w-full max-w-60 space-y-2`}
+      className={`${quest.difficulty === "Easy" ? "bg-background" : quest.difficulty === "Medium" ? "bg-yellow-50" : "bg-purple-50"} shadow rounded-2xl p-2.5 flex flex-col w-full max-w-60 space-y-1`}
     >
       <DifficultyBadge difficulty={quest.difficulty} />
-      <Image
-        src={"/house.png"}
-        alt="画像"
-        width={100}
-        height={100}
-        className="object-cover mx-auto"
-      />
+      <div className="flex-1 relative w-full h-full flex items-center justify-center aspect-video">
+        <Image
+          src={`https://pub-68bb760998324b59b97c4622e8ba2d68.r2.dev/thumbnail/${encodeURIComponent(quest.id)}.png`}
+          alt="画像"
+          fill
+          className="object-contain w-full h-full block"
+        />
+      </div>
       <h2 className="text-base font-semibold text-end">{quest.name}</h2>
     </Link>
   );
