@@ -78,10 +78,14 @@ export const compareImages = async (
     apiKey: getConfig().OPENAI_API_KEY,
     model: "gpt-4.1-mini",
   });
+  const comments = Object.values(results)
+    .map((r) => r.comment)
+    .join("\n");
+  console.log("comments:", comments);
   const summaryAi = model.invoke([
     new SystemMessage("あなたは優秀な要約AIです。"),
     new HumanMessage({
-      content: `以下は、6つの視点からの3Dオブジェクト比較コメントです。これらを参考にして、全体の総評コメントを1〜3文で作成してください。${Object.values(results).join("\n")}`,
+      content: `以下は、6つの視点からの3Dオブジェクト比較コメントです。これらを参考にして、全体の総評コメントを1〜3文で作成してください。出力は、小学生にも分かりやすい平易な日本語で行ってください。\n\n${comments}`,
     }),
   ]);
   const comment = await summaryAi;
