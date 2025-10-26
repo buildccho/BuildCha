@@ -68,16 +68,20 @@ export const CompareObjectInputSchema = z.object({
 });
 
 export const CompareObjectOutputSchema = z.object({
-  score: z
+  object_score: z
     .number()
     .min(0)
     .max(100)
-    .meta({ example: 85, description: "類似度スコア（0-100）" }),
+    .meta({ example: 85, description: "オブジェクトのスコア（0-100）" }),
   comment: z.string().meta({
     example:
       "ユーザーのオブジェクトは非常に良くできています。いくつかの細部を改善することで、さらにリアルになります。",
     description: "AIからのフィードバックコメント",
   }),
+  user_level: z.number().meta({ example: 3, description: "ユーザーのレベル" }),
+  user_score: z
+    .number()
+    .meta({ example: 1500, description: "ユーザーの総合スコア" }),
 });
 
 // ChatBotの入出力スキーマ
