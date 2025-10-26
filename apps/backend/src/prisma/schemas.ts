@@ -49,7 +49,7 @@ export const ObjectSchema = z.object({
   position: JsonNumberArray.default([0, 0, 0]),
   rotation: JsonNumberArray.default([0, 0, 0]),
   boundingBox: JsonNumberArray.default([0, 0, 0]),
-  objectPrecision: z.number(),
+  objectPrecision: z.number().optional(),
   chatHistory: z.array(ChatHistorySchema),
   parts: z.array(PartsSchema),
 });
