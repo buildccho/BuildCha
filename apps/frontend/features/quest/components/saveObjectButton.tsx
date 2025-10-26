@@ -1,8 +1,11 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import ResultObject, {
+  type ResultObjectHandle,
+} from "@/features/world3d/components/resultObject";
 import { useGetMyTown } from "@/features/world3d/hooks/useGetMaps";
 import { calculateBoundingBox } from "@/features/world3d/utils/buildingCalculations";
 import { client } from "@/lib/rpc-client";
@@ -15,6 +18,7 @@ type SaveObjectButtonProps = {
 export function SaveObjectButton({ questId }: SaveObjectButtonProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const resultObjectRef = useRef<ResultObjectHandle>(null);
 
   const objectData = useObjectStore((state) => state.objectData);
   const name = useObjectStore((state) => state.name);
@@ -85,6 +89,47 @@ export function SaveObjectButton({ questId }: SaveObjectButtonProps) {
 
       toast.success("オブジェクトを保存しました");
 
+      const data = await response.json();
+
+      // 6方向のキャプチャを取得
+      if (!resultObjectRef.current) {
+        throw new Error("ResultObject is not ready");
+      }
+
+      toast.info("画像をキャプチャしています...");
+      const capturedViews = await resultObjectRef.current.capture();
+
+      const res = await client.ai.compareObject[":objectId"].$post({
+        param: {
+          objectId: data.id,
+        },
+        form: {
+          topView: new File([capturedViews.top], "top.png", {
+            type: "image/png",
+          }),
+          bottomView: new File([capturedViews.bottom], "bottom.png", {
+            type: "image/png",
+          }),
+          leftView: new File([capturedViews.left], "left.png", {
+            type: "image/png",
+          }),
+          rightView: new File([capturedViews.right], "right.png", {
+            type: "image/png",
+          }),
+          frontView: new File([capturedViews.front], "front.png", {
+            type: "image/png",
+          }),
+          backView: new File([capturedViews.back], "back.png", {
+            type: "image/png",
+          }),
+        },
+      });
+      if (!res.ok) {
+        throw new Error("オブジェクトの比較に失敗しました");
+      }
+      const resultData = await res.json();
+      console.log("resultData", resultData);
+
       // 位置選択ページへ遷移
       router.push("/quests/position");
     } catch (error) {
@@ -105,8 +150,15 @@ export function SaveObjectButton({ questId }: SaveObjectButtonProps) {
     !map?.id;
 
   return (
-    <Button size="lg" onClick={handleSaveObject} disabled={isDisabled}>
-      {isLoading ? "保存中..." : "おく場所を選ぶ"}
-    </Button>
+    <>
+      {/* キャプチャ用の隠しResultObject */}
+      <div className="sr-only">
+        <ResultObject ref={resultObjectRef} />
+      </div>
+
+      <Button size="lg" onClick={handleSaveObject} disabled={isDisabled}>
+        {isLoading ? "保存中..." : "おく場所を選ぶ"}
+      </Button>
+    </>
   );
 }
