@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { type RefObject, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +12,11 @@ import ResultObject, {
 import { client } from "@/lib/rpc-client";
 import { useObjectStore } from "@/stores";
 
-export function QuestCreateForm() {
+type QuestCreateFormProps = {
+  resultObjectRef?: RefObject<ResultObjectHandle | null>;
+};
+
+export function QuestCreateForm({ resultObjectRef }: QuestCreateFormProps) {
   const [name, setName] = useState("");
   const [difficulty, setDifficulty] = useState<"Easy" | "Medium" | "Hard">(
     "Easy",
@@ -28,8 +32,10 @@ export function QuestCreateForm() {
     string,
     Blob
   > | null>(null);
+  const [capturedThumbnail, setCapturedThumbnail] = useState<Blob | null>(null);
+  const [isCapturingThumbnail, setIsCapturingThumbnail] = useState(false);
 
-  const resultObjectRef = useRef<ResultObjectHandle>(null);
+  const internalResultObjectRef = useRef<ResultObjectHandle>(null);
   const objectData = useObjectStore((state) => state.objectData);
 
   // BlobのURLを生成してメモリリークを防ぐ
@@ -45,14 +51,23 @@ export function QuestCreateForm() {
     };
   }, [capturedViews]);
 
+  // サムネイルのプレビューURL
+  const thumbnailPreviewUrl = useMemo(() => {
+    if (!capturedThumbnail) return null;
+    return URL.createObjectURL(capturedThumbnail);
+  }, [capturedThumbnail]);
+
   // クリーンアップ: URLを解放
   useEffect(() => {
     return () => {
       if (previewUrls) {
         Object.values(previewUrls).forEach((url) => URL.revokeObjectURL(url));
       }
+      if (thumbnailPreviewUrl) {
+        URL.revokeObjectURL(thumbnailPreviewUrl);
+      }
     };
-  }, [previewUrls]);
+  }, [previewUrls, thumbnailPreviewUrl]);
 
   // クエスト作成
   const handleCreateQuest = async (e: React.FormEvent) => {
@@ -103,7 +118,7 @@ export function QuestCreateForm() {
       return;
     }
 
-    if (!resultObjectRef.current) {
+    if (!internalResultObjectRef.current) {
       toast.error("3Dオブジェクトがまだ準備できていません");
       return;
     }
@@ -112,7 +127,7 @@ export function QuestCreateForm() {
       setIsCapturing(true);
 
       // 6方向キャプチャを実行
-      const views = await resultObjectRef.current.capture();
+      const views = await internalResultObjectRef.current.capture();
       setCapturedViews(views);
 
       toast.success("キャプチャが完了しました");
@@ -128,6 +143,39 @@ export function QuestCreateForm() {
     }
   };
 
+  // サムネイルキャプチャ実行
+  const handleCaptureThumbnail = async () => {
+    if (!objectData) {
+      toast.error("3Dオブジェクトを作成してください");
+      return;
+    }
+
+    const targetRef = resultObjectRef || internalResultObjectRef;
+    if (!targetRef.current) {
+      toast.error("3Dオブジェクトがまだ準備できていません");
+      return;
+    }
+
+    try {
+      setIsCapturingThumbnail(true);
+
+      // 現在のカメラアングルでサムネイルキャプチャを実行
+      const thumbnail = await targetRef.current.captureThumbnail();
+      setCapturedThumbnail(thumbnail);
+
+      toast.success("サムネイルキャプチャが完了しました");
+    } catch (error) {
+      console.error("サムネイルキャプチャエラー:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "サムネイルキャプチャ中にエラーが発生しました",
+      );
+    } finally {
+      setIsCapturingThumbnail(false);
+    }
+  };
+
   // 画像アップロード
   const handleUploadImages = async () => {
     if (!createdQuestId) {
@@ -136,7 +184,12 @@ export function QuestCreateForm() {
     }
 
     if (!capturedViews) {
-      toast.error("先にキャプチャを実行してください");
+      toast.error("先に6方向キャプチャを実行してください");
+      return;
+    }
+
+    if (!capturedThumbnail) {
+      toast.error("先にサムネイルキャプチャを実行してください");
       return;
     }
 
@@ -169,6 +222,20 @@ export function QuestCreateForm() {
         throw new Error("画像のアップロードに失敗しました");
       }
 
+      // サムネイル画像をアップロード
+      const thumbnailUploadResponse = await client.r2.image[":key"].$post({
+        param: { key: `thumbnail` },
+        form: {
+          image: new File([capturedThumbnail], `${createdQuestId}.png`, {
+            type: "image/png",
+          }),
+        },
+      });
+
+      if (!thumbnailUploadResponse.ok) {
+        throw new Error("サムネイルのアップロードに失敗しました");
+      }
+
       toast.success("画像をアップロードしました");
 
       // フォームをリセット
@@ -179,6 +246,7 @@ export function QuestCreateForm() {
       setChallenge("");
       setCreatedQuestId(null);
       setCapturedViews(null);
+      setCapturedThumbnail(null);
     } catch (error) {
       console.error("画像アップロードエラー:", error);
       toast.error(
@@ -193,9 +261,9 @@ export function QuestCreateForm() {
 
   return (
     <>
-      {/* 非表示の3Dオブジェクト（キャプチャ用） */}
+      {/* 非表示の3Dオブジェクト（6方向キャプチャ用） */}
       <div className="sr-only">
-        <ResultObject ref={resultObjectRef} />
+        <ResultObject ref={internalResultObjectRef} />
       </div>
 
       <form onSubmit={handleCreateQuest} className="space-y-4">
@@ -275,44 +343,82 @@ export function QuestCreateForm() {
           />
         </div>
 
-        <div className="flex gap-2">
-          <Button
-            type="submit"
-            size="lg"
-            className="flex-1"
-            disabled={isCreatingQuest || !!createdQuestId}
-          >
-            {isCreatingQuest ? "作成中..." : "クエストを作成"}
-          </Button>
+        <div className="space-y-2">
+          <div className="flex gap-2">
+            <Button
+              type="submit"
+              size="lg"
+              className="flex-1"
+              disabled={isCreatingQuest || !!createdQuestId}
+            >
+              {isCreatingQuest ? "作成中..." : "クエストを作成"}
+            </Button>
+            <Button
+              type="button"
+              size="lg"
+              className="flex-1"
+              disabled={isCapturing}
+              onClick={handleCapture}
+            >
+              {isCapturing
+                ? "6方向キャプチャ中..."
+                : capturedViews
+                  ? "6方向再キャプチャ"
+                  : "6方向キャプチャ"}
+            </Button>
+            <Button
+              type="button"
+              size="lg"
+              className="flex-1"
+              disabled={
+                !createdQuestId ||
+                !capturedViews ||
+                !capturedThumbnail ||
+                isUploadingImages
+              }
+              onClick={handleUploadImages}
+            >
+              {isUploadingImages ? "アップロード中..." : "アップロード"}
+            </Button>
+          </div>
           <Button
             type="button"
             size="lg"
-            className="flex-1"
-            disabled={isCapturing}
-            onClick={handleCapture}
+            className="w-full"
+            variant="secondary"
+            disabled={isCapturingThumbnail || !objectData}
+            onClick={handleCaptureThumbnail}
           >
-            {isCapturing
-              ? "キャプチャ中..."
-              : capturedViews
-                ? "再キャプチャ"
-                : "キャプチャ"}
-          </Button>
-          <Button
-            type="button"
-            size="lg"
-            className="flex-1"
-            disabled={!createdQuestId || !capturedViews || isUploadingImages}
-            onClick={handleUploadImages}
-          >
-            {isUploadingImages ? "アップロード中..." : "アップロード"}
+            {isCapturingThumbnail
+              ? "サムネイルキャプチャ中..."
+              : capturedThumbnail
+                ? "サムネイル再キャプチャ"
+                : "サムネイルキャプチャ"}
           </Button>
         </div>
       </form>
 
       {/* プレビュー */}
+      {thumbnailPreviewUrl && (
+        <div className="mt-6 space-y-4">
+          <h3 className="font-semibold text-lg">サムネイルプレビュー（4:3）</h3>
+          <div className="border rounded p-4 bg-gray-50">
+            <Image
+              src={thumbnailPreviewUrl}
+              alt="Thumbnail preview"
+              width={800}
+              height={600}
+              className="w-full h-auto rounded shadow-sm"
+            />
+          </div>
+        </div>
+      )}
+
       {previewUrls && (
         <div className="mt-6 space-y-4">
-          <h3 className="font-semibold text-lg">キャプチャプレビュー</h3>
+          <h3 className="font-semibold text-lg">
+            キャプチャプレビュー（6方向）
+          </h3>
           <div className="grid grid-cols-3 gap-4">
             {(["top", "bottom", "left", "right", "front", "back"] as const).map(
               (view) => (
