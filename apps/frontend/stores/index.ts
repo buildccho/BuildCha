@@ -1,3 +1,3 @@
 // Store exports
 export { useAuthStore } from "./authStore";
-export { useObjectStore } from "./objectStore";
+export { type History, useObjectStore } from "./objectStore";

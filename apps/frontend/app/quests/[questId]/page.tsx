@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Chat from "@/features/quest/components/chat";
 import { DifficultyBadge } from "@/features/quest/components/questCard";
+import { SaveObjectButton } from "@/features/quest/components/saveObjectButton";
 import ResultObject from "@/features/world3d/components/resultObject";
 import { client } from "@/lib/rpc-client";
 
@@ -41,9 +42,7 @@ export default async function QuestDetailPage({
             />
           </div>
         </div>
-        <Button size={"lg"} asChild>
-          <Link href="/quests/position">おく場所を選ぶ</Link>
-        </Button>
+        <SaveObjectButton questId={questId} />
       </div>
 
       <div className="grid gap-x-4 gap-y-5 xl:gap-x-8 lg:gap-y-5 py-3 lg:py-4 xl:py-5 grid-cols-1 md:grid-cols-7 md:grid-rows-7 grow h-[calc(100%-100px)]">
