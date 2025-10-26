@@ -81,7 +81,6 @@ export const compareImages = async (
   const comments = Object.values(results)
     .map((r) => r.comment)
     .join("\n");
-  console.log("comments:", comments);
   const summaryAi = model.invoke([
     new SystemMessage("あなたは優秀な要約AIです。"),
     new HumanMessage({
