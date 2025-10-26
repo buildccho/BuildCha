@@ -53,11 +53,6 @@ export default function Chat() {
       });
       const formData = new FormData(e.currentTarget);
       const modelName = formData.get("model") as string;
-      console.log({
-        modelName,
-        userInput: message,
-        history: JSON.stringify(filteredHistory),
-      });
       const res = await client.ai.createObject.$post({
         json: {
           modelName,

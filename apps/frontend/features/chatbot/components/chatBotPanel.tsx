@@ -71,6 +71,9 @@ export function ChatBotPanel() {
     const userMessage = createMessage("user", trimmed);
     const nextHistory = [...messages, userMessage];
 
+    const formData = new FormData(event.currentTarget);
+    const modelName = formData.get("model") as string;
+
     setMessages(nextHistory);
     setInput("");
     setError(null);
@@ -79,7 +82,7 @@ export function ChatBotPanel() {
     try {
       const response = await client.ai.chatBot.$post({
         json: {
-          modelName: "gpt-4o-mini",
+          modelName: modelName,
           userMessage: trimmed,
           chatHistory: nextHistory.map(({ role, content }) => ({
             role,
