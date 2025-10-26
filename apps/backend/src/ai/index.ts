@@ -1,10 +1,13 @@
+import type { User } from "better-auth";
 import { Hono } from "hono";
 import { describeRoute } from "hono-openapi";
 import { resolver, validator } from "hono-openapi/zod";
 import { z } from "zod";
+import prismaClients from "../lib/prisma";
 import { addDemoDataToVectorStore, createChatBotResponse } from "./chatBot";
 import { compareImages } from "./compareImages";
 import { create3DObjectFromMessage } from "./create3DObject";
+
 import {
   AddDocumentsInputSchema,
   ChatBotConversationHistorySchema,
@@ -19,7 +22,11 @@ const ErrorSchema = z.object({
   message: z.string().meta({ example: "エラーメッセージ" }),
 });
 
-const app = new Hono<{ Bindings: CloudflareBindings }>()
+const app = new Hono<{
+  Bindings: CloudflareBindings;
+  D1Database: D1Database;
+  Variables: { user?: User };
+}>()
   .post(
     "/createObject",
     describeRoute({
@@ -71,7 +78,7 @@ const app = new Hono<{ Bindings: CloudflareBindings }>()
   )
 
   .post(
-    "/compareObject/:questId",
+    "/compareObject/:objectId",
     describeRoute({
       description: "AIオブジェクト比較エンドポイント",
       tags: ["AI"],
@@ -94,9 +101,23 @@ const app = new Hono<{ Bindings: CloudflareBindings }>()
     }),
     validator("form", CompareObjectInputSchema),
     async (c) => {
+      const user = c.get("user");
+      if (!user) return c.json({ message: "認証が必要です" }, 401);
       const { topView, bottomView, leftView, rightView, frontView, backView } =
         c.req.valid("form");
-      const questId = c.req.param("questId");
+      const objectId = c.req.param("objectId");
+
+      const prisma = await prismaClients.fetch(c.env.DB);
+      const questId = await prisma.userObject
+        .findFirst({
+          where: { id: objectId },
+          select: { questId: true },
+        })
+        .then((res) => res?.questId);
+      if (!questId) {
+        return c.json({ message: "オブジェクトが見つかりません" }, 404);
+      }
+
       const {
         answerTopView,
         answerBottomView,
@@ -105,25 +126,30 @@ const app = new Hono<{ Bindings: CloudflareBindings }>()
         answerFrontView,
         answerBackView,
       } = await getAnswerImageFromR2(c.env, questId);
-      const { score, results } = await compareImages(
-        {
-          topView: topView as File,
-          bottomView: bottomView as File,
-          leftView: leftView as File,
-          rightView: rightView as File,
-          frontView: frontView as File,
-          backView: backView as File,
-        },
-        {
-          topView: answerTopView as File,
-          bottomView: answerBottomView as File,
-          leftView: answerLeftView as File,
-          rightView: answerRightView as File,
-          frontView: answerFrontView as File,
-          backView: answerBackView as File,
-        },
-      );
-      return c.json({ score, results });
+      const { object_score, comment, user_level, user_score } =
+        await compareImages(
+          {
+            topView: topView as File,
+            bottomView: bottomView as File,
+            leftView: leftView as File,
+            rightView: rightView as File,
+            frontView: frontView as File,
+            backView: backView as File,
+          },
+          {
+            topView: answerTopView as File,
+            bottomView: answerBottomView as File,
+            leftView: answerLeftView as File,
+            rightView: answerRightView as File,
+            frontView: answerFrontView as File,
+            backView: answerBackView as File,
+          },
+          c.env.DB,
+          user,
+          objectId,
+          questId,
+        );
+      return c.json({ object_score, comment, user_level, user_score }, 200);
     },
   )
   .post(

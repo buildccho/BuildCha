@@ -1,6 +1,9 @@
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { ChatOpenAI } from "@langchain/openai";
+import type { User } from "better-auth";
+import { PrismaClient } from "../../generated/prisma/client";
 import { getConfig } from "../config";
+import prismaClients from "../lib/prisma";
 import { CompareObjectOutputSchema } from "./schemas";
 
 const systemInstruction = `
@@ -27,6 +30,10 @@ const systemInstruction = `
 export const compareImages = async (
   userObjectImages: { [key: string]: File },
   answerObjectImages: { [key: string]: File },
+  d1Database: D1Database,
+  user: User,
+  objectId: string,
+  questId: string,
 ) => {
   const views = Object.keys(userObjectImages);
   const results: {
@@ -59,8 +66,26 @@ export const compareImages = async (
     scores.length === 0
       ? 0
       : Math.round(scores.reduce((acc, cur) => acc + cur, 0) / scores.length);
-
-  return { score: overallScore, results };
+  const prisma = await prismaClients.fetch(d1Database);
+  await saveObjectScoreToD1(prisma, user.id, overallScore, objectId);
+  const { user_level, user_score } = await updateUserLevelAndScoreToD1(
+    prisma,
+    user.id,
+    overallScore,
+    questId,
+  );
+  const model = new ChatOpenAI({
+    apiKey: getConfig().OPENAI_API_KEY,
+    model: "gpt-4.1-mini",
+  });
+  const summaryAi = model.invoke([
+    new SystemMessage("あなたは優秀な要約AIです。"),
+    new HumanMessage({
+      content: `以下は、6つの視点からの3Dオブジェクト比較コメントです。これらを参考にして、全体の総評コメントを1〜3文で作成してください。${Object.values(results).join("\n")}`,
+    }),
+  ]);
+  const comment = await summaryAi;
+  return { object_score: overallScore, comment, user_level, user_score };
 };
 
 const compareTwoImages = async (
@@ -69,10 +94,9 @@ const compareTwoImages = async (
 ): Promise<{ score: number; comment: string }> => {
   try {
     const { OPENAI_API_KEY } = getConfig();
-    const USE_OPENAI_MODEL_NAME = "gpt-4.1-mini"; // 生成速度とコストを考慮して固定
     const model = new ChatOpenAI({
       apiKey: OPENAI_API_KEY,
-      model: USE_OPENAI_MODEL_NAME,
+      model: "gpt-4.1-mini",
       maxTokens: 256,
     });
     const ai = model.withStructuredOutput(CompareObjectOutputSchema);
@@ -88,7 +112,7 @@ const compareTwoImages = async (
       }),
     ]);
     return {
-      score: Number(res.score),
+      score: Number(res.user_score),
       comment: String(res.comment),
     };
   } catch (_e) {
@@ -103,4 +127,61 @@ const blobLikeToDataUrl = async (blobLike: Blob | File): Promise<string> => {
   const mime = (blobLike as Blob).type || "application/octet-stream";
   const b64 = buf.toString("base64");
   return `data:${mime};base64,${b64}`;
+};
+
+// オブジェクト適合率をD1に保存する
+const saveObjectScoreToD1 = async (
+  prisma: PrismaClient,
+  userId: string,
+  precision: number,
+  objectId: string,
+) => {
+  const existingObject = await prisma.userObject.findFirst({
+    where: { id: objectId, userId: userId },
+  });
+  if (!existingObject) {
+    throw new Error("オブジェクトが見つかりません");
+  }
+  await prisma.userObject.update({
+    where: { id: objectId, userId: userId },
+    data: {
+      objectPrecision: precision,
+    },
+  });
+};
+
+// levelとscoreを設定する
+const updateUserLevelAndScoreToD1 = async (
+  prisma: PrismaClient,
+  userId: string,
+  precision: number,
+  questId: string,
+) => {
+  const userInfo = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+  if (!userInfo) {
+    throw new Error("ユーザーが見つかりません");
+  }
+
+  const questObject = await prisma.quest.findFirst({
+    where: { id: questId },
+  });
+  if (!questObject) {
+    throw new Error("クエストが見つかりません");
+  }
+  const nowUserScore = userInfo.score || 0;
+  const updateScore =
+    nowUserScore + Math.floor(questObject.score * (precision / 100));
+  const updateLevel = Math.floor(0.02 * updateScore);
+
+  const updateUserInfo = await prisma.user.update({
+    where: { id: userId },
+    data: {
+      score: updateScore,
+      level: updateLevel,
+    },
+  });
+
+  return { user_level: updateLevel, user_score: updateScore };
 };
