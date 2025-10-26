@@ -32,9 +32,9 @@ type ChatMessage = {
 };
 
 const MODEL_NAMES = [
-  { value: "gpt-5-mini", label: "GPT-5-mini" },
-  { value: "gpt-4o-mini", label: "GPT-4o-mini" },
-  { value: "gpt-4.1", label: "GPT-4.1" },
+  { value: "gpt-4.1-nano", label: "かんたんAI（はやい）" },
+  { value: "gpt-4.1-mini", label: "ふつうAI（バランス）" },
+  { value: "gpt-4.1", label: "すごいAI（かしこい）" },
 ];
 
 const createMessage = (role: ChatRole, content: string): ChatMessage => ({
@@ -149,7 +149,7 @@ export function ChatBotPanel() {
             className="md:text-base"
           />
           <InputGroupAddon align="block-end" className="justify-between">
-            <Select name="model" defaultValue="gpt-4.1">
+            <Select name="model" defaultValue="gpt-4.1-mini">
               <SelectTrigger className="bg-background">
                 <SelectValue placeholder="モデルをえらぶ" />
               </SelectTrigger>
