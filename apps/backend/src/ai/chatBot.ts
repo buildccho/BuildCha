@@ -51,13 +51,14 @@ const systemInstruction = `
 export const createChatBotResponse = async (
   userMessage: string,
   chatHistory: ChatBotConversationHistorySchema,
+  modelName: string,
   env: CloudflareBindings,
 ) => {
   try {
-    const { OPENAI_API_KEY, USE_OPENAI_MODEL_NAME } = getConfig();
+    const { OPENAI_API_KEY } = getConfig();
     const model = new ChatOpenAI({
       apiKey: OPENAI_API_KEY,
-      model: USE_OPENAI_MODEL_NAME,
+      model: modelName,
       temperature: 0,
     });
     const tools = createAllTools(getVectorizeStore(env));

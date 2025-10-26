@@ -44,7 +44,7 @@ const app = new Hono<{ Bindings: CloudflareBindings }>()
     }),
     validator("json", CreateObjectInputSchema),
     async (c) => {
-      const { userInput, history } = c.req.valid("json");
+      const { userInput, history, modelName } = c.req.valid("json");
       let parsedHistory: CreateObjectConversationHistorySchema = [];
       if (history) {
         const raw = JSON.parse(history);
@@ -59,6 +59,7 @@ const app = new Hono<{ Bindings: CloudflareBindings }>()
         const data = await create3DObjectFromMessage(
           userInput,
           JSON.stringify(parsedHistory),
+          modelName,
         );
         return c.json(data, 200);
       } catch (e) {
@@ -166,15 +167,20 @@ const app = new Hono<{ Bindings: CloudflareBindings }>()
         chatHistory: ChatBotConversationHistorySchema.meta({
           description: "チャットの履歴",
         }),
+        modelName: z.string().min(1).meta({
+          example: "gpt-4.1",
+          description: "使用するAIモデルの名前",
+        }),
       }),
     ),
     async (c) => {
-      const { userMessage, chatHistory } = c.req.valid("json");
+      const { userMessage, chatHistory, modelName } = c.req.valid("json");
       try {
         // await addDemoDataToVectorStore(c.env); //NOTE: デモデータ追加（初回のみ実行）
         const response = await createChatBotResponse(
           userMessage,
           chatHistory,
+          modelName,
           c.env,
         );
         return c.json({ response }, 200);

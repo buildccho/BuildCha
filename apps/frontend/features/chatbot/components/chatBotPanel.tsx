@@ -1,6 +1,6 @@
 "use client";
 
-import { SendHorizonal, User } from "lucide-react";
+import { ArrowUp, User } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -11,6 +11,15 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { client } from "@/lib/rpc-client";
 
@@ -21,6 +30,12 @@ type ChatMessage = {
   role: ChatRole;
   content: string;
 };
+
+const MODEL_NAMES = [
+  { value: "gpt-4.1-nano", label: "かんたんAI（はやい）" },
+  { value: "gpt-4.1-mini", label: "ふつうAI（バランス）" },
+  { value: "gpt-4.1", label: "すごいAI（かしこい）" },
+];
 
 const createMessage = (role: ChatRole, content: string): ChatMessage => ({
   id: `${role}-${Date.now()}-${Math.random().toString(16).slice(2)}`,
@@ -56,6 +71,9 @@ export function ChatBotPanel() {
     const userMessage = createMessage("user", trimmed);
     const nextHistory = [...messages, userMessage];
 
+    const formData = new FormData(event.currentTarget);
+    const modelName = formData.get("model") as string;
+
     setMessages(nextHistory);
     setInput("");
     setError(null);
@@ -64,6 +82,7 @@ export function ChatBotPanel() {
     try {
       const response = await client.ai.chatBot.$post({
         json: {
+          modelName: modelName,
           userMessage: trimmed,
           chatHistory: nextHistory.map(({ role, content }) => ({
             role,
@@ -88,8 +107,6 @@ export function ChatBotPanel() {
       setIsPending(false);
     }
   };
-
-  const canSubmit = input.trim().length > 0 && !isPending;
 
   return (
     <div className="flex h-full w-full flex-col gap-5 min-h-0">
@@ -120,11 +137,8 @@ export function ChatBotPanel() {
         </p>
       )}
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-        <label className="sr-only" htmlFor="chatbot-question">
-          質問を入力
-        </label>
-        <InputGroup className="bg-white">
+      <form onSubmit={handleSubmit}>
+        <InputGroup className="rounded-xl p-1 bg-muted/40">
           <InputGroupInput
             id="chatbot-question"
             value={input}
@@ -134,21 +148,39 @@ export function ChatBotPanel() {
             disabled={isPending}
             className="md:text-base"
           />
-          <InputGroupAddon align="inline-end">
+          <InputGroupAddon align="block-end" className="justify-between">
+            <Select name="model" defaultValue="gpt-4.1-mini">
+              <SelectTrigger className="bg-background">
+                <SelectValue placeholder="モデルをえらぶ" />
+              </SelectTrigger>
+              <SelectContent align="start">
+                <SelectGroup>
+                  <SelectLabel>AIをえらぶ</SelectLabel>
+                  {MODEL_NAMES.map((model) => (
+                    <SelectItem
+                      key={model.value}
+                      value={model.value}
+                      className="py-2"
+                    >
+                      {model.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
             <InputGroupButton
               type="submit"
-              disabled={!canSubmit}
-              className="font-semibold"
+              disabled={isPending || !input}
+              variant="default"
+              className="rounded-full size-10"
+              size="icon-sm"
             >
               {isPending ? (
-                <>
-                  <Spinner className="size-5" />
-                  送信中…
-                </>
+                <Spinner />
               ) : (
                 <>
-                  <SendHorizonal className="size-5" />
-                  送信
+                  <ArrowUp className="size-6" />
+                  <span className="sr-only">Send</span>
                 </>
               )}
             </InputGroupButton>
