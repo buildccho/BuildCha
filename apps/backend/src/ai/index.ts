@@ -150,14 +150,24 @@ const app = new Hono<{
           questId,
         );
       return streamSSE(c, async (stream) => {
-        await stream.writeSSE({
-          data: JSON.stringify({
-            object_score,
-            comment,
-            user_level,
-            user_score,
-          }),
-        });
+        try {
+          await stream.writeSSE({
+            data: JSON.stringify({
+              object_score,
+              comment,
+              user_level,
+              user_score,
+            }),
+          });
+        } catch (e) {
+          await stream.writeSSE({
+            event: "error",
+            data: JSON.stringify({
+              message:
+                e instanceof Error ? e.message : "比較処理に失敗しました",
+            }),
+          });
+        }
       });
     },
   )
