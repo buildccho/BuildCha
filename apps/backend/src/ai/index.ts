@@ -1,5 +1,6 @@
 import type { User } from "better-auth";
 import { Hono } from "hono";
+import { streamSSE } from "hono/streaming";
 import { describeRoute } from "hono-openapi";
 import { resolver, validator } from "hono-openapi/zod";
 import { z } from "zod";
@@ -148,7 +149,16 @@ const app = new Hono<{
           objectId,
           questId,
         );
-      return c.json({ object_score, comment, user_level, user_score }, 200);
+      return streamSSE(c, async (stream) => {
+        await stream.writeSSE({
+          data: JSON.stringify({
+            object_score,
+            comment,
+            user_level,
+            user_score,
+          }),
+        });
+      });
     },
   )
   .post(
