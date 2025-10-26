@@ -2,9 +2,23 @@
 import { ArrowUp } from "lucide-react";
 import { useState } from "react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupTextarea,
+} from "@/components/ui/input-group";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
 import { client } from "@/lib/rpc-client";
 import { useObjectStore } from "@/stores";
 
@@ -12,6 +26,12 @@ type History = {
   role: "user" | "assistant";
   content: string;
 };
+
+const MODEL_NAMES = [
+  { value: "gpt-5-mini", label: "GPT-5-mini" },
+  { value: "gpt-4o-mini", label: "GPT-4o-mini" },
+  { value: "gpt-4.1", label: "GPT-4.1" },
+];
 
 export default function Chat() {
   const [message, setMessage] = useState("");
@@ -31,8 +51,16 @@ export default function Chat() {
           return true;
         return false;
       });
+      const formData = new FormData(e.currentTarget);
+      const modelName = formData.get("model") as string;
+      console.log({
+        modelName,
+        userInput: message,
+        history: JSON.stringify(filteredHistory),
+      });
       const res = await client.ai.createObject.$post({
         json: {
+          modelName,
           userInput: message,
           history: JSON.stringify(filteredHistory),
         },
@@ -135,29 +163,52 @@ export default function Chat() {
         </div>
       </ScrollArea>
 
-      <div className="relative">
-        <form
-          className="flex gap-2"
-          onSubmit={handleSubmit}
-          onKeyDown={handleKeyDown}
-        >
-          <Textarea
-            className="bg-neutral-100 border-none p-4 xl:p-5 resize-none rounded-xl pr-16"
+      <form onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
+        <InputGroup className="rounded-xl p-1 bg-muted/40">
+          <InputGroupTextarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            disabled={isPending}
             placeholder="おおきい おしろみたいな いえ"
           />
-          <Button
-            variant={"default"}
-            size={"icon"}
-            className="size-10 text-white rounded-full absolute right-4 top-1/2 -translate-y-1/2"
-            disabled={isPending}
-          >
-            <ArrowUp className="size-6" />
-          </Button>
-        </form>
-      </div>
+          <InputGroupAddon align="block-end" className="justify-between">
+            <Select name="model" defaultValue="gpt-4.1">
+              <SelectTrigger className="bg-background">
+                <SelectValue placeholder="モデルをえらぶ" />
+              </SelectTrigger>
+              <SelectContent align="start">
+                <SelectGroup>
+                  <SelectLabel>AIをえらぶ</SelectLabel>
+                  {MODEL_NAMES.map((model) => (
+                    <SelectItem
+                      key={model.value}
+                      value={model.value}
+                      className="py-2"
+                    >
+                      {model.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <InputGroupButton
+              type="submit"
+              disabled={isPending || !message}
+              variant="default"
+              className="rounded-full size-10"
+              size="icon-sm"
+            >
+              {isPending ? (
+                <Spinner />
+              ) : (
+                <>
+                  <ArrowUp className="size-6" />
+                  <span className="sr-only">Send</span>
+                </>
+              )}
+            </InputGroupButton>
+          </InputGroupAddon>
+        </InputGroup>
+      </form>
     </>
   );
 }
