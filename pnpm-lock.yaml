@@ -22,7 +22,7 @@ importers:
     dependencies:
       '@hono/zod-validator':
         specifier: ^0.7.2
-        version: 0.7.3(hono@4.9.8)(zod@4.1.9)
+        version: 0.7.3(hono@4.10.3)(zod@4.1.9)
       '@langchain/cloudflare':
         specifier: ^0.1.1
         version: 0.1.1(@langchain/core@0.3.77(openai@5.12.2(ws@8.18.0)(zod@4.1.9)))
@@ -55,16 +55,16 @@ importers:
         version: 6.16.2(prisma@6.16.2(typescript@5.9.2))(typescript@5.9.2)
       '@scalar/hono-api-reference':
         specifier: ^0.9.18
-        version: 0.9.18(hono@4.9.8)
+        version: 0.9.18(hono@4.10.3)
       better-auth:
         specifier: ^1.3.8
         version: 1.3.12(next@15.5.6(@playwright/test@1.55.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       hono:
         specifier: ^4.9.6
-        version: 4.9.8
+        version: 4.10.3
       hono-openapi:
         specifier: 0.4.8
-        version: 0.4.8(@hono/zod-validator@0.7.3(hono@4.9.8)(zod@4.1.9))(@sinclair/typebox@0.34.41)(effect@3.16.12)(hono@4.9.8)(openapi-types@12.1.3)(zod-openapi@5.4.1(zod@4.1.9))(zod@4.1.9)
+        version: 0.4.8(@hono/zod-validator@0.7.3(hono@4.10.3)(zod@4.1.9))(@sinclair/typebox@0.34.41)(effect@3.16.12)(hono@4.10.3)(openapi-types@12.1.3)(zod-openapi@5.4.1(zod@4.1.9))(zod@4.1.9)
       pdf-parse:
         specifier: ^2.1.7
         version: 2.1.7
@@ -101,13 +101,13 @@ importers:
         version: 5.9.2
       wrangler:
         specifier: ^4.4.0
-        version: 4.38.0(@cloudflare/workers-types@4.20250919.0)
+        version: 4.45.0(@cloudflare/workers-types@4.20250919.0)
 
   apps/frontend:
     dependencies:
       '@opennextjs/cloudflare':
         specifier: ^1.11.0
-        version: 1.11.0(wrangler@4.38.0(@cloudflare/workers-types@4.20250919.0))
+        version: 1.11.0(wrangler@4.45.0(@cloudflare/workers-types@4.20250919.0))
       '@radix-ui/react-avatar':
         specifier: ^1.1.10
         version: 1.1.10(@types/react-dom@19.1.9(@types/react@19.1.13))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -213,7 +213,41 @@ importers:
         version: 5.9.2
       wrangler:
         specifier: ^4.37.0
-        version: 4.38.0(@cloudflare/workers-types@4.20250919.0)
+        version: 4.45.0(@cloudflare/workers-types@4.20250919.0)
+
+  apps/mcp:
+    dependencies:
+      '@hono/mcp':
+        specifier: ^0.1.4
+        version: 0.1.4(@modelcontextprotocol/sdk@1.20.1)(hono@4.10.3)
+      '@langchain/cloudflare':
+        specifier: ^0.1.1
+        version: 0.1.1(@langchain/core@0.3.77(openai@5.12.2(ws@8.18.0)(zod@3.25.76)))
+      '@langchain/core':
+        specifier: ^0.3.77
+        version: 0.3.77(openai@5.12.2(ws@8.18.0)(zod@3.25.76))
+      '@langchain/openai':
+        specifier: ^0.6.13
+        version: 0.6.13(@langchain/core@0.3.77(openai@5.12.2(ws@8.18.0)(zod@3.25.76)))(ws@8.18.0)
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.20.1
+        version: 1.20.1
+      hono:
+        specifier: ^4.10.3
+        version: 4.10.3
+      langchain:
+        specifier: ^1.0.1
+        version: 1.0.1(@langchain/core@0.3.77(openai@5.12.2(ws@8.18.0)(zod@3.25.76)))(openai@5.12.2(ws@8.18.0)(zod@3.25.76))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(zod-to-json-schema@3.24.6(zod@3.25.76))
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
+    devDependencies:
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.2
+      wrangler:
+        specifier: ^4.4.0
+        version: 4.45.0(@cloudflare/workers-types@4.20250919.0)
 
 packages:
 
@@ -827,41 +861,41 @@ packages:
     resolution: {integrity: sha512-+tv3z+SPp+gqTIcImN9o0hqE9xyfQjI1XD9pL6NuKjua9B1y7mNYv0S9cP+QEbA4ppVgGZEmKOvHX5G5Ei1CVA==}
     engines: {node: '>=18.0.0'}
 
-  '@cloudflare/unenv-preset@2.7.4':
-    resolution: {integrity: sha512-KIjbu/Dt50zseJIoOOK5y4eYpSojD9+xxkePYVK1Rg9k/p/st4YyMtz1Clju/zrenJHrOH+AAcjNArOPMwH4Bw==}
+  '@cloudflare/unenv-preset@2.7.8':
+    resolution: {integrity: sha512-Ky929MfHh+qPhwCapYrRPwPVHtA2Ioex/DbGZyskGyNRDe9Ru3WThYZivyNVaPy5ergQSgMs9OKrM9Ajtz9F6w==}
     peerDependencies:
       unenv: 2.0.0-rc.21
-      workerd: ^1.20250912.0
+      workerd: ^1.20250927.0
     peerDependenciesMeta:
       workerd:
         optional: true
 
-  '@cloudflare/workerd-darwin-64@1.20250917.0':
-    resolution: {integrity: sha512-0kL/kFnKUSycoo7b3PgM0nRyZ+1MGQAKaXtE6a2+SAeUkZ2FLnuFWmASi0s4rlWGsf/rlTw4AwXROePir9dUcQ==}
+  '@cloudflare/workerd-darwin-64@1.20251011.0':
+    resolution: {integrity: sha512-0DirVP+Z82RtZLlK2B+VhLOkk+ShBqDYO/jhcRw4oVlp0TOvk3cOVZChrt3+y3NV8Y/PYgTEywzLKFSziK4wCg==}
     engines: {node: '>=16'}
     cpu: [x64]
     os: [darwin]
 
-  '@cloudflare/workerd-darwin-arm64@1.20250917.0':
-    resolution: {integrity: sha512-3/N1QmEJsC8Byxt1SGgVp5o0r+eKjuUEMbIL2yzLk/jrMdErPXy/DGf/tXZoACU68a/gMEbbT1itkYrm85iQHg==}
+  '@cloudflare/workerd-darwin-arm64@1.20251011.0':
+    resolution: {integrity: sha512-1WuFBGwZd15p4xssGN/48OE2oqokIuc51YvHvyNivyV8IYnAs3G9bJNGWth1X7iMDPe4g44pZrKhRnISS2+5dA==}
     engines: {node: '>=16'}
     cpu: [arm64]
     os: [darwin]
 
-  '@cloudflare/workerd-linux-64@1.20250917.0':
-    resolution: {integrity: sha512-E7sEow7CErbWY3olMmlbj6iss9r7Xb2uMyc+MKzYC9/J6yFlJd/dNHvjey9QIdxzbkC9qGe90a+KxQrjs+fspA==}
+  '@cloudflare/workerd-linux-64@1.20251011.0':
+    resolution: {integrity: sha512-BccMiBzFlWZyFghIw2szanmYJrJGBGHomw2y/GV6pYXChFzMGZkeCEMfmCyJj29xczZXxcZmUVJxNy4eJxO8QA==}
     engines: {node: '>=16'}
     cpu: [x64]
     os: [linux]
 
-  '@cloudflare/workerd-linux-arm64@1.20250917.0':
-    resolution: {integrity: sha512-roOnRjxut2FUxo6HA9spbfs32naXAsnSQqsgku3iq6BYKv1QqGiFoY5bReK72N5uxmhxo7+RiTo8ZEkxA/vMIQ==}
+  '@cloudflare/workerd-linux-arm64@1.20251011.0':
+    resolution: {integrity: sha512-79o/216lsbAbKEVDZYXR24ivEIE2ysDL9jvo0rDTkViLWju9dAp3CpyetglpJatbSi3uWBPKZBEOqN68zIjVsQ==}
     engines: {node: '>=16'}
     cpu: [arm64]
     os: [linux]
 
-  '@cloudflare/workerd-windows-64@1.20250917.0':
-    resolution: {integrity: sha512-gslh6Ou9+kshHjR1BJX47OsbPw3/cZCvGDompvaW/URCgr7aMzljbgmBb7p0uhwGy1qCXcIt31St6pd3IEcLng==}
+  '@cloudflare/workerd-windows-64@1.20251011.0':
+    resolution: {integrity: sha512-RIXUQRchFdqEvaUqn1cXZXSKjpqMaSaVAkI5jNZ8XzAw/bw2bcdOVUtakrflgxDprltjFb0PTNtuss1FKtH9Jg==}
     engines: {node: '>=16'}
     cpu: [x64]
     os: [win32]
@@ -1073,6 +1107,12 @@ packages:
 
   '@hexagon/base64@1.1.28':
     resolution: {integrity: sha512-lhqDEAvWixy3bZ+UOYbPwUbBkwBq5C1LAJ/xPC8Oi+lL54oyakv/npbA0aU2hgCsx/1NUd4IBvV03+aUBWxerw==}
+
+  '@hono/mcp@0.1.4':
+    resolution: {integrity: sha512-OOMZCXaCcKw6MZoXJH1caO1FAPjJoTKRVstgzRVE8GJ/LMXvm/3OTynZYex0b5NYdMQRemd+FUjdCcYkH1pxMQ==}
+    peerDependencies:
+      '@modelcontextprotocol/sdk': ^1.12.0
+      hono: '>=4.0.0'
 
   '@hono/zod-validator@0.7.3':
     resolution: {integrity: sha512-uYGdgVib3RlGD698WR5dVM0zB3UuPY5vHKXffGUbUh7r4xY+mFIhF3/v4AcQVLrU5CQdBso8BJr4wuVoCrjTuQ==}
@@ -1883,10 +1923,30 @@ packages:
     peerDependencies:
       '@langchain/core': '>=0.2.31 <0.4.0 || ^1.0.0-alpha'
 
+  '@langchain/langgraph-checkpoint@1.0.0':
+    resolution: {integrity: sha512-xrclBGvNCXDmi0Nz28t3vjpxSH6UYx6w5XAXSiiB1WEdc2xD2iY/a913I3x3a31XpInUW/GGfXXfePfaghV54A==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@langchain/core': ^1.0.1
+
   '@langchain/langgraph-sdk@0.1.10':
     resolution: {integrity: sha512-9srSCb2bSvcvehMgjA2sMMwX0o1VUgPN6ghwm5Fwc9JGAKsQa6n1S4eCwy1h4abuYxwajH5n3spBw+4I2WYbgw==}
     peerDependencies:
       '@langchain/core': '>=0.2.31 <0.4.0 || ^1.0.0-alpha'
+      react: ^18 || ^19
+      react-dom: ^18 || ^19
+    peerDependenciesMeta:
+      '@langchain/core':
+        optional: true
+      react:
+        optional: true
+      react-dom:
+        optional: true
+
+  '@langchain/langgraph-sdk@1.0.0':
+    resolution: {integrity: sha512-g25ti2W7Dl5wUPlNK+0uIGbeNFqf98imhHlbdVVKTTkDYLhi/pI1KTgsSSkzkeLuBIfvt2b0q6anQwCs7XBlbw==}
+    peerDependencies:
+      '@langchain/core': ^1.0.1
       react: ^18 || ^19
       react-dom: ^18 || ^19
     peerDependenciesMeta:
@@ -1902,6 +1962,17 @@ packages:
     engines: {node: '>=18'}
     peerDependencies:
       '@langchain/core': '>=0.3.58 < 0.4.0'
+      zod-to-json-schema: ^3.x
+    peerDependenciesMeta:
+      zod-to-json-schema:
+        optional: true
+
+  '@langchain/langgraph@1.0.1':
+    resolution: {integrity: sha512-7y8OTDLrHrpJ55Y5x7c7zU2BbqNllXwxM106Xrd+NaQB5CpEb4hbUfIwe4XmhhscKPwvhXAq3tjeUxw9MCiurQ==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@langchain/core': ^1.0.1
+      zod: ^3.25.32 || ^4.1.0
       zod-to-json-schema: ^3.x
     peerDependenciesMeta:
       zod-to-json-schema:
@@ -4191,8 +4262,8 @@ packages:
       zod-openapi:
         optional: true
 
-  hono@4.9.8:
-    resolution: {integrity: sha512-JW8Bb4RFWD9iOKxg5PbUarBYGM99IcxFl2FPBo2gSJO11jjUDqlP1Bmfyqt8Z/dGhIQ63PMA9LdcLefXyIasyg==}
+  hono@4.10.3:
+    resolution: {integrity: sha512-2LOYWUbnhdxdL8MNbNg9XZig6k+cZXm5IjHn2Aviv7honhBMOHb+jxrKIeJRZJRmn+htUCKhaicxwXuUDlchRA==}
     engines: {node: '>=16.9.0'}
 
   html-escaper@2.0.2:
@@ -4641,6 +4712,12 @@ packages:
       typeorm:
         optional: true
 
+  langchain@1.0.1:
+    resolution: {integrity: sha512-IT4JBVbKBh2AjaUFT9OsmOfeK3UbKy3SgdzZOuvet25sAaMpAR8IaM9XVddRs+OXQqVg6sOS01KUUVCJksVhHg==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      '@langchain/core': ^1.0.0
+
   langsmith@0.3.69:
     resolution: {integrity: sha512-YKzu92YAP2o+d+1VmR38xqFX0RIRLKYj1IqdflVEY83X0FoiVlrWO3xDLXgnu7vhZ2N2M6jx8VO9fVF8yy9gHA==}
     peerDependencies:
@@ -4881,8 +4958,8 @@ packages:
     resolution: {integrity: sha512-VP79XUPxV2CigYP3jWwAUFSku2aKqBH7uTAapFWCBqutsbmDo96KY5o8uh6U+/YSIn5OxJnXp73beVkpqMIGhA==}
     engines: {node: '>=18'}
 
-  miniflare@4.20250917.0:
-    resolution: {integrity: sha512-A7kYEc/Y6ohiiTji4W/qGJj3aJNc/9IMj/6wLy2phD/iMjcoY8t35654gR5mHbMx0AgUolDdr3HOsHB0cYBf+Q==}
+  miniflare@4.20251011.1:
+    resolution: {integrity: sha512-Qbw1Z8HTYM1adWl6FAtzhrj34/6dPRDPwdYOx21dkae8a/EaxbMzRIPbb4HKVGMVvtqbK1FaRCgDLVLolNzGHg==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -6004,17 +6081,17 @@ packages:
   wordwrap@1.0.0:
     resolution: {integrity: sha512-gvVzJFlPycKc5dZN4yPkP8w7Dc37BtP1yczEneOb4uq34pXZcvrtRTmWV8W+Ume+XCxKgbjM+nevkyFPMybd4Q==}
 
-  workerd@1.20250917.0:
-    resolution: {integrity: sha512-0D+wWaccyYQb2Zx2DZDC77YDn9kOpkpGMCgyKgIHilghut5hBQ/adUIEseS4iuIZxBPeFSn6zFtICP0SxZ3z0g==}
+  workerd@1.20251011.0:
+    resolution: {integrity: sha512-Dq35TLPEJAw7BuYQMkN3p9rge34zWMU2Gnd4DSJFeVqld4+DAO2aPG7+We2dNIAyM97S8Y9BmHulbQ00E0HC7Q==}
     engines: {node: '>=16'}
     hasBin: true
 
-  wrangler@4.38.0:
-    resolution: {integrity: sha512-ITL4VZ4KWs8LMDEttDTrAKLktwtv1NxHBd5QIqHOczvcjnAQr+GQoE6XYQws+w8jlOjDV7KyvbFqAdyRh5om3g==}
+  wrangler@4.45.0:
+    resolution: {integrity: sha512-2qM6bHw8l7r89Z9Y5A7Wn4L9U+dFoLjYgEUVpqy7CcmXpppL3QIYqU6rU5lre7/SRzBuPu/H93Vwfh538gZ3iw==}
     engines: {node: '>=18.0.0'}
     hasBin: true
     peerDependencies:
-      '@cloudflare/workers-types': ^4.20250917.0
+      '@cloudflare/workers-types': ^4.20251011.0
     peerDependenciesMeta:
       '@cloudflare/workers-types':
         optional: true
@@ -7458,25 +7535,25 @@ snapshots:
     dependencies:
       mime: 3.0.0
 
-  '@cloudflare/unenv-preset@2.7.4(unenv@2.0.0-rc.21)(workerd@1.20250917.0)':
+  '@cloudflare/unenv-preset@2.7.8(unenv@2.0.0-rc.21)(workerd@1.20251011.0)':
     dependencies:
       unenv: 2.0.0-rc.21
     optionalDependencies:
-      workerd: 1.20250917.0
+      workerd: 1.20251011.0
 
-  '@cloudflare/workerd-darwin-64@1.20250917.0':
+  '@cloudflare/workerd-darwin-64@1.20251011.0':
     optional: true
 
-  '@cloudflare/workerd-darwin-arm64@1.20250917.0':
+  '@cloudflare/workerd-darwin-arm64@1.20251011.0':
     optional: true
 
-  '@cloudflare/workerd-linux-64@1.20250917.0':
+  '@cloudflare/workerd-linux-64@1.20251011.0':
     optional: true
 
-  '@cloudflare/workerd-linux-arm64@1.20250917.0':
+  '@cloudflare/workerd-linux-arm64@1.20251011.0':
     optional: true
 
-  '@cloudflare/workerd-windows-64@1.20250917.0':
+  '@cloudflare/workerd-windows-64@1.20251011.0':
     optional: true
 
   '@cloudflare/workers-types@4.20250919.0': {}
@@ -7620,9 +7697,14 @@ snapshots:
 
   '@hexagon/base64@1.1.28': {}
 
-  '@hono/zod-validator@0.7.3(hono@4.9.8)(zod@4.1.9)':
+  '@hono/mcp@0.1.4(@modelcontextprotocol/sdk@1.20.1)(hono@4.10.3)':
     dependencies:
-      hono: 4.9.8
+      '@modelcontextprotocol/sdk': 1.20.1
+      hono: 4.10.3
+
+  '@hono/zod-validator@0.7.3(hono@4.10.3)(zod@4.1.9)':
+    dependencies:
+      hono: 4.10.3
       zod: 4.1.9
 
   '@ibm-cloud/watsonx-ai@1.6.13':
@@ -8117,6 +8199,11 @@ snapshots:
       - zod
     optional: true
 
+  '@langchain/cloudflare@0.1.1(@langchain/core@0.3.77(openai@5.12.2(ws@8.18.0)(zod@3.25.76)))':
+    dependencies:
+      '@langchain/core': 0.3.77(openai@5.12.2(ws@8.18.0)(zod@3.25.76))
+      uuid: 10.0.0
+
   '@langchain/cloudflare@0.1.1(@langchain/core@0.3.77(openai@5.12.2(ws@8.18.0)(zod@4.1.9)))':
     dependencies:
       '@langchain/core': 0.3.77(openai@5.12.2(ws@8.18.0)(zod@4.1.9))
@@ -8177,6 +8264,26 @@ snapshots:
       - handlebars
       - peggy
 
+  '@langchain/core@0.3.77(openai@5.12.2(ws@8.18.0)(zod@3.25.76))':
+    dependencies:
+      '@cfworker/json-schema': 4.1.1
+      ansi-styles: 5.2.0
+      camelcase: 6.3.0
+      decamelize: 1.2.0
+      js-tiktoken: 1.0.21
+      langsmith: 0.3.69(openai@5.12.2(ws@8.18.0)(zod@3.25.76))
+      mustache: 4.2.0
+      p-queue: 6.6.2
+      p-retry: 4.6.2
+      uuid: 10.0.0
+      zod: 3.25.76
+      zod-to-json-schema: 3.24.6(zod@3.25.76)
+    transitivePeerDependencies:
+      - '@opentelemetry/api'
+      - '@opentelemetry/exporter-trace-otlp-proto'
+      - '@opentelemetry/sdk-trace-base'
+      - openai
+
   '@langchain/core@0.3.77(openai@5.12.2(ws@8.18.0)(zod@4.1.9))':
     dependencies:
       '@cfworker/json-schema': 4.1.1
@@ -8202,6 +8309,11 @@ snapshots:
       '@langchain/core': 0.3.77(openai@5.12.2(ws@8.18.0)(zod@4.1.9))
       uuid: 10.0.0
 
+  '@langchain/langgraph-checkpoint@1.0.0(@langchain/core@0.3.77(openai@5.12.2(ws@8.18.0)(zod@3.25.76)))':
+    dependencies:
+      '@langchain/core': 0.3.77(openai@5.12.2(ws@8.18.0)(zod@3.25.76))
+      uuid: 10.0.0
+
   '@langchain/langgraph-sdk@0.1.10(@langchain/core@0.3.77(openai@5.12.2(ws@8.18.0)(zod@4.1.9)))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
       '@types/json-schema': 7.0.15
@@ -8210,6 +8322,16 @@ snapshots:
       uuid: 9.0.1
     optionalDependencies:
       '@langchain/core': 0.3.77(openai@5.12.2(ws@8.18.0)(zod@4.1.9))
+      react: 19.1.1
+      react-dom: 19.1.1(react@19.1.1)
+
+  '@langchain/langgraph-sdk@1.0.0(@langchain/core@0.3.77(openai@5.12.2(ws@8.18.0)(zod@3.25.76)))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+    dependencies:
+      p-queue: 6.6.2
+      p-retry: 4.6.2
+      uuid: 9.0.1
+    optionalDependencies:
+      '@langchain/core': 0.3.77(openai@5.12.2(ws@8.18.0)(zod@3.25.76))
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
 
@@ -8225,6 +8347,28 @@ snapshots:
     transitivePeerDependencies:
       - react
       - react-dom
+
+  '@langchain/langgraph@1.0.1(@langchain/core@0.3.77(openai@5.12.2(ws@8.18.0)(zod@3.25.76)))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(zod-to-json-schema@3.24.6(zod@3.25.76))(zod@4.1.9)':
+    dependencies:
+      '@langchain/core': 0.3.77(openai@5.12.2(ws@8.18.0)(zod@3.25.76))
+      '@langchain/langgraph-checkpoint': 1.0.0(@langchain/core@0.3.77(openai@5.12.2(ws@8.18.0)(zod@3.25.76)))
+      '@langchain/langgraph-sdk': 1.0.0(@langchain/core@0.3.77(openai@5.12.2(ws@8.18.0)(zod@3.25.76)))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      uuid: 10.0.0
+      zod: 4.1.9
+    optionalDependencies:
+      zod-to-json-schema: 3.24.6(zod@3.25.76)
+    transitivePeerDependencies:
+      - react
+      - react-dom
+
+  '@langchain/openai@0.6.13(@langchain/core@0.3.77(openai@5.12.2(ws@8.18.0)(zod@3.25.76)))(ws@8.18.0)':
+    dependencies:
+      '@langchain/core': 0.3.77(openai@5.12.2(ws@8.18.0)(zod@3.25.76))
+      js-tiktoken: 1.0.21
+      openai: 5.12.2(ws@8.18.0)(zod@3.25.76)
+      zod: 3.25.76
+    transitivePeerDependencies:
+      - ws
 
   '@langchain/openai@0.6.13(@langchain/core@0.3.77(openai@5.12.2(ws@8.18.0)(zod@4.1.9)))(ws@8.18.0)':
     dependencies:
@@ -8424,7 +8568,7 @@ snapshots:
       - aws-crt
       - supports-color
 
-  '@opennextjs/cloudflare@1.11.0(wrangler@4.38.0(@cloudflare/workers-types@4.20250919.0))':
+  '@opennextjs/cloudflare@1.11.0(wrangler@4.45.0(@cloudflare/workers-types@4.20250919.0))':
     dependencies:
       '@dotenvx/dotenvx': 1.31.0
       '@opennextjs/aws': 3.8.5
@@ -8434,7 +8578,7 @@ snapshots:
       glob: 11.0.3
       rclone.js: 0.6.6
       ts-tqdm: 0.8.6
-      wrangler: 4.38.0(@cloudflare/workers-types@4.20250919.0)
+      wrangler: 4.45.0(@cloudflare/workers-types@4.20250919.0)
       yargs: 18.0.0
     transitivePeerDependencies:
       - aws-crt
@@ -8988,10 +9132,10 @@ snapshots:
     dependencies:
       '@scalar/types': 0.2.15
 
-  '@scalar/hono-api-reference@0.9.18(hono@4.9.8)':
+  '@scalar/hono-api-reference@0.9.18(hono@4.10.3)':
     dependencies:
       '@scalar/core': 0.3.16
-      hono: 4.9.8
+      hono: 4.10.3
 
   '@scalar/openapi-types@0.3.7':
     dependencies:
@@ -10751,19 +10895,19 @@ snapshots:
 
   hls.js@1.6.12: {}
 
-  hono-openapi@0.4.8(@hono/zod-validator@0.7.3(hono@4.9.8)(zod@4.1.9))(@sinclair/typebox@0.34.41)(effect@3.16.12)(hono@4.9.8)(openapi-types@12.1.3)(zod-openapi@5.4.1(zod@4.1.9))(zod@4.1.9):
+  hono-openapi@0.4.8(@hono/zod-validator@0.7.3(hono@4.10.3)(zod@4.1.9))(@sinclair/typebox@0.34.41)(effect@3.16.12)(hono@4.10.3)(openapi-types@12.1.3)(zod-openapi@5.4.1(zod@4.1.9))(zod@4.1.9):
     dependencies:
       json-schema-walker: 2.0.0
       openapi-types: 12.1.3
     optionalDependencies:
-      '@hono/zod-validator': 0.7.3(hono@4.9.8)(zod@4.1.9)
+      '@hono/zod-validator': 0.7.3(hono@4.10.3)(zod@4.1.9)
       '@sinclair/typebox': 0.34.41
       effect: 3.16.12
-      hono: 4.9.8
+      hono: 4.10.3
       zod: 4.1.9
       zod-openapi: 5.4.1(zod@4.1.9)
 
-  hono@4.9.8: {}
+  hono@4.10.3: {}
 
   html-escaper@2.0.2: {}
 
@@ -10798,7 +10942,7 @@ snapshots:
       isstream: 0.1.2
       jsonwebtoken: 9.0.2
       mime-types: 2.1.35
-      retry-axios: 2.6.0(axios@1.12.2)
+      retry-axios: 2.6.0(axios@1.12.2(debug@4.4.3))
       tough-cookie: 4.1.4
     transitivePeerDependencies:
       - supports-color
@@ -11418,6 +11562,36 @@ snapshots:
       - openai
       - ws
 
+  langchain@1.0.1(@langchain/core@0.3.77(openai@5.12.2(ws@8.18.0)(zod@3.25.76)))(openai@5.12.2(ws@8.18.0)(zod@3.25.76))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(zod-to-json-schema@3.24.6(zod@3.25.76)):
+    dependencies:
+      '@langchain/core': 0.3.77(openai@5.12.2(ws@8.18.0)(zod@3.25.76))
+      '@langchain/langgraph': 1.0.1(@langchain/core@0.3.77(openai@5.12.2(ws@8.18.0)(zod@3.25.76)))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(zod-to-json-schema@3.24.6(zod@3.25.76))(zod@4.1.9)
+      '@langchain/langgraph-checkpoint': 1.0.0(@langchain/core@0.3.77(openai@5.12.2(ws@8.18.0)(zod@3.25.76)))
+      uuid: 10.0.0
+      zod: 4.1.9
+    optionalDependencies:
+      langsmith: 0.3.69(openai@5.12.2(ws@8.18.0)(zod@3.25.76))
+    transitivePeerDependencies:
+      - '@opentelemetry/api'
+      - '@opentelemetry/exporter-trace-otlp-proto'
+      - '@opentelemetry/sdk-trace-base'
+      - openai
+      - react
+      - react-dom
+      - zod-to-json-schema
+
+  langsmith@0.3.69(openai@5.12.2(ws@8.18.0)(zod@3.25.76)):
+    dependencies:
+      '@types/uuid': 10.0.0
+      chalk: 4.1.2
+      console-table-printer: 2.14.6
+      p-queue: 6.6.2
+      p-retry: 4.6.2
+      semver: 7.7.2
+      uuid: 10.0.0
+    optionalDependencies:
+      openai: 5.12.2(ws@8.18.0)(zod@3.25.76)
+
   langsmith@0.3.69(openai@5.12.2(ws@8.18.0)(zod@4.1.9)):
     dependencies:
       '@types/uuid': 10.0.0
@@ -11613,7 +11787,7 @@ snapshots:
 
   mimic-function@5.0.1: {}
 
-  miniflare@4.20250917.0:
+  miniflare@4.20251011.1:
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       acorn: 8.14.0
@@ -11623,7 +11797,7 @@ snapshots:
       sharp: 0.33.5
       stoppable: 1.1.0
       undici: 7.14.0
-      workerd: 1.20250917.0
+      workerd: 1.20251011.0
       ws: 8.18.0
       youch: 4.1.0-beta.10
       zod: 3.22.3
@@ -12130,7 +12304,7 @@ snapshots:
       onetime: 7.0.0
       signal-exit: 4.1.0
 
-  retry-axios@2.6.0(axios@1.12.2):
+  retry-axios@2.6.0(axios@1.12.2(debug@4.4.3)):
     dependencies:
       axios: 1.12.2(debug@4.4.3)
 
@@ -12694,24 +12868,24 @@ snapshots:
 
   wordwrap@1.0.0: {}
 
-  workerd@1.20250917.0:
+  workerd@1.20251011.0:
     optionalDependencies:
-      '@cloudflare/workerd-darwin-64': 1.20250917.0
-      '@cloudflare/workerd-darwin-arm64': 1.20250917.0
-      '@cloudflare/workerd-linux-64': 1.20250917.0
-      '@cloudflare/workerd-linux-arm64': 1.20250917.0
-      '@cloudflare/workerd-windows-64': 1.20250917.0
+      '@cloudflare/workerd-darwin-64': 1.20251011.0
+      '@cloudflare/workerd-darwin-arm64': 1.20251011.0
+      '@cloudflare/workerd-linux-64': 1.20251011.0
+      '@cloudflare/workerd-linux-arm64': 1.20251011.0
+      '@cloudflare/workerd-windows-64': 1.20251011.0
 
-  wrangler@4.38.0(@cloudflare/workers-types@4.20250919.0):
+  wrangler@4.45.0(@cloudflare/workers-types@4.20250919.0):
     dependencies:
       '@cloudflare/kv-asset-handler': 0.4.0
-      '@cloudflare/unenv-preset': 2.7.4(unenv@2.0.0-rc.21)(workerd@1.20250917.0)
+      '@cloudflare/unenv-preset': 2.7.8(unenv@2.0.0-rc.21)(workerd@1.20251011.0)
       blake3-wasm: 2.1.5
       esbuild: 0.25.4
-      miniflare: 4.20250917.0
+      miniflare: 4.20251011.1
       path-to-regexp: 6.3.0
       unenv: 2.0.0-rc.21
-      workerd: 1.20250917.0
+      workerd: 1.20251011.0
     optionalDependencies:
       '@cloudflare/workers-types': 4.20250919.0
       fsevents: 2.3.3
