@@ -41,15 +41,6 @@ export function createMcpServer(): BuildchaMcpServer {
     vectorSearchTool = createVectorSearchTool(store);
   };
 
-  // ---- Get GitHub File ----
-  const getGithubFileInputSchema = z.object({
-    path: z.string().describe("取得したいファイルのパス（例: README.md）"),
-  });
-
-  const getGithubFileOutputSchema = z.object({
-    content: z.string().describe("取得したファイルの内容"),
-  });
-
   mcpServer.registerTool(
     "get_github_file_tool",
     {
@@ -59,26 +50,22 @@ export function createMcpServer(): BuildchaMcpServer {
         readOnlyHint: true,
         openWorldHint: true,
       },
-      inputSchema: getGithubFileInputSchema.shape, // ✅ 必ず z.object(...)
-      outputSchema: getGithubFileOutputSchema.shape, // ✅ 必ず z.object(...)
+      inputSchema: z.object({
+        path: z.string().describe("取得したいファイルのパス（例: README.md）"),
+      }).shape,
+      outputSchema: z.object({
+        content: z.string().describe("取得したファイルの内容"),
+      }).shape,
     },
     async ({ path }) => {
       const content = await getGithubFileTool.invoke({ path });
       const structuredContent = { content };
       return {
         content: [{ type: "text", text: JSON.stringify(structuredContent) }],
-        structuredContent, // ✅ outputSchema と一致させる
+        structuredContent,
       };
     },
   );
-
-  // ---- List Files/Dirs as tree ----
-  const listTreeInputSchema = z.object({});
-  const listTreeOutputSchema = z.object({
-    tree: z
-      .string()
-      .describe("リポジトリ内のファイルとフォルダの一覧（tree形式）"),
-  });
 
   mcpServer.registerTool(
     "github_list_files_and_folders_tool",
@@ -90,8 +77,12 @@ export function createMcpServer(): BuildchaMcpServer {
         readOnlyHint: true,
         openWorldHint: true,
       },
-      inputSchema: listTreeInputSchema.shape,
-      outputSchema: listTreeOutputSchema.shape,
+      inputSchema: z.object({}).shape,
+      outputSchema: z.object({
+        tree: z
+          .string()
+          .describe("リポジトリ内のファイルとフォルダの一覧（tree形式）"),
+      }).shape,
     },
     async () => {
       const tree = await githubListFilesAndFoldersTool.invoke({});
