@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "mcp",
+  "main": "src/index.ts",
+  "account_id": "4beba607eac3ca6a8e906c6a34cb6f18",
+  "compatibility_date": "2025-10-26",
+ 	"vectorize": [
+		{
+			"binding": "VECTORIZE_INDEX",
+			"index_name": "buildcha-vector"
+		}
+	],
+	"ai": {
+	  "binding": "AI"
+	},
+}

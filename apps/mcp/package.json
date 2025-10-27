@@ -1,0 +1,24 @@
+{
+  "name": "mcp",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy --minify",
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@hono/mcp": "^0.1.4",
+    "@langchain/cloudflare": "^0.1.1",
+    "@langchain/core": "^0.3.77",
+    "@langchain/openai": "^0.6.13",
+    "@modelcontextprotocol/sdk": "^1.20.1",
+    "hono": "^4.10.3",
+    "langchain": "^1.0.1",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2",
+    "wrangler": "^4.4.0"
+  }
+}
