@@ -21,10 +21,10 @@ Hono アプリケーションをベースに GitHub 連携ツールと Cloudflar
 ## セットアップ
 
 ```bash
-npm install
+pnpm install
 ```
 
-pnpm など別パッケージマネージャを使う場合は、下記コマンドを同等のスクリプトに置き換えてください。
+ppnpm など別パッケージマネージャを使う場合は、下記コマンドを同等のスクリプトに置き換えてください。
 
 ## ローカル開発フロー
 
@@ -39,7 +39,7 @@ pnpm など別パッケージマネージャを使う場合は、下記コマン
    ```
 3. 開発サーバーを起動します。
    ```bash
-   npm run dev
+   pnpm run dev
    ```
    Wrangler は `http://127.0.0.1:8787` で Worker を提供し、`/mcp` エンドポイントが MCP サーバーを初期化して JSON レスポンスをストリームします。
 
@@ -47,10 +47,10 @@ pnpm など別パッケージマネージャを使う場合は、下記コマン
 
 ## 利用可能なスクリプト
 
-- `npm run dev` — Cloudflare Workers の開発サーバーを起動（ホットリロード付き）。
-- `npm run deploy` — Worker を Cloudflare にデプロイ（ミニファイ有り）。
-- `npm run build` — TypeScript を `tsc` でビルドおよび型チェック。
-- `npm run cf-typegen` — `CloudflareBindings` の型定義を再生成（`wrangler.jsonc` 更新後に実行）。
+- `pnpm run dev` — Cloudflare Workers の開発サーバーを起動（ホットリロード付き）。
+- `pnpm run deploy` — Worker を Cloudflare にデプロイ（ミニファイ有り）。
+- `pnpm run build` — TypeScript を `tsc` でビルドおよび型チェック。
+- `pnpm run cf-typegen` — `CloudflareBindings` の型定義を再生成（`wrangler.jsonc` 更新後に実行）。
 
 ## シークレットとバインディング
 
@@ -61,7 +61,7 @@ wrangler secret put GITHUB_TOKEN
 wrangler secret put OPENAI_API_KEY
 ```
 
-別の Vectorize インデックスやリージョンを参照する場合は、`apps/mcp/wrangler.jsonc` を更新し、`npm run cf-typegen` で型定義を再生成します。
+別の Vectorize インデックスやリージョンを参照する場合は、`apps/mcp/wrangler.jsonc` を更新し、`pnpm run cf-typegen` で型定義を再生成します。
 
 ## ディレクトリ構成
 

@@ -143,6 +143,8 @@ pnpm dev:front  # = pnpm --filter frontend dev
 │   │   │   │   ├── object.js
 │   │   │   │   ├── quest.d.ts
 │   │   │   │   ├── quest.js
+│   │   │   │   ├── r2.d.ts
+│   │   │   │   ├── r2.js
 │   │   │   │   ├── user.d.ts
 │   │   │   │   └── user.js
 │   │   │   ├── user.d.ts
@@ -179,12 +181,13 @@ pnpm dev:front  # = pnpm --filter frontend dev
 │   │   │       ├── wasm-worker-loader.mjs
 │   │   │       ├── wasm.d.ts
 │   │   │       └── wasm.js
-│   │   ├── images
 │   │   ├── jest.config.js
 │   │   ├── migrations
 │   │   │   ├── 0001_initial.sql
 │   │   │   ├── 0002_create_tables.sql
-│   │   │   └── 0003_update_table.sql
+│   │   │   ├── 0003_update_table.sql
+│   │   │   ├── 0004_update_table.sql
+│   │   │   └── 0005_update_object.sql
 │   │   ├── package.json
 │   │   ├── prisma
 │   │   │   └── schema.prisma
@@ -205,117 +208,140 @@ pnpm dev:front  # = pnpm --filter frontend dev
 │   │   │   ├── lib
 │   │   │   │   ├── auth.ts
 │   │   │   │   └── prisma.ts
-│   │   │   ├── moc
-│   │   │   │   └── getAnswerObject.ts
 │   │   │   ├── prisma
 │   │   │   │   └── schemas.ts
 │   │   │   └── routes
 │   │   │       ├── map.ts
 │   │   │       ├── object.ts
 │   │   │       ├── quest.ts
+│   │   │       ├── r2.ts
 │   │   │       └── user.ts
-│   │   ├── test
-│   │   │   ├── __mocks__
-│   │   │   │   └── cloudflareWorkersMock.ts
-│   │   │   └── createObject.test.ts
 │   │   ├── tsconfig.json
 │   │   ├── worker-configuration.d.ts
 │   │   └── wrangler.jsonc
-│   └── frontend
-│       ├── Dockerfile
+│   ├── frontend
+│   │   ├── Dockerfile
+│   │   ├── README.md
+│   │   ├── app
+│   │   │   ├── chatbot
+│   │   │   │   └── page.tsx
+│   │   │   ├── favicon.ico
+│   │   │   ├── globals.css
+│   │   │   ├── layout.tsx
+│   │   │   ├── manifest.ts
+│   │   │   ├── page.tsx
+│   │   │   ├── quests
+│   │   │   │   ├── [questId]
+│   │   │   │   │   └── page.tsx
+│   │   │   │   ├── complete
+│   │   │   │   │   └── page.tsx
+│   │   │   │   ├── create
+│   │   │   │   │   └── page.tsx
+│   │   │   │   ├── detail
+│   │   │   │   │   └── page.tsx
+│   │   │   │   ├── layout.tsx
+│   │   │   │   ├── page.tsx
+│   │   │   │   └── position
+│   │   │   │       └── page.tsx
+│   │   │   └── start
+│   │   │       └── page.tsx
+│   │   ├── cloudflare-env.d.ts
+│   │   ├── components
+│   │   │   ├── auth
+│   │   │   │   └── authInitializer.tsx
+│   │   │   ├── layout
+│   │   │   │   ├── bgSky.tsx
+│   │   │   │   └── myTown.tsx
+│   │   │   └── ui
+│   │   │       ├── avatar.tsx
+│   │   │       ├── badge.tsx
+│   │   │       ├── button.tsx
+│   │   │       ├── dialog.tsx
+│   │   │       ├── input-group.tsx
+│   │   │       ├── input.tsx
+│   │   │       ├── label.tsx
+│   │   │       ├── progress.tsx
+│   │   │       ├── scroll-area.tsx
+│   │   │       ├── select.tsx
+│   │   │       ├── sonner.tsx
+│   │   │       ├── spinner.tsx
+│   │   │       └── textarea.tsx
+│   │   ├── components.json
+│   │   ├── features
+│   │   │   ├── auth
+│   │   │   │   ├── components
+│   │   │   │   │   ├── authenticatedProfileDialog.tsx
+│   │   │   │   │   ├── profileSection.tsx
+│   │   │   │   │   ├── signInButton.tsx
+│   │   │   │   │   ├── signInForm.tsx
+│   │   │   │   │   └── userProfileCard.tsx
+│   │   │   │   └── hooks
+│   │   │   │       └── useSignIn.ts
+│   │   │   ├── chatbot
+│   │   │   │   └── components
+│   │   │   │       └── chatBotPanel.tsx
+│   │   │   ├── quest
+│   │   │   │   └── components
+│   │   │   │       ├── chat.tsx
+│   │   │   │       ├── questCard.tsx
+│   │   │   │       ├── questCreateForm.tsx
+│   │   │   │       ├── saveObjectButton.tsx
+│   │   │   │       └── submitButton.tsx
+│   │   │   └── world3d
+│   │   │       ├── components
+│   │   │       │   ├── captureController.tsx
+│   │   │       │   ├── ground.tsx
+│   │   │       │   ├── hoverGuide.tsx
+│   │   │       │   ├── resultObject.tsx
+│   │   │       │   ├── rotationControl.tsx
+│   │   │       │   ├── sceneSetup.tsx
+│   │   │       │   └── selectPosition.tsx
+│   │   │       ├── hooks
+│   │   │       │   ├── useGetMaps.ts
+│   │   │       │   └── useObjectPlacement.ts
+│   │   │       └── utils
+│   │   │           ├── buildingCalculations.ts
+│   │   │           └── buildingRotation.ts
+│   │   ├── hooks
+│   │   │   └── useDeviceDetection.ts
+│   │   ├── lib
+│   │   │   ├── auth-client.ts
+│   │   │   ├── rpc-client.ts
+│   │   │   ├── text-shadow.ts
+│   │   │   └── utils.ts
+│   │   ├── next-env.d.ts
+│   │   ├── next-sitemap.config.js
+│   │   ├── next.config.ts
+│   │   ├── open-next.config.ts
+│   │   ├── package.json
+│   │   ├── postcss.config.mjs
+│   │   ├── public
+│   │   │   ├── AICharacter.png
+│   │   │   ├── house.png
+│   │   │   ├── icon-192x192.png
+│   │   │   ├── icon-512x512.png
+│   │   │   ├── robots.txt
+│   │   │   ├── sitemap-0.xml
+│   │   │   └── sitemap.xml
+│   │   ├── stores
+│   │   │   ├── authStore.ts
+│   │   │   ├── index.ts
+│   │   │   └── objectStore.ts
+│   │   ├── tsconfig.json
+│   │   ├── types
+│   │   │   └── index.ts
+│   │   └── wrangler.jsonc
+│   └── mcp
 │       ├── README.md
-│       ├── app
-│       │   ├── chatbot
-│       │   │   └── page.tsx
-│       │   ├── favicon.ico
-│       │   ├── globals.css
-│       │   ├── layout.tsx
-│       │   ├── page.tsx
-│       │   ├── quests
-│       │   │   ├── complete
-│       │   │   │   └── page.tsx
-│       │   │   ├── detail
-│       │   │   │   └── page.tsx
-│       │   │   ├── layout.tsx
-│       │   │   ├── page.tsx
-│       │   │   └── position
-│       │   │       └── page.tsx
-│       │   └── start
-│       │       └── page.tsx
-│       ├── cloudflare-env.d.ts
-│       ├── components
-│       │   ├── auth
-│       │   │   └── authInitializer.tsx
-│       │   ├── layout
-│       │   │   ├── bgSky.tsx
-│       │   │   └── myTown.tsx
-│       │   └── ui
-│       │       ├── avatar.tsx
-│       │       ├── badge.tsx
-│       │       ├── button.tsx
-│       │       ├── dialog.tsx
-│       │       ├── input-group.tsx
-│       │       ├── input.tsx
-│       │       ├── label.tsx
-│       │       ├── progress.tsx
-│       │       ├── scroll-area.tsx
-│       │       ├── sonner.tsx
-│       │       ├── spinner.tsx
-│       │       └── textarea.tsx
-│       ├── components.json
-│       ├── features
-│       │   ├── auth
-│       │   │   ├── components
-│       │   │   │   ├── authenticatedProfileDialog.tsx
-│       │   │   │   ├── profileSection.tsx
-│       │   │   │   ├── signInButton.tsx
-│       │   │   │   ├── signInForm.tsx
-│       │   │   │   └── userProfileCard.tsx
-│       │   │   └── hooks
-│       │   │       └── useSignIn.ts
-│       │   ├── chatbot
-│       │   │   └── components
-│       │   │       └── chatBotPanel.tsx
-│       │   ├── quest
-│       │   │   └── components
-│       │   │       ├── chat.tsx
-│       │   │       └── questCard.tsx
-│       │   └── world3d
-│       │       ├── components
-│       │       │   ├── ground.tsx
-│       │       │   ├── hoverGuide.tsx
-│       │       │   ├── resultObject.tsx
-│       │       │   ├── rotationControl.tsx
-│       │       │   ├── sceneSetup.tsx
-│       │       │   └── selectPosition.tsx
-│       │       ├── hooks
-│       │       │   ├── useGetMaps.ts
-│       │       │   └── useObjectPlacement.ts
-│       │       └── utils
-│       │           ├── buildingCalculations.ts
-│       │           └── buildingRotation.ts
-│       ├── hooks
-│       │   └── useDeviceDetection.ts
-│       ├── lib
-│       │   ├── auth-client.ts
-│       │   ├── rpc-client.ts
-│       │   ├── text-shadow.ts
-│       │   └── utils.ts
-│       ├── next-env.d.ts
-│       ├── next.config.ts
-│       ├── open-next.config.ts
 │       ├── package.json
-│       ├── postcss.config.mjs
-│       ├── public
-│       │   ├── AICharacter.png
-│       │   └── house.png
-│       ├── stores
-│       │   ├── authStore.ts
+│       ├── src
+│       │   ├── config.ts
 │       │   ├── index.ts
-│       │   └── objectStore.ts
+│       │   └── tools
+│       │       ├── githubTools.ts
+│       │       └── vectorSearchTool.ts
 │       ├── tsconfig.json
-│       ├── types
-│       │   └── index.ts
+│       ├── worker-configuration.d.ts
 │       └── wrangler.jsonc
 ├── biome.json
 ├── compose.yml
