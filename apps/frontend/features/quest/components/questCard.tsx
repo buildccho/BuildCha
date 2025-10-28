@@ -15,6 +15,7 @@ export default function QuestCard({ quest }: { quest: Quest }) {
           alt="画像"
           fill
           className="object-contain w-full h-full block"
+          loading="lazy"
         />
       </div>
       <h2 className="text-base font-semibold text-end">{quest.name}</h2>

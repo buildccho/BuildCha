@@ -10,6 +10,7 @@ const getQuests = async (): Promise<Quest[]> => {
         init: {
           next: {
             tags: ["quests"],
+            revalidate: 300, // 5分キャッシュ
           },
         },
       },
