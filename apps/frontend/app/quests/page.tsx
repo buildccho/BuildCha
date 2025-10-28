@@ -4,7 +4,16 @@ import type { Quest } from "@/types";
 
 const getQuests = async (): Promise<Quest[]> => {
   try {
-    const res = await client.quests.$get();
+    const res = await client.quests.$get(
+      {},
+      {
+        init: {
+          next: {
+            tags: ["quests"],
+          },
+        },
+      },
+    );
     if (!res.ok) {
       throw new Error(`HTTP ${res.status}: ${res.statusText}`);
     }
