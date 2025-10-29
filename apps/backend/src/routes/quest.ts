@@ -27,7 +27,7 @@ const CreateQuestSchema = QuestSchema.pick({
   score: true,
   difficulty: true,
 }).extend({
-  answerObject: z.array(CreateAnswerObjectSchema),
+  answerObject: z.array(CreateAnswerObjectSchema).optional(),
 });
 
 // クエスト一覧のレスポンススキーマ (answerObjectは取得しない)
