@@ -3,7 +3,7 @@ import { describeRoute } from "hono-openapi";
 import { resolver, validator } from "hono-openapi/zod";
 import { z } from "zod";
 import prismaClients from "../lib/prisma";
-import { QuestSchema } from "../prisma/schemas";
+import { PartsSchema, QuestSchema } from "../prisma/schemas";
 
 const UpdateQuestSchema = QuestSchema.pick({
   name: true,
@@ -12,12 +12,33 @@ const UpdateQuestSchema = QuestSchema.pick({
   score: true,
   difficulty: true,
 }).partial();
+
+const CreateAnswerObjectSchema = PartsSchema.omit({
+  id: true,
+  createdAt: true,
+  userObjectId: true,
+  role: true,
+});
+
 const CreateQuestSchema = QuestSchema.pick({
   name: true,
   level: true,
   challenge: true,
   score: true,
   difficulty: true,
+}).extend({
+  answerObject: z.array(CreateAnswerObjectSchema).optional(),
+});
+
+// クエスト一覧のレスポンススキーマ (answerObjectは取得しない)
+const GetQuestsResponseSchema = QuestSchema.pick({
+  id: true,
+  name: true,
+  level: true,
+  challenge: true,
+  score: true,
+  difficulty: true,
+  createdAt: true,
 });
 
 const app = new Hono<{
@@ -32,7 +53,9 @@ const app = new Hono<{
         200: {
           description: "クエスト情報の取得",
           content: {
-            "application/json": { schema: resolver(z.array(QuestSchema)) },
+            "application/json": {
+              schema: resolver(z.array(GetQuestsResponseSchema)),
+            },
           },
         },
       },
@@ -72,6 +95,9 @@ const app = new Hono<{
       const prisma = await prismaClients.fetch(c.env.DB);
       const quest = await prisma.quest.findUnique({
         where: { id },
+        include: {
+          answerObject: true,
+        },
       });
       if (!quest) {
         return c.json({ message: "クエストが見つかりません" }, 404);
@@ -98,8 +124,24 @@ const app = new Hono<{
     async (c) => {
       const prisma = await prismaClients.fetch(c.env.DB);
       const questData = c.req.valid("json");
+
       const newQuest = await prisma.quest.create({
-        data: questData,
+        data: {
+          ...questData,
+          answerObject: {
+            create:
+              questData.answerObject?.map((part) => ({
+                ...part,
+                size: JSON.stringify(part.size),
+                position: JSON.stringify(part.position),
+                rotation: JSON.stringify(part.rotation),
+                role: "Answer",
+              })) ?? [],
+          },
+        },
+        include: {
+          answerObject: true,
+        },
       });
       return c.json(newQuest, 200);
     },
