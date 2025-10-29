@@ -8,7 +8,7 @@ export default function QuestCard({ quest }: { quest: Quest }) {
       href={`/quests/${quest.id}`}
       className={`${quest.difficulty === "Easy" ? "bg-background" : quest.difficulty === "Medium" ? "bg-yellow-50" : "bg-purple-50"} shadow rounded-2xl p-2.5 flex flex-col w-full max-w-60 space-y-1`}
     >
-      <DifficultyBadge difficulty={quest.difficulty} />
+      <DifficultyBadge difficulty={quest.difficulty as Difficulty} />
       <div className="flex-1 relative w-full h-full flex items-center justify-center aspect-video">
         <Image
           src={`https://pub-68bb760998324b59b97c4622e8ba2d68.r2.dev/thumbnail/${encodeURIComponent(quest.id)}.png`}

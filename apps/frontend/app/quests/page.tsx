@@ -19,12 +19,7 @@ const getQuests = async (): Promise<Quest[]> => {
       throw new Error(`HTTP ${res.status}: ${res.statusText}`);
     }
 
-    const data = await res.json();
-    const quests = data.map((quest) => ({
-      ...quest,
-      difficulty: quest.difficulty as "Easy" | "Medium" | "Hard",
-      createdAt: new Date(quest.createdAt),
-    }));
+    const quests = await res.json();
     return quests;
   } catch (error) {
     console.error("Error fetching quests:", error);
