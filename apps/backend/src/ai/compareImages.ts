@@ -81,13 +81,13 @@ export const compareImages = async (
   const comments = Object.values(results)
     .map((r) => r.comment)
     .join("\n");
-  const summaryAi = model.invoke([
+  const summaryAi = await model.invoke([
     new SystemMessage("あなたは優秀な要約AIです。"),
     new HumanMessage({
-      content: `以下は、6つの視点からの3Dオブジェクト比較コメントです。これらを参考にして、全体の総評コメントを1〜3文で作成してください。出力は、小学生にも分かりやすい平易な日本語で行ってください。\n\n${comments}`,
+      content: `以下は、6つの視点からの3Dオブジェクト比較コメントです。これらを参考にして、全体の総評コメントを1〜3文で作成してください。出力は、小学生低学年にも分かりやすいかんたんな日本語で行ってください。例：「ちがっているかしょがあるよ」，「もっと工夫しようね！！」，「もっと改良しよう！！」\n\n${comments}`,
     }),
   ]);
-  const comment = await summaryAi;
+  const comment = summaryAi.content;
   return { object_score: overallScore, comment, user_level, user_score };
 };
 
