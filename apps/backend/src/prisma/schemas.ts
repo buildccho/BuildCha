@@ -70,6 +70,7 @@ export const QuestSchema = z.object({
   challenge: z.string().optional(),
   score: z.number(),
   difficulty: z.enum(["Easy", "Medium", "Hard"]),
+  answerObject: z.array(PartsSchema).optional(),
 });
 
 export const AccountSchema = z.object({

@@ -88,6 +88,7 @@ export function QuestCreateForm({ resultObjectRef }: QuestCreateFormProps) {
           level,
           score,
           challenge: challenge.trim() || undefined,
+          answerObject: objectData?.BuildingPartData.parts,
         },
       });
 
