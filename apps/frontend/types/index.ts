@@ -47,12 +47,24 @@ export type User = {
   userObjectCount?: number;
 };
 
+export type AnswerObject = {
+  id: string;
+  position: [number, number, number];
+  rotation: [number, number, number];
+  size: [number, number, number];
+  type: string;
+  color: string;
+  role?: string;
+  createdAt?: string;
+};
+
 export type Quest = {
   id: string;
   name: string;
-  difficulty: "Easy" | "Medium" | "Hard";
+  difficulty: string;
   score: number;
   level: number;
   challenge: string | null;
-  createdAt: Date;
+  createdAt: Date | string;
+  answerObject?: AnswerObject[];
 };

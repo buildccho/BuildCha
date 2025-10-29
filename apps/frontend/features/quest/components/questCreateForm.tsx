@@ -209,7 +209,7 @@ export function QuestCreateForm({ resultObjectRef }: QuestCreateFormProps) {
       const formData = Object.fromEntries(
         views.map((view) => [
           `${view}View`,
-          new File([capturedViews[view]], `${createdQuestId}_${view}.png`, {
+          new File([capturedViews[view]], `${createdQuestId}.png`, {
             type: "image/png",
           }),
         ]),

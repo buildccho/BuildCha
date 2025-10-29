@@ -4,19 +4,26 @@ import { Canvas } from "@react-three/fiber";
 import { useEffect, useState } from "react";
 import { useDeviceDetection } from "@/hooks/useDeviceDetection";
 import { useObjectStore } from "@/stores";
-import { useObjectPlacement } from "../hooks/useObjectPlacement";
+import type { useObjectPlacement } from "../hooks/useObjectPlacement";
 import Ground from "./ground";
 import HoverGuide from "./hoverGuide";
 import { Buildings } from "./resultObject";
 import RotationControl from "./rotationControl";
 import SceneSetup from "./sceneSetup";
 
-export default function SelectPosition() {
-  const fixedBoxPosition: [number, number, number] = [5, 3.5, 5];
+interface SelectPositionProps {
+  objectPlacement: ReturnType<typeof useObjectPlacement>;
+}
+
+export default function SelectPosition({
+  objectPlacement,
+}: SelectPositionProps) {
   const cellSize = 1;
 
   const { objectData } = useObjectStore();
   const { isTouchDevice } = useDeviceDetection();
+  const [selectedObject, setSelectedObject] = useState<boolean>(false);
+
   const {
     placedObject,
     hoverPosition,
@@ -24,9 +31,7 @@ export default function SelectPosition() {
     updateHoverPosition,
     rotateObject,
     getCurrentRotationY,
-  } = useObjectPlacement();
-
-  const [selectedObject, setSelectedObject] = useState<boolean>(false);
+  } = objectPlacement;
 
   // キーボード操作（PC補助機能）
   useEffect(() => {
@@ -64,12 +69,6 @@ export default function SelectPosition() {
     <div className="w-full h-full">
       <Canvas shadows camera={{ fov: 45, position: [5, 15, -40] }}>
         <SceneSetup>
-          {/* 固定位置のテスト用Box */}
-          <mesh castShadow position={fixedBoxPosition}>
-            <boxGeometry args={[2, 5, 2]} />
-            <meshLambertMaterial color="#008080" />
-          </mesh>
-
           {/* 配置されたオブジェクト */}
           {placedObject && (
             // biome-ignore lint/a11y/noStaticElementInteractions: クリックで選択解除

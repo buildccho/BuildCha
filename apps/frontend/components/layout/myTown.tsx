@@ -1,13 +1,20 @@
 "use client";
 import { Cloud, Clouds, OrbitControls, Sky } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
+import { useEffect } from "react";
 import * as THREE from "three";
 import Ground from "@/features/world3d/components/ground";
 import { Buildings } from "@/features/world3d/components/resultObject";
 import { useGetMyTown } from "@/features/world3d/hooks/useGetMaps";
+import { useObjectStore } from "@/stores";
 
 export default function MyTown() {
   const { map, isLoading } = useGetMyTown();
+  const { reset } = useObjectStore();
+
+  useEffect(() => {
+    reset();
+  }, [reset]);
 
   return (
     <div className="w-full h-full grow">

@@ -1,33 +1,36 @@
-"use client";
-import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import ResultObject, {
-  type ResultObjectHandle,
-} from "@/features/world3d/components/resultObject";
+import type { ResultObjectHandle } from "@/features/world3d/components/resultObject";
 import { useGetMyTown } from "@/features/world3d/hooks/useGetMaps";
 import { calculateBoundingBox } from "@/features/world3d/utils/buildingCalculations";
 import { client } from "@/lib/rpc-client";
 import { useObjectStore } from "@/stores";
+import type { UserObject } from "@/types";
 
-type SaveObjectButtonProps = {
-  questId: string;
-};
-
-export function SaveObjectButton({ questId }: SaveObjectButtonProps) {
-  const router = useRouter();
+export function useSaveObject() {
   const [isLoading, setIsLoading] = useState(false);
   const resultObjectRef = useRef<ResultObjectHandle>(null);
-
+  const [object, setObject] = useState<UserObject | null>(null);
   const objectData = useObjectStore((state) => state.objectData);
   const name = useObjectStore((state) => state.name);
   const chatHistory = useObjectStore((state) => state.chatHistory);
   const objectPrecision = useObjectStore((state) => state.objectPrecision);
+  const [result, setResult] = useState<{
+    objectScore: number;
+    userLevel: number;
+    userScore: number;
+    comment: string;
+  } | null>(null);
 
   const { map, isLoading: isLoadingMap } = useGetMyTown();
 
-  const handleSaveObject = async () => {
+  const handleSaveObject = async ({
+    questId,
+    handleChangeMode,
+  }: {
+    questId: string;
+    handleChangeMode: () => void;
+  }) => {
     // バリデーション
     if (!objectData?.BuildingPartData) {
       toast.error("オブジェクトデータがありません");
@@ -90,6 +93,21 @@ export function SaveObjectButton({ questId }: SaveObjectButtonProps) {
       toast.success("オブジェクトを保存しました");
 
       const data = await response.json();
+      setObject({
+        ...data,
+        position: JSON.parse(data.position),
+        rotation: JSON.parse(data.rotation),
+        boundingBox: JSON.parse(data.boundingBox),
+        parts: data.parts.map((part) => ({
+          ...part,
+          position: JSON.parse(part.position),
+          rotation: JSON.parse(part.rotation),
+          size: JSON.parse(part.size),
+        })),
+      });
+
+      // 位置選択ページへ遷移
+      handleChangeMode();
 
       // 6方向のキャプチャを取得
       if (!resultObjectRef.current) {
@@ -129,9 +147,12 @@ export function SaveObjectButton({ questId }: SaveObjectButtonProps) {
       }
       const resultData = await res.json();
       console.log("resultData", resultData);
-
-      // 位置選択ページへ遷移
-      router.push("/quests/position");
+      setResult({
+        objectScore: resultData.object_score,
+        userLevel: resultData.user_level,
+        userScore: resultData.user_score,
+        comment: resultData.comment as unknown as string,
+      });
     } catch (error) {
       console.error("Error saving object:", error);
       toast.error(
@@ -149,16 +170,12 @@ export function SaveObjectButton({ questId }: SaveObjectButtonProps) {
     !name ||
     !map?.id;
 
-  return (
-    <>
-      {/* キャプチャ用の隠しResultObject */}
-      <div className="sr-only">
-        <ResultObject ref={resultObjectRef} />
-      </div>
-
-      <Button size="lg" onClick={handleSaveObject} disabled={isDisabled}>
-        {isLoading ? "保存中..." : "おく場所を選ぶ"}
-      </Button>
-    </>
-  );
+  return {
+    isLoading,
+    handleSaveObject,
+    isDisabled,
+    resultObjectRef,
+    object,
+    result,
+  };
 }
