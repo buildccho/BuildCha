@@ -16,7 +16,7 @@
     "dev:front": "pnpm -F frontend dev",
     "dev:mcp": "pnpm -F mcp dev",
     "dev": "pnpm dev:back && pnpm dev:front && pnpm dev:mcp",
-    "build:front": "npx next-sitemap && pnpm -F frontend run build",
+    "build:front": "pnpm -F frontend run build:sitemap && pnpm -F frontend run build",
     "build:back": "pnpm -F backend run build",
     "build:mcp": "pnpm -F mcp run build",
     "build": "pnpm build:back && pnpm build:front && pnpm build:mcp",
