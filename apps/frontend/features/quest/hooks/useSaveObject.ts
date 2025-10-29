@@ -122,22 +122,22 @@ export function useSaveObject() {
           objectId: data.id,
         },
         form: {
-          topView: new File([capturedViews.top], `${questId}.png`, {
+          topView: new File([capturedViews.top], "top.png", {
             type: "image/png",
           }),
-          bottomView: new File([capturedViews.bottom], `${questId}.png`, {
+          bottomView: new File([capturedViews.bottom], "bottom.png", {
             type: "image/png",
           }),
-          leftView: new File([capturedViews.left], `${questId}.png`, {
+          leftView: new File([capturedViews.left], "left.png", {
             type: "image/png",
           }),
-          rightView: new File([capturedViews.right], `${questId}.png`, {
+          rightView: new File([capturedViews.right], "right.png", {
             type: "image/png",
           }),
-          frontView: new File([capturedViews.front], `${questId}.png`, {
+          frontView: new File([capturedViews.front], "front.png", {
             type: "image/png",
           }),
-          backView: new File([capturedViews.back], `${questId}.png`, {
+          backView: new File([capturedViews.back], "back.png", {
             type: "image/png",
           }),
         },
