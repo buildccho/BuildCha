@@ -18,6 +18,7 @@ import ResultObject, {
 } from "@/features/world3d/components/resultObject";
 import SelectPosition from "@/features/world3d/components/selectPosition";
 import { useObjectPlacement } from "@/features/world3d/hooks/useObjectPlacement";
+import { calculateBoundingBox } from "@/features/world3d/utils/buildingCalculations";
 import { client } from "@/lib/rpc-client";
 import type { Quest, UserObject } from "@/types";
 import { useSaveObject } from "../hooks/useSaveObject";
@@ -186,6 +187,7 @@ const PositionMode = ({
       // SelectPositionで選択された位置と回転を使用
       const position = placedObject.position || [0, 0, 0];
       const rotation = placedObject.rotation || [0, 0, 0];
+      const boundingBox = calculateBoundingBox(placedObject);
 
       const res = await client.objects[":id"].$patch({
         param: {
@@ -194,6 +196,7 @@ const PositionMode = ({
         json: {
           position: position,
           rotation: rotation,
+          boundingBox: boundingBox,
         },
       });
       if (!res.ok) {

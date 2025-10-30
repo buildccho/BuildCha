@@ -14,7 +14,6 @@ export function useSaveObject() {
   const objectData = useObjectStore((state) => state.objectData);
   const name = useObjectStore((state) => state.name);
   const chatHistory = useObjectStore((state) => state.chatHistory);
-  const objectPrecision = useObjectStore((state) => state.objectPrecision);
   const [result, setResult] = useState<{
     objectScore: number;
     userLevel: number;
@@ -50,7 +49,6 @@ export function useSaveObject() {
     setIsLoading(true);
 
     try {
-      // boundingBoxを計算
       const boundingBox = calculateBoundingBox(objectData.BuildingPartData);
 
       // chatHistoryをバックエンドの形式に変換
@@ -74,8 +72,7 @@ export function useSaveObject() {
           mapId: map.id,
           position: [0, 0, 0],
           rotation: [0, 0, 0],
-          boundingBox,
-          objectPrecision,
+          boundingBox: boundingBox,
           parts: formattedParts,
           chatHistory: formattedChatHistory,
         },
