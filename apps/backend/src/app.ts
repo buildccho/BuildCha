@@ -12,6 +12,11 @@ import quest from "./routes/quest";
 import r2 from "./routes/r2";
 import user from "./routes/user";
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://frontend.buildcha.workers.dev",
+];
+
 const app = new Hono<{
   Bindings: CloudflareBindings;
   Variables: {
@@ -24,10 +29,9 @@ const app = new Hono<{
   .use(
     "*",
     cors({
-      origin: [
-        "http://localhost:3000",
-        "https://frontend.buildcha.workers.dev",
-      ],
+      origin: (origin) => {
+        return allowedOrigins.includes(origin) ? origin : undefined;
+      },
       allowHeaders: ["Content-Type", "Authorization"],
       allowMethods: ["POST", "GET", "PATCH", "DELETE", "OPTIONS"],
       exposeHeaders: ["Content-Length"],
