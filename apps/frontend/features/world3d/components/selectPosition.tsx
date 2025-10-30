@@ -4,6 +4,7 @@ import { Canvas } from "@react-three/fiber";
 import { useEffect, useState } from "react";
 import { useDeviceDetection } from "@/hooks/useDeviceDetection";
 import { useObjectStore } from "@/stores";
+import { useGetMyTown } from "../hooks/useGetMaps";
 import type { useObjectPlacement } from "../hooks/useObjectPlacement";
 import Ground from "./ground";
 import HoverGuide from "./hoverGuide";
@@ -23,7 +24,7 @@ export default function SelectPosition({
   const { objectData } = useObjectStore();
   const { isTouchDevice } = useDeviceDetection();
   const [selectedObject, setSelectedObject] = useState<boolean>(false);
-
+  const { map, isLoading } = useGetMyTown();
   const {
     placedObject,
     hoverPosition,
@@ -69,6 +70,10 @@ export default function SelectPosition({
     <div className="w-full h-full">
       <Canvas shadows camera={{ fov: 45, position: [5, 15, -40] }}>
         <SceneSetup>
+          {!isLoading &&
+            map?.userObjects.map((object) => (
+              <Buildings buildingData={object} key={object.id} />
+            ))}
           {/* 配置されたオブジェクト */}
           {placedObject && (
             // biome-ignore lint/a11y/noStaticElementInteractions: クリックで選択解除
