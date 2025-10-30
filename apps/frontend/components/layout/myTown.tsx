@@ -1,16 +1,21 @@
 "use client";
-import { Cloud, Clouds, OrbitControls, Sky } from "@react-three/drei";
+import { Cloud, Clouds, Html, OrbitControls, Sky } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { useEffect } from "react";
+import { Hammer, Move, RotateCw } from "lucide-react";
+import { useEffect, useState } from "react";
 import * as THREE from "three";
 import Ground from "@/features/world3d/components/ground";
 import { Buildings } from "@/features/world3d/components/resultObject";
 import { useGetMyTown } from "@/features/world3d/hooks/useGetMaps";
 import { useObjectStore } from "@/stores";
+import type { BuildingPartData } from "@/types";
+import { Button } from "../ui/button";
+import { ButtonGroup } from "../ui/button-group";
 
 export default function MyTown() {
   const { map, isLoading } = useGetMyTown();
   const { reset } = useObjectStore();
+  const [selectedObject, setSelectedObject] = useState<string | null>(null);
 
   useEffect(() => {
     reset();
@@ -61,7 +66,21 @@ export default function MyTown() {
 
         {!isLoading &&
           map?.userObjects.map((object) => (
-            <Buildings buildingData={object} key={object.id} />
+            // biome-ignore lint/a11y/noStaticElementInteractions: クリックで選択解除
+            <group
+              key={object.id}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (selectedObject === object.id) {
+                  setSelectedObject(null);
+                } else {
+                  setSelectedObject(object.id);
+                }
+              }}
+            >
+              <Buildings buildingData={object} />
+              {selectedObject === object.id && <ControlPanel object={object} />}
+            </group>
           ))}
 
         {/* <mesh castShadow position={[0, 3.5, 0]} key={object.id}>
@@ -77,3 +96,34 @@ export default function MyTown() {
     </div>
   );
 }
+
+const ControlPanel = ({ object }: { object: BuildingPartData }) => {
+  const { position, boundingBox } = object;
+  // TODO: 作りなおす、うごかす、まわすを実装 patch叩く
+  return (
+    <Html
+      position={[
+        position?.[0] || 0,
+        (position?.[1] || 0) + (boundingBox?.[1] || 0) - 0.5,
+        position?.[2] || 0,
+      ]}
+      center
+      style={{ pointerEvents: "auto" }}
+    >
+      <ButtonGroup>
+        <Button variant="secondary">
+          <Hammer />
+          作りなおす
+        </Button>
+        <Button variant="secondary">
+          <Move />
+          うごかす
+        </Button>
+        <Button variant="secondary">
+          <RotateCw />
+          まわす
+        </Button>
+      </ButtonGroup>
+    </Html>
+  );
+};
