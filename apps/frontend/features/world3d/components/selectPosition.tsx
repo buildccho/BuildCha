@@ -71,9 +71,11 @@ export default function SelectPosition({
       <Canvas shadows camera={{ fov: 45, position: [5, 15, -40] }}>
         <SceneSetup>
           {!isLoading &&
-            map?.userObjects.map((object) => (
-              <Buildings buildingData={object} key={object.id} />
-            ))}
+            map?.userObjects
+              .filter((object) => object.position !== undefined)
+              .map((object) => (
+                <Buildings buildingData={object} key={object.id} />
+              ))}
           {/* 配置されたオブジェクト */}
           {placedObject && (
             // biome-ignore lint/a11y/noStaticElementInteractions: クリックで選択解除
