@@ -28,8 +28,8 @@ export type UserObject = {
     createdAt: string;
     userObjectId: string | null;
   }[];
-  position: [number, number, number];
-  rotation: [number, number, number];
+  position?: [number, number, number];
+  rotation?: [number, number, number];
   boundingBox: [number, number, number];
 };
 

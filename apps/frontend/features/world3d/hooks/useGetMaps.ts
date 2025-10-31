@@ -67,8 +67,12 @@ const fetcherMap = (mapId: string) => async () => {
     ...data,
     userObjects: data.userObjects.map((userObject) => ({
       ...userObject,
-      position: jsonNumberArrayParser(userObject.position),
-      rotation: jsonNumberArrayParser(userObject.rotation),
+      position: userObject.position
+        ? jsonNumberArrayParser(userObject.position)
+        : undefined,
+      rotation: userObject.rotation
+        ? jsonNumberArrayParser(userObject.rotation)
+        : undefined,
       boundingBox: jsonNumberArrayParser(userObject.boundingBox),
       parts: userObject.parts.map((part) => ({
         ...part,

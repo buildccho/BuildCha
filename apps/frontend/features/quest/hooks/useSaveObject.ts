@@ -70,8 +70,6 @@ export function useSaveObject() {
           name,
           questId,
           mapId: map.id,
-          position: [0, 0, 0],
-          rotation: [0, 0, 0],
           boundingBox: boundingBox,
           parts: formattedParts,
           chatHistory: formattedChatHistory,
@@ -92,8 +90,8 @@ export function useSaveObject() {
       const data = await response.json();
       setObject({
         ...data,
-        position: JSON.parse(data.position),
-        rotation: JSON.parse(data.rotation),
+        position: data.position ? JSON.parse(data.position) : undefined,
+        rotation: data.rotation ? JSON.parse(data.rotation) : undefined,
         boundingBox: JSON.parse(data.boundingBox),
         parts: data.parts.map((part) => ({
           ...part,

@@ -193,8 +193,8 @@ const app = new Hono<{
           userId: user.id,
           questId: data.questId,
           mapId: data.mapId,
-          position: JSON.stringify(data.position),
-          rotation: JSON.stringify(data.rotation),
+          position: data.position ? JSON.stringify(data.position) : undefined,
+          rotation: data.rotation ? JSON.stringify(data.rotation) : undefined,
           boundingBox: JSON.stringify(data.boundingBox),
           objectPrecision: data.objectPrecision,
           parts: {
