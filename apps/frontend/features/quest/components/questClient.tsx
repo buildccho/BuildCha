@@ -2,7 +2,14 @@
 
 import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { ChevronLeft, Home, Plus, RotateCw, Sparkles } from "lucide-react";
+import {
+  ChevronLeft,
+  Home,
+  Plus,
+  RefreshCw,
+  RotateCw,
+  Sparkles,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -57,9 +64,55 @@ export default function QuestClient({ quest }: { quest: Quest }) {
           objectPlacement={objectPlacement}
         />
       )}
-      {displayMode === "result" && (
-        <ResultMode quest={quest} result={result} object={object} />
-      )}
+      {displayMode === "result" &&
+        (result && object && !isLoading ? (
+          <ResultMode quest={quest} result={result} object={object} />
+        ) : isLoading ? (
+          <div className="w-full max-w-4xl mx-auto min-h-screen flex flex-col items-center justify-center p-4 lg:py-6 gap-6">
+            <div className="flex items-center justify-center gap-4 w-full h-fit">
+              <div className="bg-white rounded-xl overflow-hidden w-full relative max-w-52 h-fit">
+                <Image
+                  src={`https://pub-68bb760998324b59b97c4622e8ba2d68.r2.dev/thumbnail/${quest.id}.png`}
+                  alt="お手本"
+                  width={200}
+                  height={200}
+                  className="object-contain block w-full h-full"
+                />
+              </div>
+              <RefreshCw className="size-6 animate-spin" />
+              <div className="bg-white rounded-xl overflow-hidden w-full relative max-w-52 h-full">
+                <ResultObject />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 animate-pulse">
+              <Image
+                src={"/AICharacter.png"}
+                alt="AIキャラ"
+                width={44}
+                height={44}
+                className="object-cover block"
+              />
+              <p className="text-base font-semibold">
+                お手本と作ったものをくらべているよ
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="w-full min-h-screen flex flex-col items-center justify-center p-4 lg:py-6 gap-4">
+            <p className="text-lg font-bold">ごめんね。エラーが発生したよ</p>
+            <Button
+              size={"lg"}
+              variant={"secondary"}
+              onClick={() => {
+                setDisplayMode("chat");
+              }}
+            >
+              <RefreshCw />
+              もう一度やり直す
+            </Button>
+          </div>
+        ))}
       <div className="sr-only">
         <ResultObject ref={resultObjectRef} />
       </div>
