@@ -305,6 +305,21 @@ const ResultMode = ({
   if (!result || !object) {
     return null;
   }
+
+  const LEVEL_COEFFICIENT = 0.02;
+  const currentLevelStartScore = Math.floor(
+    (result.userLevel || 0) / LEVEL_COEFFICIENT,
+  );
+  const nextLevelScore = Math.floor(
+    ((result.userLevel || 0) + 1) / LEVEL_COEFFICIENT,
+  );
+  const scoreInCurrentLevel = (result.userScore || 0) - currentLevelStartScore;
+  const scoreNeededForNextLevel = nextLevelScore - currentLevelStartScore;
+  const progressPercentage =
+    scoreNeededForNextLevel > 0
+      ? (scoreInCurrentLevel / scoreNeededForNextLevel) * 100
+      : 0;
+
   return (
     <main className="w-full min-h-screen grid place-items-center p-4 lg:py-6">
       <div className="max-w-6xl grid w-full px-6 py-6 lg:px-9 lg:py-9 xl:px-12 xl:py-12 rounded-3xl gap-6 xl:gap-9 bg-white/60 border border-white backdrop-blur-sm shadow-lg shadow-black/5">
@@ -366,16 +381,14 @@ const ResultMode = ({
                         {result.userLevel}
                       </span>
                     </div>
-                    {/* TODO: スコア表示修正する */}
                     <div className="text-muted-foreground shrink-0 flex items-baseline gap-1">
-                      20 →{" "}
                       <span className="font-bold text-foreground">
-                        {result.userScore}
+                        {scoreInCurrentLevel}
                       </span>{" "}
-                      / 100
+                      / {scoreNeededForNextLevel}
                     </div>
                   </div>
-                  <Progress value={40} className="flex-1" />
+                  <Progress value={progressPercentage} className="flex-1" />
                 </div>
               </div>
             </div>

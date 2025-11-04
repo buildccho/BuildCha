@@ -1,7 +1,7 @@
 "use client";
 import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDeviceDetection } from "@/hooks/useDeviceDetection";
 import { useObjectStore } from "@/stores";
 import { useGetMyTown } from "../hooks/useGetMaps";
@@ -23,7 +23,6 @@ export default function SelectPosition({
 
   const { objectData } = useObjectStore();
   const { isTouchDevice } = useDeviceDetection();
-  const [selectedObject, setSelectedObject] = useState<boolean>(false);
   const { map, isLoading } = useGetMyTown();
   const {
     placedObject,
@@ -50,17 +49,8 @@ export default function SelectPosition({
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [placedObject, rotateObject, isTouchDevice]);
 
-  // 建物選択時の処理
-  const handleBuildingClick = (event: { stopPropagation: () => void }) => {
-    event.stopPropagation(); // イベントバブリングを停止
-    if (placedObject) {
-      setSelectedObject(true);
-    }
-  };
-
   // 他の場所クリック時の選択解除
   const handleGroundSelect = ({ x, z }: { x: number; z: number }) => {
-    setSelectedObject(false);
     if (objectData?.BuildingPartData) {
       placeObject(objectData.BuildingPartData, x, z);
     }
@@ -72,15 +62,13 @@ export default function SelectPosition({
         <SceneSetup>
           {!isLoading &&
             map?.userObjects
-              .filter((object) => object.position !== undefined)
+              .filter((object) => object.position)
               .map((object) => (
                 <Buildings buildingData={object} key={object.id} />
               ))}
           {/* 配置されたオブジェクト */}
           {placedObject && (
-            // biome-ignore lint/a11y/noStaticElementInteractions: クリックで選択解除
             <group
-              onClick={handleBuildingClick}
               onPointerOver={(e) => e.stopPropagation()}
               onPointerOut={(e) => e.stopPropagation()}
               onPointerDown={(e) => e.stopPropagation()}
@@ -94,7 +82,7 @@ export default function SelectPosition({
           {/* 回転コントロール */}
           {placedObject && (
             <RotationControl
-              visible={isTouchDevice ? true : selectedObject}
+              visible={true}
               currentRotation={getCurrentRotationY()}
               onRotate={rotateObject}
               position={[
