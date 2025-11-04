@@ -71,7 +71,7 @@ export default function RotationControl({
         <div
           className="direction-indicator absolute -top-2 -right-2 w-5 h-5 bg-white/90 rounded-full flex items-center justify-center text-xs shadow-md transition-transform duration-300 ease-in-out"
           style={{
-            transform: `rotate(${(currentRotation * 180) / Math.PI}deg)`,
+            transform: `rotate(${-(currentRotation * 180) / Math.PI}deg)`,
           }}
         >
           <span
