@@ -1,6 +1,6 @@
 "use client";
 
-import { Hammer } from "lucide-react";
+import { Hammer, MessageCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -38,7 +38,10 @@ export default function Home() {
   return (
     <main className="mx-auto py-10 px-4 md:px-6 lg:px-8 xl:px-10 min-h-svh flex">
       <div className="relative grow grid grid-cols-2 content-between">
-        <div className="z-30 flex items-center gap-2">
+        <Link
+          href={"/chatbot"}
+          className="z-30 flex items-center gap-2 w-fit relative"
+        >
           <Image
             src={"/AICharacter.png"}
             alt="AIキャラ"
@@ -50,7 +53,10 @@ export default function Home() {
             <br />
             ぼくにきいてね！
           </div>
-        </div>
+          <span className="bg-primary rounded-full p-1.5 absolute bottom-5 right-3 shadow">
+            <MessageCircle className="size-4 text-white" />
+          </span>
+        </Link>
         <ProfileSection />
 
         <Button
