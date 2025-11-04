@@ -24,5 +24,21 @@ export default async function QuestDetailPage({
       rotation: JSON.parse(answerObject.rotation) as [number, number, number],
       size: JSON.parse(answerObject.size) as [number, number, number],
     })) ?? [];
-  return <QuestClient quest={{ ...quest, answerObject }} />;
+
+  const questsRes = await client.quests.$get();
+  if (!questsRes.ok) {
+    console.error(questsRes.statusText);
+    return <div>Error</div>;
+  }
+  const quests = await questsRes.json();
+  const questIndex = quests.findIndex((quest) => quest.id === questId);
+  const filteredQuests =
+    questIndex !== -1 ? quests.slice(questIndex + 1, questIndex + 4) : [];
+
+  return (
+    <QuestClient
+      quest={{ ...quest, answerObject }}
+      nextQuests={filteredQuests}
+    />
+  );
 }

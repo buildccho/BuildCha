@@ -30,7 +30,13 @@ import { client } from "@/lib/rpc-client";
 import type { Quest, UserObject } from "@/types";
 import { useSaveObject } from "../hooks/useSaveObject";
 
-export default function QuestClient({ quest }: { quest: Quest }) {
+export default function QuestClient({
+  quest,
+  nextQuests,
+}: {
+  quest: Quest;
+  nextQuests: Quest[];
+}) {
   const [displayMode, setDisplayMode] = useState<
     "chat" | "position" | "result"
   >("chat");
@@ -66,7 +72,12 @@ export default function QuestClient({ quest }: { quest: Quest }) {
       )}
       {displayMode === "result" &&
         (result && object && !isLoading ? (
-          <ResultMode quest={quest} result={result} object={object} />
+          <ResultMode
+            quest={quest}
+            result={result}
+            object={object}
+            nextQuests={nextQuests}
+          />
         ) : isLoading ? (
           <div className="w-full max-w-4xl mx-auto min-h-screen flex flex-col items-center justify-center p-4 lg:py-6 gap-6">
             <div className="flex items-center justify-center gap-4 w-full h-fit">
@@ -289,10 +300,12 @@ const PositionMode = ({
 
 const ResultMode = ({
   quest,
+  nextQuests,
   result,
   object,
 }: {
   quest: Quest;
+  nextQuests: Quest[];
   result: {
     objectScore: number;
     userLevel: number;
@@ -397,16 +410,17 @@ const ResultMode = ({
         <div className="grid grid-cols-4 gap-4 md:gap-6 pt-3 md:pt-6">
           <div className="flex flex-col gap-2 col-span-1">
             <h3 className="font-semibold text-base flex items-center gap-1.5">
-              <RotateCw size={14} className="text-foreground/80" /> つくりなおす
+              <RotateCw size={14} className="text-foreground/80" />{" "}
+              同じクエストをやる
             </h3>
             <QuestCard quest={quest} />
           </div>
           <div className="flex flex-col gap-2 col-span-3">
             <h3 className="font-semibold text-base">次はどれをつくる？</h3>
             <div className="grid grid-cols-3 gap-2">
-              {/* <QuestCard quest={quest} />
-        <QuestCard quest={quest} />
-        <QuestCard quest={quest} /> */}
+              {nextQuests.map((quest) => (
+                <QuestCard quest={quest} key={quest.id} />
+              ))}
             </div>
           </div>
         </div>
