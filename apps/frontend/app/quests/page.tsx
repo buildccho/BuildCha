@@ -1,9 +1,9 @@
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import QuestCard from "@/features/quest/components/questCard";
 import { client } from "@/lib/rpc-client";
 import type { Quest } from "@/types";
+import QuestsList from "./questsList";
 
 const getQuests = async (): Promise<Quest[]> => {
   try {
@@ -44,11 +44,7 @@ export default async function QuestListPage() {
         </Button>
         <h1 className="text-2xl font-black pb-6">クエスト一覧</h1>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-        {quests.map((quest) => (
-          <QuestCard quest={quest} key={quest.id} />
-        ))}
-      </div>
+      <QuestsList quests={quests} />
     </main>
   );
 }
