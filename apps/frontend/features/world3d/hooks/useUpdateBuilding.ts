@@ -22,7 +22,15 @@ export function useUpdateBuilding() {
       }
 
       toast.success("たてものをうごかしたよ！");
-      await onSuccess?.();
+
+      // onSuccess のエラーは PATCH の成功状態に影響させない
+      if (onSuccess) {
+        try {
+          await onSuccess();
+        } catch (error) {
+          console.error("onSuccess callback error:", error);
+        }
+      }
     } catch (error) {
       toast.error("たてものをうごかせなかったよ…もういちどためしてね");
       console.error(error);
@@ -49,7 +57,15 @@ export function useUpdateBuilding() {
       }
 
       toast.success("たてものをまわしたよ！");
-      await onSuccess?.();
+
+      // onSuccess のエラーは PATCH の成功状態に影響させない
+      if (onSuccess) {
+        try {
+          await onSuccess();
+        } catch (error) {
+          console.error("onSuccess callback error:", error);
+        }
+      }
     } catch (error) {
       toast.error("たてものをまわせなかったよ…もういちどためしてね");
       console.error(error);
