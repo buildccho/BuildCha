@@ -87,11 +87,11 @@ const fetcherMap = (mapId: string) => async () => {
 
 export const useGetMap = (mapId: string | undefined) => {
   const key = mapId ? `get-map-${mapId}` : null;
-  const { data, error, isLoading } = useSWR(
+  const { data, error, isLoading, mutate } = useSWR(
     key,
     mapId ? fetcherMap(mapId) : null,
   );
-  return { map: data, error, isLoading };
+  return { map: data, error, isLoading, mutate };
 };
 
 export const useGetMyTown = () => {
@@ -120,7 +120,12 @@ export const useGetMyTown = () => {
   const firstMapId = maps?.[0]?.id;
 
   // マップ詳細（IDがある時だけ）
-  const { map, error: mapError, isLoading: mapLoading } = useGetMap(firstMapId);
+  const {
+    map,
+    error: mapError,
+    isLoading: mapLoading,
+    mutate: mutateMap,
+  } = useGetMap(firstMapId);
 
   const isLoading = mapsLoading || isCreating || isInitializing || mapLoading;
   const error = mapsError || mapError;
@@ -130,5 +135,6 @@ export const useGetMyTown = () => {
     error,
     map,
     maps,
+    mutate: mutateMap, // マップ詳細のmutateを返す
   };
 };
