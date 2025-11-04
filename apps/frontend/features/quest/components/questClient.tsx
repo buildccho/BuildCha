@@ -257,7 +257,6 @@ const PositionMode = ({
       }
       const data = await res.json();
       console.log("位置と回転を更新しました:", { position, rotation, data });
-      toast.success("建物を配置しました！");
     } catch (error) {
       console.error(error);
       toast.error(

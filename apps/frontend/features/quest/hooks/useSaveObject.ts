@@ -85,8 +85,6 @@ export function useSaveObject() {
         );
       }
 
-      toast.success("オブジェクトを保存しました");
-
       const data = await response.json();
       setObject({
         ...data,
@@ -109,7 +107,6 @@ export function useSaveObject() {
         throw new Error("ResultObject is not ready");
       }
 
-      toast.info("画像をキャプチャしています...");
       const capturedViews = await resultObjectRef.current.capture();
 
       const res = await client.ai.compareObject[":objectId"].$post({
