@@ -4,9 +4,11 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { client } from "@/lib/rpc-client";
+import { useAuthStore } from "@/stores";
 
 export function useSignIn() {
   const router = useRouter();
+  const { checkSession } = useAuthStore();
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -46,7 +48,8 @@ export function useSignIn() {
       }
       await createMapRes.json();
 
-      // トップに移動
+      // セッション情報を更新してからリダイレクト
+      await checkSession();
       router.push("/");
     } catch (error) {
       console.error(error);

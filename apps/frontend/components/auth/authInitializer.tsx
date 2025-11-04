@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useAuthStore } from "@/stores";
 
 type AuthInitializerProps = {
@@ -9,9 +9,14 @@ type AuthInitializerProps = {
 
 export function AuthInitializer({ children }: AuthInitializerProps) {
   const { checkSession } = useAuthStore();
+  const initializedRef = useRef(false);
 
   useEffect(() => {
-    checkSession();
+    // 初回マウント時のみ実行
+    if (!initializedRef.current) {
+      initializedRef.current = true;
+      checkSession();
+    }
   }, [checkSession]);
 
   return <>{children}</>;
