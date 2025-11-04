@@ -63,7 +63,7 @@ const app = new Hono<{
     async (c) => {
       const prisma = await prismaClients.fetch(c.env.DB);
       const quests = await prisma.quest.findMany({
-        orderBy: { score: "desc" },
+        orderBy: { score: "asc" },
       });
       return c.json(quests, 200);
     },
