@@ -6,6 +6,20 @@ import { useAuthStore } from "@/stores";
 export function UserProfileCard() {
   const { user, isAuthenticated } = useAuthStore();
 
+  const LEVEL_COEFFICIENT = 0.02;
+  const currentLevelStartScore = Math.floor(
+    (user?.level || 0) / LEVEL_COEFFICIENT,
+  );
+  const nextLevelScore = Math.floor(
+    ((user?.level || 0) + 1) / LEVEL_COEFFICIENT,
+  );
+  const scoreInCurrentLevel = (user?.score || 0) - currentLevelStartScore;
+  const scoreNeededForNextLevel = nextLevelScore - currentLevelStartScore;
+  const progressPercentage =
+    scoreNeededForNextLevel > 0
+      ? (scoreInCurrentLevel / scoreNeededForNextLevel) * 100
+      : 0;
+
   return (
     <div className="bg-white/65 border border-white backdrop-blur-md rounded-xl px-2 py-0.5 w-full divide-y divide-foreground/15">
       <div className="flex items-center gap-6 w-full py-2 px-2">
@@ -26,7 +40,7 @@ export function UserProfileCard() {
             {user?.level || 0}
           </span>
         </div>
-        <Progress value={user?.score || 0} />
+        <Progress value={progressPercentage} />
       </div>
     </div>
   );
